@@ -1,0 +1,58 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<routes>
+
+    
+    
+    
+
+    <vType id="car" accel="2.6" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="13.89" guiShape="passenger" />
+
+    <vType id="ambulance" accel="3.0" decel="5.0" sigma="0.2" length="5" minGap="2.5" maxSpeed="20.0" guiShape="emergency" />
+
+
+    
+    
+    
+
+    
+    <route id="route_A_H" edges="AB BC CE EH" />
+    <route id="route_H_A" edges="HE ED DB BA" />
+
+    
+    <route id="route_A_D" edges="AB BD" />
+    <route id="route_D_A" edges="DB BA" />
+
+    
+    <route id="route_D_C" edges="DE EC" />
+    <route id="route_C_D" edges="CB BD" />
+
+    
+    <route id="route_C_B" edges="CB" />
+    <route id="route_B_C" edges="BC" />
+
+    
+    <route id="route_E_D" edges="ED" />
+    <route id="route_D_E" edges="DE" />
+
+    
+    <route id="route_H_E" edges="HE" />
+    <route id="route_E_H" edges="EH" />
+
+
+    
+    
+    
+
+    <route id="ambulance_route_main" edges="AB BC CE EH" />
+
+    <route id="ambulance_route_alternative" edges="AB BD DE EH" />
+
+
+    
+    
+    
+
+    
+    <vehicle id="cross_B_1" type="car" route="route_D_A" depart="10" /><vehicle id="cross_E_1" type="car" route="route_H_A" depart="10" /><vehicle id="cross_B_2" type="car" route="route_D_A" depart="12" /><vehicle id="cross_E_2" type="car" route="route_H_A" depart="12" /><vehicle id="cross_B_3" type="car" route="route_D_A" depart="14" /><vehicle id="cross_E_3" type="car" route="route_H_A" depart="14" /><vehicle id="ambulance" type="ambulance" route="ambulance_route_main" depart="20" />
+
+</routes>

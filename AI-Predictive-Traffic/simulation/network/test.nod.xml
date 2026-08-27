@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<nodes>
+    <!-- Ambulance starting point -->
+    <node id="A" x="0" y="100" type="priority"/>
+
+    <!-- Signalized intersections -->
+    <node id="B" x="100" y="100" type="traffic_light"/>
+    <node id="C" x="200" y="100" type="traffic_light"/>
+    <node id="D" x="100" y="0" type="traffic_light"/>
+    <node id="E" x="200" y="0" type="traffic_light"/>
+
+    <!-- Hospital / destination -->
+    <node id="H" x="300" y="0" type="priority"/>
+</nodes>

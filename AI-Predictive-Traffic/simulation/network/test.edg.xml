@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<edges>
+    <!-- A <-> B -->
+    <edge id="AB" from="A" to="B" priority="1" numLanes="1" speed="13.89"/>
+    <edge id="BA" from="B" to="A" priority="1" numLanes="1" speed="13.89"/>
+
+    <!-- B <-> C -->
+    <edge id="BC" from="B" to="C" priority="1" numLanes="1" speed="13.89"/>
+    <edge id="CB" from="C" to="B" priority="1" numLanes="1" speed="13.89"/>
+
+    <!-- B <-> D -->
+    <edge id="BD" from="B" to="D" priority="1" numLanes="1" speed="13.89"/>
+    <edge id="DB" from="D" to="B" priority="1" numLanes="1" speed="13.89"/>
+
+    <!-- C <-> E -->
+    <edge id="CE" from="C" to="E" priority="1" numLanes="1" speed="13.89"/>
+    <edge id="EC" from="E" to="C" priority="1" numLanes="1" speed="13.89"/>
+
+    <!-- D <-> E -->
+    <edge id="DE" from="D" to="E" priority="1" numLanes="1" speed="13.89"/>
+    <edge id="ED" from="E" to="D" priority="1" numLanes="1" speed="13.89"/>
+
+    <!-- E <-> Hospital -->
+    <edge id="EH" from="E" to="H" priority="1" numLanes="1" speed="13.89"/>
+    <edge id="HE" from="H" to="E" priority="1" numLanes="1" speed="13.89"/>
+</edges>

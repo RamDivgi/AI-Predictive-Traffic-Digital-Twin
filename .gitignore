@@ -1,0 +1,12 @@
+MangaluruDigitalTwin3D/Library/
+MangaluruDigitalTwin3D/Temp/
+MangaluruDigitalTwin3D/Logs/
+MangaluruDigitalTwin3D/Obj/
+MangaluruDigitalTwin3D/Build/
+MangaluruDigitalTwin3D/Builds/
+MangaluruDigitalTwin3D/UserSettings/
+.vscode/
+.idea/
+*.user
+*.csproj
+*.sln

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <input>
+        <net-file value="mangaluru_ai.net.xml.gz"/>
+        <route-files value="ambulance_test.rou.xml"/>
+        <additional-files value="osm.poly.xml.gz,hospitals.add.xml"/>
+    </input>
+    <time>
+        <begin value="0"/>
+        <end value="3600"/>
+    </time>
+</configuration>

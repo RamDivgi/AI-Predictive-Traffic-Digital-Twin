@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Predictive Traffic — Digital Twin</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="glass-panel header">
+        <div class="logo">
+            <h1>AI Predictive Traffic <span>Digital Twin</span></h1>
+        </div>
+        <div class="status-indicators">
+            <div class="status-badge">
+                <span class="dot" id="ws-dot"></span>
+                <span id="ws-status">DISCONNECTED</span>
+            </div>
+            <div class="status-badge">
+                <span class="dot" id="sim-dot"></span>
+                <span id="sim-status">OFFLINE</span>
+            </div>
+            <div class="time-badge">
+                ⏱ <span id="sim-time">0.0</span>s
+            </div>
+        </div>
+    </header>
+
+    <main class="dashboard-grid">
+        <!-- AMBULANCE PANEL -->
+        <section class="glass-panel panel-ambulance">
+            <h2>🚑 Ambulance</h2>
+            <div class="data-grid" id="ambulance-data">
+                <div class="data-item"><label>Vehicle ID</label><span id="amb-id">-</span></div>
+                <div class="data-item"><label>Speed</label><span id="amb-speed">-</span></div>
+                <div class="data-item"><label>Current Edge</label><span id="amb-edge">-</span></div>
+                <div class="data-item"><label>Lat / Lon</label><span id="amb-coord">-</span></div>
+                <div class="data-item"><label>Destination</label><span id="amb-dest">-</span></div>
+                <div class="data-item"><label>ETA</label><span id="amb-eta" class="highlight">-</span></div>
+            </div>
+        </section>
+
+        <!-- MAP AREA -->
+        <section class="glass-panel panel-map">
+            <h2>🗺️ Live Schematic</h2>
+            <div class="map-container" id="map-container">
+                <div class="hospital-marker">🏥 Highland Hospital</div>
+                <div id="ambulance-marker" class="ambulance-marker">🚑</div>
+                <div class="route-line"></div>
+            </div>
+        </section>
+
+        <!-- TRAFFIC PANEL -->
+        <section class="glass-panel panel-traffic">
+            <h2>🚗 Traffic Overview</h2>
+            <div class="list-container" id="traffic-list">
+                <!-- Dynamically populated -->
+            </div>
+        </section>
+
+        <!-- SIGNAL PANEL -->
+        <section class="glass-panel panel-signals">
+            <h2>🚦 Signal Status</h2>
+            <div class="list-container" id="signal-list">
+                <!-- Dynamically populated -->
+            </div>
+        </section>
+
+        <!-- DECISION PANEL -->
+        <section class="glass-panel panel-decisions">
+            <h2>🤖 AI Decisions</h2>
+            <div class="timeline" id="decision-list">
+                <!-- Dynamically populated -->
+            </div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
