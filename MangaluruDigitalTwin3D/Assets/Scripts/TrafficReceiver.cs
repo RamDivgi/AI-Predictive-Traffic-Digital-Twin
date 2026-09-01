@@ -15,13 +15,8 @@ public class TrafficPayload
 public class TrafficReceiver : MonoBehaviour
 {
     public int listenPort = 5006;
-    public float movementSmoothing = 10f;
-    public float rotationSmoothing = 10f;
-    
-    // Configurable maximum number of vehicles (0 = unlimited)
     public int maxVehicles = 500;
-    public Material vehicleMaterial;
-
+    
     private UdpClient udpClient;
     private Thread receiveThread;
     private bool isRunning = false;
@@ -29,15 +24,33 @@ public class TrafficReceiver : MonoBehaviour
     private TrafficPayload latestPayload;
     private object dataLock = new object();
 
-    // Dictionary to track active vehicle game objects
+    private Queue<GameObject> vehiclePool = new Queue<GameObject>();
     private Dictionary<string, GameObject> activeVehicles = new Dictionary<string, GameObject>();
+    private Dictionary<string, VehicleSmoother> activeSmoothers = new Dictionary<string, VehicleSmoother>();
     
     private int packetsReceived = 0;
     private float lastLogTime = 0f;
 
+    private GameObject[] carPrefabs;
+
     void Start()
     {
+        InitializeAssets();
         StartUDPReceiver();
+    }
+
+    private void InitializeAssets()
+    {
+        // Load the prefabs copied from SUMO2Unity
+        carPrefabs = new GameObject[]
+        {
+            Resources.Load<GameObject>("Cars/AlmaBlue"),
+            Resources.Load<GameObject>("Cars/AlmaGrey"),
+            Resources.Load<GameObject>("Cars/ElkaBlack"),
+            Resources.Load<GameObject>("Cars/ElkaRed"),
+            Resources.Load<GameObject>("Cars/EloraGold"),
+            Resources.Load<GameObject>("Cars/EloraWhite")
+        };
     }
 
     private void StartUDPReceiver()
@@ -55,8 +68,6 @@ public class TrafficReceiver : MonoBehaviour
         {
             udpClient = new UdpClient(listenPort);
             IPEndPoint anyIP = new IPEndPoint(IPAddress.Any, 0);
-
-            // Increase receive buffer size for larger JSON arrays
             udpClient.Client.ReceiveBufferSize = 65535 * 4;
 
             while (isRunning)
@@ -67,7 +78,6 @@ public class TrafficReceiver : MonoBehaviour
                 try
                 {
                     TrafficPayload payload = JsonUtility.FromJson<TrafficPayload>(text);
-
                     if (payload != null && payload.vehicles != null)
                     {
                         lock (dataLock)
@@ -84,10 +94,7 @@ public class TrafficReceiver : MonoBehaviour
         }
         catch (Exception err)
         {
-            if (isRunning)
-            {
-                Debug.LogError("UDP receive thread error (Traffic): " + err.ToString());
-            }
+            if (isRunning) Debug.LogError("UDP receive thread error (Traffic): " + err.ToString());
         }
     }
 
@@ -100,7 +107,6 @@ public class TrafficReceiver : MonoBehaviour
             if (latestPayload != null)
             {
                 payload = latestPayload;
-                // Clear so we don't process the same payload repeatedly if simulation is paused
                 latestPayload = null; 
             }
         }
@@ -108,134 +114,112 @@ public class TrafficReceiver : MonoBehaviour
         if (payload != null && payload.vehicles != null)
         {
             HashSet<string> currentFrameVehicleIDs = new HashSet<string>();
-
             int count = 0;
+            
             foreach (TelemetryData v in payload.vehicles)
             {
                 if (maxVehicles > 0 && count >= maxVehicles) break;
-
                 currentFrameVehicleIDs.Add(v.id);
 
-                Vector3 targetPos = new Vector3(v.x, v.y + 0.75f, v.z);
+                Vector3 targetPos = new Vector3(v.x, v.y, v.z);
                 Quaternion targetRot = Quaternion.Euler(0, v.angle, 0);
 
-                if (activeVehicles.ContainsKey(v.id))
+                if (activeSmoothers.TryGetValue(v.id, out VehicleSmoother smoother))
                 {
-                    // Update existing vehicle
-                    GameObject vehObj = activeVehicles[v.id];
-                    vehObj.transform.position = Vector3.Lerp(vehObj.transform.position, targetPos, Time.deltaTime * movementSmoothing);
-                    vehObj.transform.rotation = Quaternion.Lerp(vehObj.transform.rotation, targetRot, Time.deltaTime * rotationSmoothing);
+                    smoother.UpdateTarget(targetPos, targetRot);
                 }
                 else
                 {
-                    // Create new vehicle procedural model
-                    GameObject vehObj = CreateProceduralVehicle(v.id);
-                    
-                    GameObject vehParent = GameObject.Find("Traffic/Vehicles");
-                    vehObj.transform.parent = (vehParent != null) ? vehParent.transform : this.transform;
-                    
-                    vehObj.transform.position = targetPos;
-                    vehObj.transform.rotation = targetRot;
-
+                    GameObject vehObj = GetOrCreateVehicle(v.id);
+                    VehicleSmoother newSmoother = vehObj.GetComponent<VehicleSmoother>();
+                    newSmoother.UpdateTarget(targetPos, targetRot);
                     activeVehicles.Add(v.id, vehObj);
+                    activeSmoothers.Add(v.id, newSmoother);
+                }
+                
+                if (v.id == "car_0" && (Time.time - lastLogTime >= 2.0f))
+                {
+                    GameObject carObj = activeVehicles[v.id];
+                    Debug.Log($"\n[VEHICLE DEBUG]\n" +
+                              $"ID={v.id}\n" +
+                              $"SUMO=({v.x:F2}, {v.y:F2}, {v.z:F2})\n" +
+                              $"UNITY_CONVERTED=({targetPos.x:F2}, {targetPos.y:F2}, {targetPos.z:F2})\n" +
+                              $"FINAL_TRANSFORM=(Pos:{carObj.transform.position} | LocalPos:{carObj.transform.localPosition} | Rot:{carObj.transform.rotation.eulerAngles} | LocalScale:{carObj.transform.localScale})\n");
                 }
                 
                 count++;
             }
 
-            // Remove vehicles that left the SUMO simulation
             List<string> toRemove = new List<string>();
             foreach (var kvp in activeVehicles)
             {
                 if (!currentFrameVehicleIDs.Contains(kvp.Key))
                 {
                     toRemove.Add(kvp.Key);
-                    Destroy(kvp.Value);
+                    kvp.Value.SetActive(false);
+                    vehiclePool.Enqueue(kvp.Value);
                 }
             }
 
             foreach (string id in toRemove)
             {
                 activeVehicles.Remove(id);
+                activeSmoothers.Remove(id);
             }
             
             packetsReceived++;
-            if (Time.time - lastLogTime >= 5.0f)
+            if (Time.time - lastLogTime >= 15.0f)
             {
-                string firstVehPos = activeVehicles.Count > 0 ? activeVehicles[new List<string>(activeVehicles.Keys)[0]].transform.position.ToString() : "None";
-                Debug.Log($"TrafficReceiver: Packets received: {packetsReceived} | Active Unity vehicles: {activeVehicles.Count}");
-                Debug.Log($"Traffic visual check: Active vehicles = {activeVehicles.Count} | First vehicle position = {firstVehPos}");
+                Debug.Log($"TrafficReceiver: Active Unity vehicles: {activeVehicles.Count} | Pooled: {vehiclePool.Count}");
                 lastLogTime = Time.time;
             }
         }
     }
 
-    private GameObject CreateProceduralVehicle(string id)
+    private GameObject GetOrCreateVehicle(string id)
     {
-        GameObject root = new GameObject("Vehicle_" + id);
-        
-        // Deterministic variation based on ID
-        int hash = Mathf.Abs(id.GetHashCode());
-        int vehicleType = hash % 4; // 0=Sedan, 1=Hatchback, 2=SUV, 3=Truck
-        
-        Color[] colors = new Color[] {
-            Color.red, Color.blue, new Color(0.1f, 0.6f, 0.1f), 
-            Color.yellow, new Color(0.8f, 0.8f, 0.8f), 
-            new Color(0.2f, 0.2f, 0.2f), Color.white 
-        };
-        Color vColor = colors[(hash / 4) % colors.Length];
-        
-        Material mat = new Material(Shader.Find("Universal Render Pipeline/Lit"));
-        mat.color = vColor;
-        
-        Material glassMat = new Material(Shader.Find("Universal Render Pipeline/Lit"));
-        glassMat.color = new Color(0.1f, 0.1f, 0.1f);
-        
-        if (vehicleType == 0) // Sedan
+        GameObject vehObj;
+        if (vehiclePool.Count > 0)
         {
-            CreatePart(root, "Body", new Vector3(0, 0.4f, 0), new Vector3(1.8f, 0.8f, 4.2f), mat);
-            CreatePart(root, "Cabin", new Vector3(0, 1.0f, -0.2f), new Vector3(1.6f, 0.6f, 2.0f), glassMat);
+            vehObj = vehiclePool.Dequeue();
+            vehObj.name = "Vehicle_" + id;
+            vehObj.SetActive(true);
+            vehObj.GetComponent<VehicleSmoother>().ResetState();
+            return vehObj;
         }
-        else if (vehicleType == 1) // Hatchback
-        {
-            CreatePart(root, "Body", new Vector3(0, 0.4f, 0), new Vector3(1.8f, 0.8f, 3.6f), mat);
-            CreatePart(root, "Cabin", new Vector3(0, 1.0f, -0.5f), new Vector3(1.6f, 0.7f, 1.8f), glassMat);
-        }
-        else if (vehicleType == 2) // SUV
-        {
-            CreatePart(root, "Body", new Vector3(0, 0.6f, 0), new Vector3(2.0f, 1.0f, 4.5f), mat);
-            CreatePart(root, "Cabin", new Vector3(0, 1.3f, -0.4f), new Vector3(1.8f, 0.8f, 2.5f), glassMat);
-        }
-        else // Truck
-        {
-            CreatePart(root, "Cab", new Vector3(0, 0.8f, 1.5f), new Vector3(2.2f, 1.6f, 1.8f), mat);
-            CreatePart(root, "Bed", new Vector3(0, 0.6f, -1.0f), new Vector3(2.2f, 1.2f, 3.2f), new Material(Shader.Find("Universal Render Pipeline/Lit")) { color = Color.gray });
-        }
-        
-        return root;
-    }
 
-    private void CreatePart(GameObject parent, string name, Vector3 pos, Vector3 scale, Material mat)
-    {
-        GameObject part = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        part.name = name;
-        part.transform.parent = parent.transform;
-        part.transform.localPosition = pos;
-        part.transform.localScale = scale;
-        Destroy(part.GetComponent<Collider>()); // optimize
-        part.GetComponent<Renderer>().material = mat;
+        // Create new
+        vehObj = new GameObject("Vehicle_" + id);
+        GameObject vehParent = GameObject.Find("Traffic/Vehicles") ?? this.gameObject;
+        vehObj.transform.parent = vehParent.transform;
+        
+        vehObj.AddComponent<VehicleSmoother>();
+
+        int hash = Mathf.Abs(id.GetHashCode());
+        GameObject prefab = carPrefabs[hash % carPrefabs.Length];
+        if (prefab != null)
+        {
+            GameObject mesh = Instantiate(prefab, vehObj.transform);
+            mesh.SetActive(true);
+            // Model Normalization: Imported cars often natively face the X-axis and pivot at the rear/center.
+            // SUMO provides the coordinate for the front bumper.
+            mesh.transform.localScale = Vector3.one; 
+            mesh.transform.localPosition = new Vector3(0, 0, -2.1f); // Shift mesh backward to align front bumper with root
+            mesh.transform.localRotation = Quaternion.Euler(0, -90f, 0); // Rotate mesh so native X-forward faces root's Z-forward
+            // Remove physics interference since SUMO controls movement
+            foreach (var rb in mesh.GetComponentsInChildren<Rigidbody>())
+            {
+                Destroy(rb);
+            }
+        }
+
+        return vehObj;
     }
 
     void OnApplicationQuit()
     {
         isRunning = false;
-        if (receiveThread != null && receiveThread.IsAlive)
-        {
-            receiveThread.Abort();
-        }
-        if (udpClient != null)
-        {
-            udpClient.Close();
-        }
+        if (receiveThread != null && receiveThread.IsAlive) receiveThread.Abort();
+        if (udpClient != null) udpClient.Close();
     }
 }

@@ -37,10 +37,27 @@ public class BuildingData {
 }
 
 [System.Serializable]
+public class HospitalData {
+    public string id;
+    public string name;
+    public float x;
+    public float y;
+}
+
+[System.Serializable]
+public class RoadLabelData {
+    public string name;
+    public float x;
+    public float y;
+}
+
+[System.Serializable]
 public class RoadNetworkData {
     public EdgeData[] edges;
     public JunctionData[] junctions;
     public BuildingData[] buildings;
+    public HospitalData[] hospitals;
+    public RoadLabelData[] road_labels;
 }
 
 public class RoadVisualizer : MonoBehaviour
@@ -51,6 +68,13 @@ public class RoadVisualizer : MonoBehaviour
 
     void Start()
     {
+        // Bootstrap essential receivers if they are missing from the scene
+        if (gameObject.GetComponent<HospitalVisualizer>() == null)
+        {
+            gameObject.AddComponent<HospitalVisualizer>();
+            Debug.Log("RoadVisualizer: Bootstrapped missing HospitalVisualizer.");
+        }
+
         LoadAndRenderRoads();
     }
 
@@ -101,8 +125,22 @@ public class RoadVisualizer : MonoBehaviour
             }
         }
         
+        // Create a massive ground plane to anchor the city visually
+        GameObject ground = GameObject.CreatePrimitive(PrimitiveType.Plane);
+        ground.name = "CityGround";
+        ground.transform.parent = roadsParent.transform;
+        ground.transform.localPosition = new Vector3(2000f, -0.1f, 1500f); // Center of typical Mangaluru coords
+        ground.transform.localScale = new Vector3(1000f, 1f, 1000f); // 10km x 10km
+        Material groundMat = new Material(Shader.Find("Universal Render Pipeline/Lit"));
+        groundMat.color = new Color(0.15f, 0.2f, 0.15f); // Dark greenish-gray base
+        ground.GetComponent<Renderer>().material = groundMat;
+        Destroy(ground.GetComponent<Collider>()); // Don't need physics for ground
+        
         Material markingMat = new Material(Shader.Find("Universal Render Pipeline/Unlit"));
         markingMat.color = Color.white;
+        
+        Material solidMarkingMat = new Material(Shader.Find("Universal Render Pipeline/Unlit"));
+        solidMarkingMat.color = Color.white;
         
         // Generate a dashed texture
         Texture2D dashedTex = new Texture2D(64, 4);
@@ -123,6 +161,7 @@ public class RoadVisualizer : MonoBehaviour
 
                 GameObject laneObj = new GameObject("Lane_" + lane.id);
                 laneObj.transform.parent = roadsParent.transform;
+                laneObj.isStatic = true;
 
                 MeshFilter meshFilter = laneObj.AddComponent<MeshFilter>();
                 MeshRenderer meshRenderer = laneObj.AddComponent<MeshRenderer>();
@@ -142,7 +181,7 @@ public class RoadVisualizer : MonoBehaviour
                 lr.startWidth = 0.15f;
                 lr.endWidth = 0.15f;
                 lr.material = markingMat;
-                lr.useWorldSpace = true;
+                lr.useWorldSpace = false;
                 lr.textureMode = LineTextureMode.Tile;
                 
                 float totalDistance = 0f;
@@ -161,6 +200,35 @@ public class RoadVisualizer : MonoBehaviour
                 // Tile the texture based on distance to make it look dashed
                 // Approx 2 dashes per meter
                 lr.material.mainTextureScale = new Vector2(totalDistance / 2f, 1f);
+                
+                // Add solid edge markings
+                for (int m = -1; m <= 1; m += 2)
+                {
+                    GameObject edgeObj = new GameObject("Edge_" + lane.id + (m < 0 ? "_L" : "_R"));
+                    edgeObj.transform.parent = laneObj.transform;
+                    LineRenderer elr = edgeObj.AddComponent<LineRenderer>();
+                    elr.positionCount = lane.shape.Length;
+                    elr.startWidth = 0.1f;
+                    elr.endWidth = 0.1f;
+                    elr.material = solidMarkingMat;
+                    elr.useWorldSpace = false;
+                    
+                    for (int i = 0; i < lane.shape.Length; i++)
+                    {
+                        Vector3 centerPos = new Vector3(lane.shape[i].x, 0.05f, lane.shape[i].y);
+                        Vector3 right = Vector3.right;
+                        if (i < lane.shape.Length - 1) {
+                            Vector3 fwd = new Vector3(lane.shape[i+1].x - lane.shape[i].x, 0, lane.shape[i+1].y - lane.shape[i].y).normalized;
+                            right = Vector3.Cross(Vector3.up, fwd).normalized;
+                        } else if (i > 0) {
+                            Vector3 fwd = new Vector3(lane.shape[i].x - lane.shape[i-1].x, 0, lane.shape[i].y - lane.shape[i-1].y).normalized;
+                            right = Vector3.Cross(Vector3.up, fwd).normalized;
+                        }
+                        // Offset by half width minus a small margin so it sits on the road
+                        Vector3 pos = centerPos + (right * ((width / 2f - 0.15f) * m));
+                        elr.SetPosition(i, pos);
+                    }
+                }
             }
         }
         
@@ -178,6 +246,7 @@ public class RoadVisualizer : MonoBehaviour
                 {
                     GameObject juncObj = new GameObject("Junction_" + junc.id);
                     juncObj.transform.parent = junctionsParent.transform;
+                    juncObj.isStatic = true;
                     
                     MeshFilter mf = juncObj.AddComponent<MeshFilter>();
                     MeshRenderer mr = juncObj.AddComponent<MeshRenderer>();
@@ -188,18 +257,48 @@ public class RoadVisualizer : MonoBehaviour
 
                 if (junc.is_tls)
                 {
-                    GameObject tlsObj = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-                    tlsObj.name = "TLS_" + junc.id;
-                    tlsObj.transform.parent = tlsParent.transform;
-                    tlsObj.transform.position = new Vector3(junc.x, 10f, junc.y); // Hovering high above junction
-                    tlsObj.transform.localScale = new Vector3(5f, 5f, 5f);
+                    GameObject tlsRoot = new GameObject("TLS_" + junc.id);
+                    tlsRoot.transform.parent = tlsParent.transform;
                     
-                    // Remove collider to save performance
-                    Destroy(tlsObj.GetComponent<Collider>());
+                    Vector3 signalPos = new Vector3(junc.x, 0f, junc.y);
+                    if (junc.shape != null && junc.shape.Length > 0)
+                    {
+                        signalPos = new Vector3(junc.shape[0].x, 0f, junc.shape[0].y);
+                    }
+                    tlsRoot.transform.localPosition = signalPos;
+                    if (Vector3.Distance(signalPos, new Vector3(junc.x, 0f, junc.y)) > 0.1f)
+                    {
+                        tlsRoot.transform.LookAt(new Vector3(junc.x, 0f, junc.y));
+                    }
+
+                    // Pole
+                    GameObject pole = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+                    pole.name = "Pole";
+                    pole.transform.parent = tlsRoot.transform;
+                    pole.transform.localPosition = new Vector3(0, 3f, 0); // 6m tall
+                    pole.transform.localScale = new Vector3(0.2f, 3f, 0.2f);
+                    Destroy(pole.GetComponent<Collider>());
+                    Material poleMat = new Material(Shader.Find("Universal Render Pipeline/Lit"));
+                    poleMat.color = new Color(0.2f, 0.2f, 0.2f);
+                    pole.GetComponent<Renderer>().material = poleMat;
+
+                    // Signal Head
+                    GameObject head = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                    head.name = "Head";
+                    head.transform.parent = tlsRoot.transform;
+                    head.transform.localPosition = new Vector3(0, 5.5f, 0);
+                    head.transform.localScale = new Vector3(0.5f, 1.5f, 0.5f);
+                    Destroy(head.GetComponent<Collider>());
                     
-                    Material tlsMat = new Material(Shader.Find("Universal Render Pipeline/Lit"));
-                    tlsMat.color = Color.black; // default off state
-                    tlsObj.GetComponent<Renderer>().material = tlsMat;
+                    Material headMat = new Material(Shader.Find("Universal Render Pipeline/Lit"));
+                    headMat.color = Color.black;
+                    head.GetComponent<Renderer>().material = headMat;
+                    
+                    // Lights (R, Y, G)
+                    // Placed at Z = -0.27f to protrude cleanly out of the 0.5 scale head (0.25 radius)
+                    CreateSignalLight(head.transform, "Light_R", new Vector3(0, 0.5f, -0.27f), Color.red);
+                    CreateSignalLight(head.transform, "Light_Y", new Vector3(0, 0f, -0.27f), Color.yellow);
+                    CreateSignalLight(head.transform, "Light_G", new Vector3(0, -0.5f, -0.27f), Color.green);
                 }
             }
         }
@@ -209,8 +308,20 @@ public class RoadVisualizer : MonoBehaviour
         if (buildingsParent == null) buildingsParent = new GameObject("SUMO_Buildings");
         if (networkData.buildings != null)
         {
-            Material bldgMat = new Material(Shader.Find("Universal Render Pipeline/Lit"));
-            bldgMat.color = new Color(0.7f, 0.7f, 0.7f); // Light gray buildings
+            Material[] bldgMats = new Material[4];
+            Color[] colors = { 
+                new Color(0.7f, 0.7f, 0.7f),   // Light gray
+                new Color(0.75f, 0.72f, 0.65f), // Beige
+                new Color(0.65f, 0.7f, 0.75f), // Pale blue-gray
+                new Color(0.6f, 0.6f, 0.6f)    // Medium gray
+            };
+            for(int i=0; i<4; i++) {
+                bldgMats[i] = new Material(Shader.Find("Universal Render Pipeline/Lit"));
+                bldgMats[i].color = colors[i];
+            }
+            
+            // Setup simple random determinism so buildings don't flicker on reload
+            Random.InitState(42);
             
             foreach (BuildingData bldg in networkData.buildings)
             {
@@ -236,18 +347,91 @@ public class RoadVisualizer : MonoBehaviour
                 // Random height based on footprint size to look somewhat realistic
                 float height = Mathf.Clamp((sizeX + sizeZ) * 0.5f, 5f, 40f);
                 
-                GameObject bObj = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                bObj.name = "Building_" + bldg.id;
+                GameObject bObj = new GameObject("Building_" + bldg.id);
                 bObj.transform.parent = buildingsParent.transform;
-                bObj.transform.position = new Vector3(centerX, height / 2f, centerZ);
-                bObj.transform.localScale = new Vector3(sizeX, height, sizeZ);
+                bObj.isStatic = true;
                 
-                bObj.GetComponent<Renderer>().material = bldgMat;
-                Destroy(bObj.GetComponent<Collider>());
+                MeshFilter mf = bObj.AddComponent<MeshFilter>();
+                MeshRenderer mr = bObj.AddComponent<MeshRenderer>();
+                mr.material = bldgMats[Random.Range(0, 4)];
+                
+                mf.mesh = GenerateBuildingMesh(bldg.shape, height);
+            }
+        }
+        // Render Road Labels
+        GameObject labelsParent = GameObject.Find("Environment/RoadLabels");
+        if (labelsParent == null) labelsParent = new GameObject("SUMO_RoadLabels");
+        if (networkData.road_labels != null)
+        {
+            foreach (RoadLabelData label in networkData.road_labels)
+            {
+                GameObject signObj = new GameObject("Label_" + label.name.Replace(" ", ""));
+                signObj.transform.parent = labelsParent.transform;
+                // Place slightly above the road surface
+                signObj.transform.localPosition = new Vector3(label.x, 2.0f, label.y);
+                
+                // Align text flat against the ground plane so overhead camera can read it easily
+                signObj.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
+                
+                TextMesh tm = signObj.AddComponent<TextMesh>();
+                tm.text = label.name;
+                tm.characterSize = 0.5f;
+                tm.fontSize = 64;
+                tm.anchor = TextAnchor.MiddleCenter;
+                tm.alignment = TextAlignment.Center;
+                tm.color = Color.white;
+                
+                // Add a dark outline/shadow effect by duplicating
+                GameObject shadowObj = new GameObject("Shadow");
+                shadowObj.transform.parent = signObj.transform;
+                shadowObj.transform.localPosition = new Vector3(0.5f, -0.5f, 0.1f);
+                shadowObj.transform.localRotation = Quaternion.identity;
+                
+                TextMesh s_tm = shadowObj.AddComponent<TextMesh>();
+                s_tm.text = label.name;
+                s_tm.characterSize = 0.5f;
+                s_tm.fontSize = 64;
+                s_tm.anchor = TextAnchor.MiddleCenter;
+                s_tm.alignment = TextAlignment.Center;
+                s_tm.color = Color.black;
             }
         }
         
+        // Log boundaries for debugging
+        float roadMinX = float.MaxValue, roadMinZ = float.MaxValue;
+        float roadMaxX = float.MinValue, roadMaxZ = float.MinValue;
+        foreach (EdgeData edge in networkData.edges)
+        {
+            foreach (LaneData lane in edge.lanes)
+            {
+                if (lane.shape == null) continue;
+                foreach (Point2D p in lane.shape)
+                {
+                    if (p.x < roadMinX) roadMinX = p.x;
+                    if (p.x > roadMaxX) roadMaxX = p.x;
+                    if (p.y < roadMinZ) roadMinZ = p.y;
+                    if (p.y > roadMaxZ) roadMaxZ = p.y;
+                }
+            }
+        }
+        Debug.Log($"\n[ROAD DEBUG]\nminX={roadMinX}\nmaxX={roadMaxX}\nminZ={roadMinZ}\nmaxZ={roadMaxZ}\n");
+        
         Debug.Log($"Successfully rendered {networkData.edges.Length} edges, {(networkData.junctions != null ? networkData.junctions.Length : 0)} junctions, and {(networkData.buildings != null ? networkData.buildings.Length : 0)} buildings.");
+    }
+
+    void CreateSignalLight(Transform parent, string name, Vector3 localPos, Color defaultColor)
+    {
+        GameObject light = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        light.name = name;
+        light.transform.parent = parent;
+        light.transform.localPosition = localPos;
+        // Squashed sphere to look like a light bulb lens
+        light.transform.localScale = new Vector3(0.4f, 0.4f, 0.1f);
+        Destroy(light.GetComponent<Collider>());
+        
+        Material mat = new Material(Shader.Find("Universal Render Pipeline/Unlit"));
+        mat.color = new Color(defaultColor.r * 0.15f, defaultColor.g * 0.15f, defaultColor.b * 0.15f); // dim
+        light.GetComponent<Renderer>().material = mat;
     }
 
     Mesh GenerateJunctionMesh(Point2D[] shape)
@@ -280,6 +464,67 @@ public class RoadVisualizer : MonoBehaviour
         Mesh mesh = new Mesh();
         mesh.vertices = vertices;
         mesh.triangles = triangles;
+        mesh.RecalculateNormals();
+        return mesh;
+    }
+
+    Mesh GenerateBuildingMesh(Point2D[] shape, float height)
+    {
+        int numPoints = shape.Length;
+        List<Vector3> verts = new List<Vector3>();
+        List<int> tris = new List<int>();
+
+        // Roof centroid
+        Vector3 centroid = Vector3.zero;
+        for (int i = 0; i < numPoints; i++)
+        {
+            centroid += new Vector3(shape[i].x, height, shape[i].y);
+        }
+        centroid /= numPoints;
+
+        int roofStartIndex = verts.Count;
+        verts.Add(centroid);
+        for (int i = 0; i < numPoints; i++)
+        {
+            verts.Add(new Vector3(shape[i].x, height, shape[i].y));
+        }
+
+        // Roof Triangles
+        for (int i = 0; i < numPoints; i++)
+        {
+            int next = (i + 1) % numPoints;
+            tris.Add(roofStartIndex);
+            tris.Add(roofStartIndex + 1 + i);
+            tris.Add(roofStartIndex + 1 + next);
+        }
+
+        // Walls
+        for (int i = 0; i < numPoints; i++)
+        {
+            int next = (i + 1) % numPoints;
+            Vector3 bl = new Vector3(shape[i].x, 0, shape[i].y);
+            Vector3 br = new Vector3(shape[next].x, 0, shape[next].y);
+            Vector3 tl = new Vector3(shape[i].x, height, shape[i].y);
+            Vector3 tr = new Vector3(shape[next].x, height, shape[next].y);
+
+            int wStart = verts.Count;
+            verts.Add(bl);
+            verts.Add(br);
+            verts.Add(tl);
+            verts.Add(tr);
+
+            tris.Add(wStart);
+            tris.Add(wStart + 2);
+            tris.Add(wStart + 1);
+
+            tris.Add(wStart + 1);
+            tris.Add(wStart + 2);
+            tris.Add(wStart + 3);
+        }
+
+        Mesh mesh = new Mesh();
+        mesh.vertices = verts.ToArray();
+        mesh.triangles = tris.ToArray();
         mesh.RecalculateNormals();
         return mesh;
     }

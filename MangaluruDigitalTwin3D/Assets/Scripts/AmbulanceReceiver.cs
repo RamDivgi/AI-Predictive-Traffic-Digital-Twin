@@ -37,6 +37,13 @@ public class AmbulanceReceiver : MonoBehaviour
 
     void Start()
     {
+        // Disable any placeholder mesh on this object
+        MeshRenderer mr = GetComponent<MeshRenderer>();
+        if (mr != null) mr.enabled = false;
+
+        // Load a realistic SUV model for the ambulance
+        // (Removed duplicate instantiation of EloraWhite as AmbulanceVisual. The intended visual is now managed entirely by MangaluruSceneBootstrapper)
+
         // Start the UDP listener on a background thread so it doesn't block Unity
         StartUDPReceiver();
     }
@@ -111,6 +118,9 @@ public class AmbulanceReceiver : MonoBehaviour
                     speed = latestTelemetry.speed,
                     sim_time = latestTelemetry.sim_time
                 };
+                
+                // Clear the buffer so we don't process stale data if connection stops
+                latestTelemetry = null;
             }
         }
 
@@ -125,15 +135,21 @@ public class AmbulanceReceiver : MonoBehaviour
             // Unity rotation on Y axis matches this.
             Quaternion targetRotation = Quaternion.Euler(0, telemetry.angle, 0);
 
-            // Interpolate for smooth visual movement, eliminating "stutter" 
-            // caused by discrete Python bridge steps.
-            transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * movementSmoothing);
-            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * rotationSmoothing);
+            // Send data to the proven VehicleSmoother architecture instead of broken manual lerping
+            VehicleSmoother smoother = GetComponent<VehicleSmoother>();
+            if (smoother == null)
+            {
+                smoother = gameObject.AddComponent<VehicleSmoother>();
+            }
+            smoother.UpdateTarget(targetPosition, targetRotation);
 
             // Log at a reasonable interval (e.g. every 2 seconds) to avoid flooding the console
             if (Time.time - lastLogTime >= 2.0f)
             {
-                Debug.Log($"Ambulance position received. Unity position: X={transform.position.x:F2}, Y={transform.position.y:F2}, Z={transform.position.z:F2}");
+                Debug.Log($"\n[AMBULANCE DEBUG]\n" +
+                          $"SUMO=({telemetry.x:F2}, {telemetry.y:F2}, {telemetry.z:F2})\n" +
+                          $"UNITY_CONVERTED=({targetPosition.x:F2}, {targetPosition.y:F2}, {targetPosition.z:F2})\n" +
+                          $"FINAL_TRANSFORM=(Pos:{transform.position} | LocalPos:{transform.localPosition} | Rot:{transform.rotation.eulerAngles} | LocalScale:{transform.localScale})\n");
                 lastLogTime = Time.time;
             }
         }

@@ -3,7 +3,7 @@ import xml.etree.ElementTree as ET
 import sumolib
 import math
 
-NETWORK_PATH = "D:/AIML/Projects/AI-Predictive-Traffic/simulation/mangaluru/osm.net.xml.gz"
+NETWORK_PATH = "D:/AIML/Projects/Major/AI-Predictive-Traffic/simulation/mangaluru/osm.net.xml.gz"
 OSM_PATH = "C:/Users/ram/Sumo/2026-08-20-22-55-58/osm_bbox.osm.xml.gz"
 
 def distance(x1, y1, x2, y2):

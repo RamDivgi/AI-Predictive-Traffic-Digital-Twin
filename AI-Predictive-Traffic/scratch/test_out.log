@@ -1,0 +1,1493 @@
+C:\Program Files (x86)\Eclipse\Sumo\tools\sumolib\net\__init__.py:388: UserWarning: Module 'rtree' not available. Using brute-force fallback.
+  warnings.warn("Module 'rtree' not available. Using brute-force fallback.")
+INFO:     Started server process [22556]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:61257 - "GET /health HTTP/1.1" 200 OK
+C:\Program Files (x86)\Eclipse\Sumo\tools\sumolib\net\__init__.py:388: UserWarning: Module 'rtree' not available. Using brute-force fallback.
+  warnings.warn("Module 'rtree' not available. Using brute-force fallback.")
+INFO:     127.0.0.1:61261 - "GET /hospitals HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61265 - "POST /trip/start HTTP/1.1" 200 OK
+Starting UDP server, targeting Unity at 127.0.0.1:5005
+Listening for commands from Unity on port 5009
+============================================================
+STARTING SUMO -> UNITY BRIDGE
+============================================================
+Generating spatially distributed dynamic traffic...
+
+BACKGROUND TRAFFIC
+------------------
+Total background vehicles: 68
+Unique origin edges: 63
+Unique destination edges: 63
+Unique routes: 68
+Spatial regions used: 12/16
+Vehicles near ambulance spawn: 2
+Departure-time distribution: [9, 8, 11, 12, 15, 13]
+
+Traffic generation complete. Guaranteed 68 spatially distributed background vehicles.
+Initializing AI Controller...
+ControlEgress MQTT connect error: [WinError 10061] No connection could be made because the target machine actively refused it
+[SYSTEM] Starting Web Dashboard API on port 8000...
+[SYSTEM] Opening Web Dashboard in Browser...
+[13:42:22] Entering simulation loop...
+
+[DASHBOARD] EMERGENCY TRIP STARTED
+[AMBULANCE DETECTED]
+ID: ambulance
+Emergency: TRUE
+DEBUG_JUNC: No TLS for -1096889856 -> -184750315#1 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+
+[SUCCESS] Ambulance found!
+DEBUG_JUNC: No TLS for -1096889856 -> -184750315#1 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -1096889856 -> -184750315#1 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -1096889856 -> -184750315#1 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -1096889856 -> -184750315#1 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -1096889856 -> -184750315#1 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -1096889856 -> -184750315#1 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -1096889856 -> -184750315#1 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -1096889856 -> -184750315#1 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -1096889856 -> -184750315#1 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -1096889856 -> -184750315#1 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -1096889856 -> -184750315#1 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -1096889856 -> -184750315#1 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -1096889856 -> -184750315#1 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -1096889856 -> -184750315#1 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -1096889856 -> -184750315#1 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -1096889856 -> -184750315#1 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -1096889856 -> -184750315#1 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -1096889856 -> -184750315#1 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -1096889856 -> -184750315#1 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -1096889856 -> -184750315#1 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -1096889856 -> -184750315#1 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -1096889856 -> -184750315#1 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -1096889856 -> -184750315#1 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -1096889856 -> -184750315#1 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -1096889856 -> -184750315#1 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -1096889856 -> -184750315#1 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -1096889856 -> -184750315#1 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -1096889856 -> -184750315#1 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -1096889856 -> -184750315#1 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -1096889856 -> -184750315#1 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -1096889856 -> -184750315#1 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -1096889856 -> -184750315#1 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -1096889856 -> -184750315#1 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -1096889856 -> -184750315#1 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -1096889856 -> -184750315#1 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -1096889856 -> -184750315#1 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -1096889856 -> -184750315#1 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -1096889856 -> -184750315#1 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -1096889856 -> -184750315#1 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -1096889856 -> -184750315#1 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -1096889856 -> -184750315#1 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -1096889856 -> -184750315#1 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -1096889856 -> -184750315#1 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -1096889856 -> -184750315#1 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -1096889856 -> -184750315#1 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#1 -> -184750315#0 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -184750315#0 -> -26299202#6 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#6 -> -26299202#5 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+Step #0.00 (2ms ~= 50.00*RT, ~0.00UPS, TraCI: 6332ms, vehicles TOT 0 ACT 0 BUF 0)         Step #10.00 (0ms ?*RT. ?UPS, TraCI: 2ms, vehicles TOT 9 ACT 9 BUF 0)                      Step #20.00 (0ms ?*RT. ?UPS, TraCI: 4ms, vehicles TOT 17 ACT 17 BUF 0)                    Step #30.00 (0ms ?*RT. ?UPS, TraCI: 9ms, vehicles TOT 28 ACT 28 BUF 0)                    Step #40.00 (1ms ~= 100.00*RT, ~40000.00UPS, TraCI: 10ms, vehicles TOT 40 ACT 40 BUF 0)   Step #50.00 (1ms ~= 100.00*RT, ~55000.00UPS, TraCI: 13ms, vehicles TOT 55 ACT 55 BUF 0)   Step #60.00 (1ms ~= 100.00*RT, ~68000.00UPS, TraCI: 17ms, vehicles TOT 68 ACT 68 BUF 0)   Step #70.00 (0ms ?*RT. ?UPS, TraCI: 17ms, vehicles TOT 68 ACT 68 BUF 0)                   Step #80.00 (0ms ?*RT. ?UPS, TraCI: 17ms, vehicles TOT 68 ACT 68 BUF 0)                   Step #90.00 (1ms ~= 100.00*RT, ~68000.00UPS, TraCI: 13ms, vehicles TOT 69 ACT 68 BUF 0)   Step #100.00 (1ms ~= 100.00*RT, ~64000.00UPS, TraCI: 20ms, vehicles TOT 69 ACT 64 BUF 0)  Step #110.00 (0ms ?*RT. ?UPS, TraCI: 12ms, vehicles TOT 69 ACT 59 BUF 0)                  Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+Step #120.00Error: Answered with error to command 0xa4: Vehicle 'ambulance' is not known.
+ (0ms ?*RT. ?UPS, TraCI: 18ms, vehicles TOT 72 ACT 61 BUF 0)                  
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#5 -> -26299202#4 (tls_id=None, indices=[])
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: No TLS for -26299202#4 -> -26299202#3 (tls_id=None, indices=[])
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+DEBUG_JUNC: Returning 0 junctions. First element valid? False
+Simulation ended.

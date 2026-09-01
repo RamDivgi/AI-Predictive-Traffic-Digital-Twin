@@ -1,5 +1,12 @@
 using UnityEngine;
 
+public enum CameraState
+{
+    Overview,
+    Transitioning,
+    Following
+}
+
 public class AmbulanceCameraFollow : MonoBehaviour
 {
     public Transform target;
@@ -7,76 +14,140 @@ public class AmbulanceCameraFollow : MonoBehaviour
     [Header("Camera Settings")]
     public float followDistance = 25f;
     public float height = 15f;
-    public float lookAhead = 10f;
+    public float lookAhead = 15f;
     
     [Header("Smoothness")]
-    public float positionSmoothness = 5f;
-    public float rotationSmoothness = 5f;
+    public float transitionDuration = 3f;
+    public float positionSmoothTime = 0.5f;
+    public float rotationSmoothTime = 0.3f;
     
-    private bool isFollowing = true;
-    private Vector3 overviewPosition = new Vector3(2000f, 300f, 1500f);
+    [Header("State")]
+    public CameraState currentState = CameraState.Overview;
+    
+    private Vector3 overviewPosition = new Vector3(1400f, 150f, 1600f);
     private Quaternion overviewRotation = Quaternion.Euler(60f, 0f, 0f);
-    private float lastLogTime = 0f;
+    
+    private Vector3 velocity = Vector3.zero;
+    private float transitionTimer = 0f;
+    
+    private Vector3 lastTargetPosition;
 
     void Start()
     {
-        // Try to find the ambulance if not assigned
+        transform.position = overviewPosition;
+        transform.rotation = overviewRotation;
+        
+        FindTarget();
+        Debug.Log("AmbulanceCameraFollow: Started in Overview state.");
+    }
+    
+    void FindTarget()
+    {
         if (target == null)
         {
             GameObject amb = GameObject.Find("Ambulance");
             if (amb != null) target = amb.transform;
             else
             {
-                // AmbulanceReceiver might be on a generic GameObject, let's look for the component
                 AmbulanceReceiver receiver = FindObjectOfType<AmbulanceReceiver>();
                 if (receiver != null) target = receiver.transform;
             }
         }
-        
-        Debug.Log("AmbulanceCameraFollow started. Target assigned: " + (target != null));
-    }
-
-    void Update()
-    {
-        // Removed old UnityEngine.Input calls to fix Input System compatibility.
-        // We will automatically follow the ambulance.
     }
 
     void LateUpdate()
     {
-        // Only follow if the target exists and has moved away from origin (i.e. spawned by SUMO)
-        bool hasSpawned = (target != null && target.position.sqrMagnitude > 100f);
-        
-        if (isFollowing && hasSpawned)
-        {
-            // Calculate desired position behind and above the target
-            Vector3 targetForward = target.forward;
-            if (targetForward == Vector3.zero) targetForward = Vector3.forward;
-            
-            Vector3 desiredPosition = target.position - (targetForward * followDistance) + (Vector3.up * height);
-            transform.position = Vector3.Lerp(transform.position, desiredPosition, Time.deltaTime * positionSmoothness);
+        if (target == null) FindTarget();
 
-            // Calculate desired rotation looking ahead of the ambulance
-            Vector3 lookAtPoint = target.position + (targetForward * lookAhead);
-            Quaternion desiredRotation = Quaternion.LookRotation(lookAtPoint - transform.position);
-            transform.rotation = Quaternion.Slerp(transform.rotation, desiredRotation, Time.deltaTime * rotationSmoothness);
-        }
-        else
+        bool targetIsActive = (target != null && target.position.sqrMagnitude > 100f);
+
+        switch (currentState)
         {
-            // Move to overview position (Mangaluru city center approx)
-            transform.position = Vector3.Lerp(transform.position, overviewPosition, Time.deltaTime * positionSmoothness);
-            transform.rotation = Quaternion.Slerp(transform.rotation, overviewRotation, Time.deltaTime * rotationSmoothness);
+            case CameraState.Overview:
+                if (targetIsActive)
+                {
+                    currentState = CameraState.Transitioning;
+                    transitionTimer = 0f;
+                    Debug.Log("AmbulanceCameraFollow: Transitioning to ambulance.");
+                }
+                break;
+                
+            case CameraState.Transitioning:
+                transitionTimer += Time.deltaTime;
+                float t = Mathf.Clamp01(transitionTimer / transitionDuration);
+                
+                // Use a smooth ease-in-out curve
+                float smoothT = t * t * (3f - 2f * t);
+                
+                Vector3 targetDesiredPos = GetDesiredPosition();
+                Quaternion targetDesiredRot = GetDesiredRotation();
+                
+                transform.position = Vector3.Lerp(overviewPosition, targetDesiredPos, smoothT);
+                transform.rotation = Quaternion.Slerp(overviewRotation, targetDesiredRot, smoothT);
+                
+                if (t >= 1f)
+                {
+                    currentState = CameraState.Following;
+                    Debug.Log("AmbulanceCameraFollow: Following ambulance.");
+                }
+                break;
+                
+            case CameraState.Following:
+                if (!targetIsActive)
+                {
+                    currentState = CameraState.Overview;
+                    Debug.Log("AmbulanceCameraFollow: Returning to Overview.");
+                    break;
+                }
+                
+                UpdateFollow();
+                break;
         }
+    }
+    
+    private Vector3 GetDesiredPosition()
+    {
+        Vector3 targetForward = target.forward;
+        if (targetForward == Vector3.zero) targetForward = Vector3.forward;
         
-        // Diagnostic Logging
-        if (Time.time - lastLogTime > 2.0f)
+        return target.position - (targetForward * followDistance) + (Vector3.up * height);
+    }
+    
+    private Quaternion GetDesiredRotation()
+    {
+        Vector3 targetForward = target.forward;
+        if (targetForward == Vector3.zero) targetForward = Vector3.forward;
+        
+        Vector3 lookAtPoint = target.position + (targetForward * lookAhead);
+        Vector3 direction = (lookAtPoint - transform.position).normalized;
+        if (direction != Vector3.zero)
         {
-            if (target != null)
-            {
-                Debug.Log($"AMBULANCE TARGET:\nGameObject = {target.gameObject.name}\nPosition = {target.position.x:F2}, {target.position.y:F2}, {target.position.z:F2}");
-                Debug.Log($"CAMERA TARGET:\nGameObject = {target.gameObject.name}\nPosition = {transform.position.x:F2}, {transform.position.y:F2}, {transform.position.z:F2}");
-            }
-            lastLogTime = Time.time;
+            return Quaternion.LookRotation(direction);
         }
+        return transform.rotation;
+    }
+    
+    private void UpdateFollow()
+    {
+        // Calculate displacement to see if the ambulance has stopped
+        float distMoved = Vector3.Distance(target.position, lastTargetPosition);
+        
+        // If ambulance is stopped (e.g. at a red light), don't jitter the camera
+        if (distMoved < 0.01f)
+        {
+            // Just softly damp to a complete halt
+            transform.position = Vector3.SmoothDamp(transform.position, transform.position, ref velocity, positionSmoothTime);
+            return;
+        }
+
+        Vector3 desiredPosition = GetDesiredPosition();
+        Quaternion desiredRotation = GetDesiredRotation();
+        
+        transform.position = Vector3.SmoothDamp(transform.position, desiredPosition, ref velocity, positionSmoothTime);
+        
+        // Slerp rotation for buttery smooth look-ahead tracking
+        transform.rotation = Quaternion.Slerp(transform.rotation, desiredRotation, Time.deltaTime * (1f / rotationSmoothTime));
+        
+        lastTargetPosition = target.position;
     }
 }

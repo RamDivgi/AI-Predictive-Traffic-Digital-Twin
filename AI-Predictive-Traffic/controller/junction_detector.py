@@ -8,9 +8,8 @@ import traci
 AMBULANCE_ID = "ambulance"
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-NETWORK_FILE = PROJECT_ROOT / "simulation" / "network" / "test.net.xml"
-
-SUMO_NETWORK = sumolib.net.readNet(str(NETWORK_FILE))
+NETWORK_FILE = "simulation/mangaluru/mangaluru_ai.net.xml.gz"
+SUMO_NETWORK = sumolib.net.readNet(str(PROJECT_ROOT / NETWORK_FILE).replace('\\', '/'))
 
 
 @dataclass
@@ -41,6 +40,7 @@ def _get_edge_destination(edge_id: str) -> str:
 
 def get_upcoming_junctions(
     max_junctions: int = 3,
+    ambulance_id: str = "ambulance",
 ) -> list[JunctionInfo]:
     """
     Find upcoming junctions along the ambulance's planned route.
@@ -51,18 +51,18 @@ def get_upcoming_junctions(
     handled separately and are not treated as route edges.
     """
 
-    if AMBULANCE_ID not in traci.vehicle.getIDList():
+    if ambulance_id not in traci.vehicle.getIDList():
         return []
 
-    route = list(traci.vehicle.getRoute(AMBULANCE_ID))
-    route_index = traci.vehicle.getRouteIndex(AMBULANCE_ID)
+    route = list(traci.vehicle.getRoute(ambulance_id))
+    route_index = traci.vehicle.getRouteIndex(ambulance_id)
 
     if not route or route_index < 0 or route_index >= len(route):
         return []
 
-    current_edge_id = traci.vehicle.getRoadID(AMBULANCE_ID)
-    current_lane_id = traci.vehicle.getLaneID(AMBULANCE_ID)
-    current_lane_position = traci.vehicle.getLanePosition(AMBULANCE_ID)
+    current_edge_id = traci.vehicle.getRoadID(ambulance_id)
+    current_lane_id = traci.vehicle.getLaneID(ambulance_id)
+    current_lane_position = traci.vehicle.getLanePosition(ambulance_id)
 
     try:
         current_lane_length = traci.lane.getLength(current_lane_id)
@@ -101,14 +101,17 @@ def get_upcoming_junctions(
             )
 
         if route_index + 1 < len(route):
-            junctions.append(
-                JunctionInfo(
-                    junction_id=current_junction_id,
-                    incoming_edge=current_route_edge,
-                    outgoing_edge=route[route_index + 1],
-                    distance_from_ambulance_m=distance_to_junction,
+            import signal_mapping
+            tls_id, indices = signal_mapping.get_tls_and_indices_for_movement(current_route_edge, route[route_index + 1])
+            if tls_id and indices:
+                junctions.append(
+                    JunctionInfo(
+                        junction_id=current_junction_id,
+                        incoming_edge=current_route_edge,
+                        outgoing_edge=route[route_index + 1],
+                        distance_from_ambulance_m=distance_to_junction,
+                    )
                 )
-            )
 
     # Distance from the ambulance to the end of the current route edge.
     if current_edge_id.startswith(":"):
@@ -135,7 +138,8 @@ def get_upcoming_junctions(
         try:
             edge_length = _get_edge_length(incoming_edge)
             junction_id = _get_edge_destination(incoming_edge)
-        except Exception:
+        except Exception as e:
+            print(f"DEBUG_JUNC: Exception for {incoming_edge}: {e}")
             continue
 
         if index == route_index + 1:
@@ -150,6 +154,7 @@ def get_upcoming_junctions(
         # ONLY add if it is a valid traffic light mapping with signal indices
         tls_id, indices = signal_mapping.get_tls_and_indices_for_movement(incoming_edge, outgoing_edge)
         if not tls_id or not indices:
+            print(f"DEBUG_JUNC: No TLS for {incoming_edge} -> {outgoing_edge} (tls_id={tls_id}, indices={indices})")
             continue
 
         junctions.append(
@@ -164,6 +169,9 @@ def get_upcoming_junctions(
         if len(junctions) >= max_junctions:
             break
 
+    print(f"DEBUG_JUNC: Returning {len(junctions)} junctions. First element valid? {len(junctions) > 0}")
+    if junctions:
+        print(f"DEBUG_JUNC: First junction: {junctions[0]}")
     return junctions[:max_junctions]
 
 

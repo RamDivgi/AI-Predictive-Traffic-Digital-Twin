@@ -98,10 +98,14 @@ def get_signal_features(
     Collect the current traffic-signal state and determine
     the signal state specifically for the ambulance movement.
     """
+    
+    from signal_mapping import get_tls_and_indices_for_movement
+    tls_id, movement_indices = get_tls_and_indices_for_movement(
+        incoming_edge,
+        outgoing_edge,
+    )
 
-    signal_ids = traci.trafficlight.getIDList()
-
-    if junction_id not in signal_ids:
+    if not tls_id or tls_id not in traci.trafficlight.getIDList():
         return (
             -1,
             "",
@@ -112,42 +116,18 @@ def get_signal_features(
 
     current_time = traci.simulation.getTime()
 
-    phase = traci.trafficlight.getPhase(
-        junction_id
-    )
-
-    state = traci.trafficlight.getRedYellowGreenState(
-        junction_id
-    )
-
-    next_switch = traci.trafficlight.getNextSwitch(
-        junction_id
-    )
-
-    time_to_switch = max(
-        0.0,
-        next_switch - current_time,
-    )
-
-    movement_indices = (
-        get_signal_indices_for_movement(
-            junction_id,
-            incoming_edge,
-            outgoing_edge,
-        )
-    )
+    phase = traci.trafficlight.getPhase(tls_id)
+    state = traci.trafficlight.getRedYellowGreenState(tls_id)
+    next_switch = traci.trafficlight.getNextSwitch(tls_id)
+    time_to_switch = max(0.0, next_switch - current_time)
 
     movement_state_chars = []
 
     for index in movement_indices:
         if 0 <= index < len(state):
-            movement_state_chars.append(
-                state[index]
-            )
+            movement_state_chars.append(state[index])
 
-    movement_signal_state = "".join(
-        movement_state_chars
-    )
+    movement_signal_state = "".join(movement_state_chars)
 
     return (
         phase,

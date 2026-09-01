@@ -1,0 +1,7 @@
+<configuration>
+    <input>
+        <net-file value="mangaluru_ai.net.xml.gz"/>
+        <route-files value="kankanady_demo.rou.xml"/>
+        <additional-files value="hospitals.add.xml"/>
+    </input>
+</configuration>

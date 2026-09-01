@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <additional>
     <poi id="highland_hospital" type="hospital" color="red" layer="10" x="1687.4691396001144" y="1134.9806500039995" name="Highland Hospital"/>
+    <poi id="kmc_hospital" type="hospital" color="red" layer="10" x="1017.2893338267459" y="1723.6821941386443" name="KMC Hospital"/>
+    <poi id="city_hospital" type="hospital" color="red" layer="10" x="1527.7240275393124" y="2595.906122856308" name="City Hospital"/>
 </additional>

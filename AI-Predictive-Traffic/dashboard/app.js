@@ -167,3 +167,87 @@ function updateDecisions(decisions) {
 
 // Start connection
 connect();
+
+// API Interactions for Trip Controls
+const startPointSelect = document.getElementById('startPointSelect');
+const hospitalSelect = document.getElementById('hospitalSelect');
+const startTripBtn = document.getElementById('startTripBtn');
+const emergencyCheck = document.getElementById('emergencyCheck');
+
+let startPointsData = [];
+
+async function loadStartingPoints() {
+    try {
+        const res = await fetch('/api/starting-points');
+        startPointsData = await res.json();
+        startPointSelect.innerHTML = '';
+        
+        startPointsData.forEach(sp => {
+            const opt = document.createElement('option');
+            opt.value = sp.id;
+            opt.textContent = sp.label;
+            startPointSelect.appendChild(opt);
+        });
+        
+        // Default to Base (1952656064)
+        startPointSelect.value = "1952656064";
+        loadHospitals();
+    } catch (e) {
+        console.error("Failed to load starting points", e);
+    }
+}
+
+async function loadHospitals() {
+    try {
+        const startJunction = startPointSelect.value;
+        const res = await fetch(`/api/hospitals${startJunction ? '?start_junction=' + startJunction : ''}`);
+        const hospitals = await res.json();
+        
+        hospitalSelect.innerHTML = '';
+        hospitals.forEach(h => {
+            if (h.available) {
+                const opt = document.createElement('option');
+                opt.value = h.id;
+                opt.textContent = h.distance_km != null ? `${h.name} (${h.distance_km} km)` : h.name;
+                hospitalSelect.appendChild(opt);
+            }
+        });
+    } catch (e) {
+        console.error("Failed to load hospitals", e);
+    }
+}
+
+startPointSelect.addEventListener('change', loadHospitals);
+
+startTripBtn.addEventListener('click', async () => {
+    const hospitalId = hospitalSelect.value;
+    const startPointId = startPointSelect.value;
+    const isEmergency = emergencyCheck.checked;
+    
+    if (!hospitalId) {
+        alert("Please select a hospital");
+        return;
+    }
+    
+    const startObj = startPointsData.find(sp => sp.id === startPointId);
+    const startEdge = startObj ? startObj.outgoing_edge : null;
+    
+    try {
+        await fetch('/api/trip/start', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                emergency: isEmergency,
+                hospital_id: hospitalId,
+                start_edge: startEdge
+            })
+        });
+        // Feedback could be handled via websocket updates
+    } catch (e) {
+        console.error("Failed to start trip", e);
+    }
+});
+
+// Init
+loadStartingPoints();
+

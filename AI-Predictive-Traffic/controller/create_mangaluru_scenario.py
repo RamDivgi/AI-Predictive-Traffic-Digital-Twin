@@ -5,7 +5,7 @@ import math
 import random
 import os
 
-NETWORK_PATH = "D:/AIML/Projects/AI-Predictive-Traffic/simulation/mangaluru/mangaluru_ai.net.xml.gz"
+NETWORK_PATH = "D:/AIML/Projects/Major/AI-Predictive-Traffic/simulation/mangaluru/osm.net.xml.gz"
 OSM_PATH = "C:/Users/ram/Sumo/2026-08-20-22-55-58/osm_bbox.osm.xml.gz"
 ROUTEOUT = "D:/AIML/Projects/AI-Predictive-Traffic/simulation/mangaluru/ambulance_test.rou.xml"
 SUMOCFGOUT = "D:/AIML/Projects/AI-Predictive-Traffic/simulation/mangaluru/ambulance_test.sumocfg"

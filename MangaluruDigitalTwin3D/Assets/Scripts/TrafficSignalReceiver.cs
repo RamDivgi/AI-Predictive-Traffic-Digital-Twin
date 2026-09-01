@@ -14,6 +14,7 @@ public class SignalData
 }
 
 [System.Serializable]
+
 public class SignalPayload
 {
     public SignalData[] signals;
@@ -33,8 +34,31 @@ public class TrafficSignalReceiver : MonoBehaviour
     private int packetsReceived = 0;
     private float lastLogTime = 0f;
 
+    private Material matRedActive, matRedDim;
+    private Material matYellowActive, matYellowDim;
+    private Material matGreenActive, matGreenDim;
+
+    private Dictionary<string, Renderer[]> signalRenderers = new Dictionary<string, Renderer[]>();
+    private Dictionary<string, string> signalStateCache = new Dictionary<string, string>(); // NEW: State cache
+
     void Start()
     {
+        // Use Unlit/Color which works across all pipelines as a safe fallback
+        Shader unlitShader = Shader.Find("Unlit/Color");
+        if (unlitShader == null) unlitShader = Shader.Find("Universal Render Pipeline/Unlit");
+
+        Shader litShader = Shader.Find("Standard");
+        if (litShader == null) litShader = Shader.Find("Universal Render Pipeline/Lit");
+
+        matRedActive = new Material(unlitShader) { color = Color.red };
+        matRedDim = new Material(litShader) { color = new Color(0.1f, 0, 0) };
+
+        matYellowActive = new Material(unlitShader) { color = Color.yellow };
+        matYellowDim = new Material(litShader) { color = new Color(0.1f, 0.1f, 0) };
+
+        matGreenActive = new Material(unlitShader) { color = Color.green };
+        matGreenDim = new Material(litShader) { color = new Color(0, 0.1f, 0) };
+
         StartUDPReceiver();
     }
 
@@ -103,59 +127,64 @@ public class TrafficSignalReceiver : MonoBehaviour
 
         if (payload != null && payload.signals != null)
         {
+            int updatedSignals = 0;
             foreach (SignalData sig in payload.signals)
             {
-                GameObject tlsObj = GameObject.Find("TLS_" + sig.id);
-                if (tlsObj != null)
+                // Cache check: Skip material assignment if state hasn't changed
+                if (signalStateCache.TryGetValue(sig.id, out string cachedState))
                 {
-                    Renderer rnd = tlsObj.GetComponent<Renderer>();
-                    if (rnd != null)
+                    if (cachedState == sig.state)
                     {
-                        // SUMO state string: 'r' = red, 'y' = yellow, 'g' = green (and variations)
-                        // If any part of the signal is green, show green.
-                        // If no green but yellow, show yellow.
-                        // Otherwise red.
-                        string stateLower = sig.state.ToLower();
-                        if (stateLower.Contains("g"))
+                        continue;
+                    }
+                }
+
+                Renderer[] rends;
+                if (!signalRenderers.TryGetValue(sig.id, out rends))
+                {
+                    GameObject tlsObj = GameObject.Find("TLS_" + sig.id);
+                    if (tlsObj != null)
+                    {
+                        Transform head = tlsObj.transform.Find("Head");
+                        if (head != null)
                         {
-                            rnd.material.color = Color.green;
-                        }
-                        else if (stateLower.Contains("y"))
-                        {
-                            rnd.material.color = Color.yellow;
-                        }
-                        else if (stateLower.Contains("r"))
-                        {
-                            rnd.material.color = Color.red;
-                        }
-                        else
-                        {
-                            rnd.material.color = Color.black; // unknown/off
+                            Transform rLight = head.Find("Light_R");
+                            Transform yLight = head.Find("Light_Y");
+                            Transform gLight = head.Find("Light_G");
+                            if (rLight != null && yLight != null && gLight != null)
+                            {
+                                rends = new Renderer[] {
+                                    rLight.GetComponent<Renderer>(),
+                                    yLight.GetComponent<Renderer>(),
+                                    gLight.GetComponent<Renderer>()
+                                };
+                                signalRenderers[sig.id] = rends;
+                            }
                         }
                     }
+                }
+
+                if (rends != null)
+                {
+                    string stateLower = sig.state.ToLower();
+                    bool isGreen = stateLower.Contains("g");
+                    bool isYellow = !isGreen && stateLower.Contains("y");
+                    bool isRed = !isGreen && !isYellow && stateLower.Contains("r");
+
+                    rends[0].sharedMaterial = isRed ? matRedActive : matRedDim;
+                    rends[1].sharedMaterial = isYellow ? matYellowActive : matYellowDim;
+                    rends[2].sharedMaterial = isGreen ? matGreenActive : matGreenDim;
+                    
+                    // Update cache
+                    signalStateCache[sig.id] = sig.state;
+                    updatedSignals++;
                 }
             }
             
             packetsReceived++;
-            if (Time.time - lastLogTime >= 5.0f)
+            if (Time.time - lastLogTime >= 15.0f && updatedSignals > 0)
             {
-                string firstPos = "None";
-                string firstState = "UNKNOWN";
-                
-                if (payload.signals.Length > 0)
-                {
-                    SignalData firstSig = payload.signals[0];
-                    GameObject tlsObj = GameObject.Find("TLS_" + firstSig.id);
-                    if (tlsObj != null) firstPos = tlsObj.transform.position.ToString();
-                    
-                    string s = firstSig.state.ToLower();
-                    if (s.Contains("g")) firstState = "GREEN";
-                    else if (s.Contains("y")) firstState = "YELLOW";
-                    else if (s.Contains("r")) firstState = "RED";
-                }
-                
-                Debug.Log($"TrafficSignalReceiver: Packets received: {packetsReceived} | Signals updated: {payload.signals.Length}");
-                Debug.Log($"Traffic signal visual check: Active signals = {payload.signals.Length} | First signal position = {firstPos} | First signal state = {firstState}");
+                Debug.Log($"TrafficSignalReceiver: Active signals = {payload.signals.Length} | Visual materials applied for {updatedSignals} changed signals.");
                 lastLogTime = Time.time;
             }
         }

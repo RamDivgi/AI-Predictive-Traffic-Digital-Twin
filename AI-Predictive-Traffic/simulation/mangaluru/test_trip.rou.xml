@@ -1,0 +1,4 @@
+<routes>
+    <vType id="passenger" vClass="passenger" maxSpeed="15.0" color="blue" />
+    <trip id="t0" type="passenger" depart="0.0" from="26182678#1" to="-1096889856" />
+</routes>

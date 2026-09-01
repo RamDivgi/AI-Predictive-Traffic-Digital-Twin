@@ -25,7 +25,8 @@ _SUMO_NETWORK = None
 def _get_network() -> sumolib.net.Net:
     global _SUMO_NETWORK
     if _SUMO_NETWORK is None:
-        _SUMO_NETWORK = sumolib.net.readNet(str(NETWORK_FILE))
+        import config
+        _SUMO_NETWORK = sumolib.net.readNet(str(config.NET_FILE))
     return _SUMO_NETWORK
 
 

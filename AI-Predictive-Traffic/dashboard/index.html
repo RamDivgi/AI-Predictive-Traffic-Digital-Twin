@@ -28,6 +28,28 @@
     </header>
 
     <main class="dashboard-grid">
+        <!-- CONTROL PANEL -->
+        <section class="glass-panel panel-controls" style="grid-column: 1 / -1; display: flex; gap: 1rem; align-items: center; padding: 1rem;">
+            <h2>🎛️ Trip Controls</h2>
+            <div class="control-group">
+                <label for="startPointSelect">Starting Location</label>
+                <select id="startPointSelect">
+                    <option value="">Loading...</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="hospitalSelect">Destination Hospital</label>
+                <select id="hospitalSelect">
+                    <option value="">Loading...</option>
+                </select>
+            </div>
+            <div class="control-group" style="display: flex; align-items: center; gap: 0.5rem; margin-top: 1rem;">
+                <input type="checkbox" id="emergencyCheck" checked>
+                <label for="emergencyCheck">Emergency Mode</label>
+            </div>
+            <button id="startTripBtn" style="margin-top: 1rem; padding: 0.5rem 1rem; background: var(--accent-primary); color: white; border: none; border-radius: 4px; cursor: pointer;">Start Trip</button>
+        </section>
+
         <!-- AMBULANCE PANEL -->
         <section class="glass-panel panel-ambulance">
             <h2>🚑 Ambulance</h2>

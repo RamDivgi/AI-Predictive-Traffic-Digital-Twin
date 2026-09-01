@@ -39,3 +39,56 @@ class StateProvider:
                 os.remove(STATE_FILE)
             except:
                 pass
+
+    @staticmethod
+    def write_trip_command(command: Dict[str, Any]):
+        cmd_file = os.path.join(os.path.dirname(__file__), "..", "trip_command.json")
+        temp_file = cmd_file + ".tmp"
+        try:
+            with open(temp_file, "w") as f:
+                json.dump(command, f)
+            os.replace(temp_file, cmd_file)
+        except Exception:
+            pass
+
+    @staticmethod
+    def read_trip_command() -> Dict[str, Any]:
+        cmd_file = os.path.join(os.path.dirname(__file__), "..", "trip_command.json")
+        if not os.path.exists(cmd_file):
+            return None
+        try:
+            with open(cmd_file, "r") as f:
+                return json.load(f)
+        except Exception:
+            return None
+
+    @staticmethod
+    def clear_trip_command():
+        cmd_file = os.path.join(os.path.dirname(__file__), "..", "trip_command.json")
+        if os.path.exists(cmd_file):
+            try:
+                os.remove(cmd_file)
+            except:
+                pass
+
+    @staticmethod
+    def write_trip_status(status_dict: Dict[str, Any]):
+        status_file = os.path.join(os.path.dirname(__file__), "..", "trip_status.json")
+        temp_file = status_file + ".tmp"
+        try:
+            with open(temp_file, "w") as f:
+                json.dump(status_dict, f)
+            os.replace(temp_file, status_file)
+        except Exception:
+            pass
+
+    @staticmethod
+    def read_trip_status() -> Dict[str, Any]:
+        status_file = os.path.join(os.path.dirname(__file__), "..", "trip_status.json")
+        if not os.path.exists(status_file):
+            return None
+        try:
+            with open(status_file, "r") as f:
+                return json.load(f)
+        except Exception:
+            return None

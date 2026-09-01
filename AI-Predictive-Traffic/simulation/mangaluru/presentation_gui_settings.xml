@@ -1,0 +1,7 @@
+<viewsettings>
+    <scheme name="real world"/>
+    <!-- Show POI names for our custom labels -->
+    <pois poiTextSize="14" poiName_show="1" poiName_size="60" poiName_color="black" poiName_bgColor="white" poiName_italic="1"/>
+    <!-- Do not show edge names natively, to prevent clutter -->
+    <edges edgeName_show="0" />
+</viewsettings>

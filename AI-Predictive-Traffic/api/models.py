@@ -35,3 +35,20 @@ class DigitalTwinState(BaseModel):
     traffic: List[TrafficState]
     signals: List[SignalState]
     decisions: List[DecisionState]
+
+class TripStartRequest(BaseModel):
+    emergency: bool
+    hospital_id: str
+    start_edge: Optional[str] = None
+
+class HospitalResponse(BaseModel):
+    id: str
+    name: str
+    available: bool
+    reason: Optional[str] = None
+    distance_km: Optional[float] = None
+
+class StartPointResponse(BaseModel):
+    id: str
+    label: str
+    outgoing_edge: str

@@ -18,8 +18,8 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 SUMO_CONFIG = (
     PROJECT_ROOT
     / "simulation"
-    / "config"
-    / "test.sumocfg"
+    / "mangaluru"
+    / "kankanady_demo.sumocfg"
 )
 
 
@@ -30,11 +30,11 @@ def main() -> None:
         )
 
     sumo_command = [
-        "sumo-gui",
+        "sumo",
         "-c",
         str(SUMO_CONFIG),
-        "--delay",
-        "200",
+        "--step-length",
+        "1.0",
     ]
 
     print("Starting traffic-aware preemption test...")

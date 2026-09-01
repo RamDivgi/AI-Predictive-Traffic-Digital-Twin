@@ -81,26 +81,28 @@ class ReroutingController:
 
     def evaluate_and_reroute(
         self,
+        ambulance_id: str | None = None,
         ml_etas: dict[str, float] | None = None,
     ) -> bool:
         """
         Evaluate candidate routes and trigger rerouting if justified.
         Returns True if the ambulance was rerouted, False otherwise.
         """
+        target_id = ambulance_id if ambulance_id is not None else self.ambulance_id
 
         vehicle_ids = traci.vehicle.getIDList()
-        if self.ambulance_id not in vehicle_ids:
+        if target_id not in vehicle_ids:
             return False
 
         current_time = traci.simulation.getTime()
 
         try:
-            current_traci_route_id = traci.vehicle.getRouteID(self.ambulance_id)
-            current_edges = list(traci.vehicle.getRoute(self.ambulance_id))
-            current_edge = traci.vehicle.getRoadID(self.ambulance_id)
-            current_lane_pos = traci.vehicle.getLanePosition(self.ambulance_id)
-            ambulance_speed = traci.vehicle.getSpeed(self.ambulance_id)
-            route_index = traci.vehicle.getRouteIndex(self.ambulance_id)
+            current_traci_route_id = traci.vehicle.getRouteID(target_id)
+            current_edges = list(traci.vehicle.getRoute(target_id))
+            current_edge = traci.vehicle.getRoadID(target_id)
+            current_lane_pos = traci.vehicle.getLanePosition(target_id)
+            ambulance_speed = traci.vehicle.getSpeed(target_id)
+            route_index = traci.vehicle.getRouteIndex(target_id)
         except traci.TraCIException:
             return False
 
@@ -268,7 +270,7 @@ class ReroutingController:
             try:
                 unique_route_id = f"dynamic_astar_{int(current_time)}_{self.reroute_count}"
                 traci.route.add(unique_route_id, best_eval.route_edges)
-                traci.vehicle.setRouteID(self.ambulance_id, unique_route_id)
+                traci.vehicle.setRouteID(target_id, unique_route_id)
                 
                 self.previous_route_id = self.current_route_id
                 self.current_route_id = unique_route_id

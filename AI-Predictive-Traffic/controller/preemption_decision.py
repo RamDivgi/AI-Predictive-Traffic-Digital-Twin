@@ -17,12 +17,12 @@ class TrafficAwareDecision:
 # PREEMPTION CONFIGURATION
 # ---------------------------------------------------------------------------
 
-MAX_CONTROL_DISTANCE_M = 100.0
-MAX_PREDICTIVE_ETA_S = 10.0
+MAX_CONTROL_DISTANCE_M = 500.0
+MAX_PREDICTIVE_ETA_S = 35.0
 
 MIN_SIGNAL_ADVANTAGE_S = 1.0
 
-MIN_PRIORITY_SCORE = 40.0
+MIN_PRIORITY_SCORE = 30.0
 
 
 # ---------------------------------------------------------------------------

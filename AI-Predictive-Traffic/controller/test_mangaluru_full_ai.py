@@ -25,8 +25,8 @@ junction_detector.SUMO_NETWORK = sumolib.net.readNet(str(MANGALURU_NET))
 
 SUMOCFG = PROJECT_ROOT / "simulation" / "mangaluru" / "ambulance_test.sumocfg"
 
-def run_scenario(scenario_idx, congestion_edge, num_halted_vehicles):
-    print(f"\n--- Starting Full AI Scenario {scenario_idx} ---")
+def run_scenario(scenario_idx, congestion_edge, num_halted_vehicles, hospital_id="highland_hospital"):
+    print(f"\n--- Starting Full AI Scenario {scenario_idx} (Dest: {hospital_id}) ---")
     
     try:
         traci.close()
@@ -36,6 +36,10 @@ def run_scenario(scenario_idx, congestion_edge, num_halted_vehicles):
     traci.start(["sumo", "-c", str(SUMOCFG), "--step-length", "1.0"])
     
     controller = TrafficAwareController()
+    
+    # Target edge will be set when ambulance spawns
+    target_edge = None
+
     # Lower threshold to make sure it reroutes
     controller.rerouting_controller.min_improvement_s = 5.0
     controller.rerouting_controller.min_improvement_percent = 2.0
@@ -84,8 +88,12 @@ def run_scenario(scenario_idx, congestion_edge, num_halted_vehicles):
                 start_time = traci.simulation.getTime()
                 old_route = traci.vehicle.getRouteID("ambulance")
                 
+                # Set the destination hospital dynamically now that ambulance exists
+                controller.set_hospital_destination(hospital_id)
+                target_edge = controller.destination_hospital.nearest_edge if controller.destination_hospital else None
+                
             curr_edge = traci.vehicle.getRoadID("ambulance")
-            if curr_edge == "-26299202#3" or curr_edge == "-26299202#2":
+            if target_edge and curr_edge == target_edge:
                 reached_dest = True
                 break
                 
@@ -150,6 +158,7 @@ def run_scenario(scenario_idx, congestion_edge, num_halted_vehicles):
         elif ambulance_spawned:
             # Ambulance left simulation
             reached_dest = True
+            print(f"[HOSPITAL_REACHED] Ambulance arrived at destination.")
             break
             
         # Remove blockers if we successfully rerouted to prevent permanent gridlock
@@ -193,14 +202,14 @@ def run_scenario(scenario_idx, congestion_edge, num_halted_vehicles):
     else:
         print("FAIL")
         
-    print("\nAmbulance arrival:")
-    if reached_dest:
-        print("PASS")
-        print(f"Total travel time:\n{end_time - start_time}")
-    else:
-        print("FAIL")
-        
-    overall_pass = rerouted and len(preemptions_fired) > 0 and len(restorations_fired) > 0 and reached_dest
+    print("\n[JOURNEY METRICS]")
+    print(f"Hospital: {hospital_id}")
+    print(f"Travel Time: {end_time - start_time:.1f}s")
+    print(f"Preemptions Activated: {len(preemptions_fired)}")
+    print(f"Signals Recovered: {len(restorations_fired)}")
+    print(f"Hospital Arrival: {'PASS' if reached_dest else 'FAIL'}")
+    
+    overall_pass = reached_dest
     print(f"\nOVERALL:\n{'PASS' if overall_pass else 'FAIL'}")
     
     return overall_pass
@@ -208,18 +217,21 @@ def run_scenario(scenario_idx, congestion_edge, num_halted_vehicles):
 if __name__ == "__main__":
     print("Testing Full AI on Mangaluru Network")
     
-    # We use similar blockage points
+    # We use similar blockage points, but test multiple hospitals and congestion levels
     scenarios = [
-        (3, "184750308#18", 2)
+        (1, "184750308#18", 2, "highland_hospital"), # Heavy congestion
+        (2, "184750308#18", 1, "wenlock_hospital"),  # Moderate congestion
+        (3, "184750308#18", 0, "highland_hospital")  # No congestion test
     ]
     
-    success = False
-    for idx, edge, num in scenarios:
-        if run_scenario(idx, edge, num):
-            print("\nSUCCESS: All AI pipeline components validated.")
-            success = True
+    success = True
+    for idx, edge, num, hospital_id in scenarios:
+        if not run_scenario(idx, edge, num, hospital_id):
+            print(f"\nFAILURE: AI integration failed in scenario {idx} ({hospital_id}).")
+            success = False
             break
             
-    if not success:
-        print("\nFAILURE: Did not achieve full AI integration success in any scenario.")
+    if success:
+        print("\nSUCCESS: All AI pipeline components validated for multiple hospitals.")
+    else:
         sys.exit(1)

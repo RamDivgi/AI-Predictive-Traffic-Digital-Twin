@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ambulance Control Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f1f5f9;
+            --panel-bg: #ffffff;
+            --border-color: #e2e8f0;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --accent-blue: #2563eb;
+            --accent-red: #ef4444;
+            --accent-green: #10b981;
+            --accent-yellow: #f59e0b;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: #ffffff;
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+            padding: 1.25rem 2.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .status-badge {
+            font-size: 0.75rem;
+            padding: 0.35rem 0.85rem;
+            border-radius: 9999px;
+            font-weight: 700;
+            background: #dcfce7;
+            color: var(--accent-green);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: currentColor;
+            box-shadow: 0 0 8px currentColor;
+        }
+
+        main {
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+            flex-grow: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 
+                        0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+
+        .panel-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .control-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .control-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        /* Toggle Switch */
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: #f8fafc;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .switch input { 
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #475569;
+            transition: .3s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--accent-red);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .toggle-text {
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        input:checked ~ .toggle-text {
+            color: var(--accent-red);
+        }
+
+        select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            outline: none;
+            font-weight: 500;
+            transition: border-color 0.2s;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1.2rem;
+        }
+
+        select:focus {
+            border-color: var(--accent-blue);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.1s, box-shadow 0.2s, background-color 0.2s;
+            margin-bottom: 0.75rem;
+        }
+
+        .btn-start {
+            background: var(--accent-blue);
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-start:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6);
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+        }
+        
+        .btn-start:disabled {
+            background: #334155;
+            color: #94a3b8;
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-stop {
+            background: #fef2f2;
+            color: var(--accent-red);
+            border: 1px solid #fecaca;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-stop:hover:not(:disabled) {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: rgba(239, 68, 68, 0.6);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px 0 rgba(239, 68, 68, 0.2);
+        }
+        
+        .btn-stop:disabled {
+            opacity: 0.4;
+            filter: grayscale(1);
+            cursor: not-allowed;
+            background: transparent;
+            border-color: var(--border-color);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .metric-card {
+            background: #ffffff;
+            padding: 1.25rem;
+            border-radius: 0.75rem;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        .metric-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 700;
+        }
+
+        .metric-value {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .metric-value.highlight {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        
+        @keyframes pulse-ring {
+            0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
+            70% { box-shadow: 0 0 0 6px rgba(245, 158, 11, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+        }
+        
+        .pulse-anim {
+            animation: pulse-ring 2s infinite;
+        }
+
+        .metric-value.action {
+            color: var(--accent-blue);
+        }
+        
+        .metric-value.danger {
+            color: var(--accent-red);
+        }
+
+        #empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+
+        #live-telemetry {
+            display: none;
+            height: 100%;
+            flex-direction: column;
+        }
+
+        .status-ring {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .ring-green { background: var(--accent-green); box-shadow: 0 0 8px var(--accent-green); }
+        .ring-red { background: var(--accent-red); box-shadow: 0 0 8px var(--accent-red); }
+        .ring-yellow { background: var(--accent-yellow); box-shadow: 0 0 8px var(--accent-yellow); }
+
+    
+        .nav-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            flex-grow: 1;
+        }
+
+        .map-container {
+            position: relative;
+            background: rgba(0,0,0,0.3);
+            border-radius: 0.5rem;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px;
+        }
+        
+        .route-line {
+            position: absolute;
+            top: 50%;
+            left: 10%;
+            right: 10%;
+            height: 6px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+        }
+        
+        .route-progress-line {
+            position: absolute;
+            top: 50%;
+            left: 10%;
+            width: 0%;
+            height: 6px;
+            background: var(--accent-blue);
+            border-radius: 3px;
+            box-shadow: 0 0 10px var(--accent-blue);
+            transition: width 0.5s ease-in-out;
+            z-index: 5;
+        }
+        
+        .hospital-marker {
+            position: absolute;
+            right: 5%;
+            top: 35%;
+            font-size: 1.5rem;
+            background: rgba(255,255,255,0.1);
+            padding: 5px 10px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
+            z-index: 8;
+        }
+        
+        .ambulance-marker {
+            position: absolute;
+            font-size: 1.5rem;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            filter: drop-shadow(0 0 10px rgba(255, 50, 50, 0.8));
+            pointer-events: none;
+            transition: left 0.5s ease-out, top 0.5s ease-out;
+        }
+
+        .nav-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .progress-bar-container {
+            width: 100%;
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            height: 24px;
+            position: relative;
+        }
+        
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-blue), #2563eb);
+            width: 0%;
+            transition: width 0.5s ease-in-out;
+        }
+        
+        .progress-bar-text {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+        }
+
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-title">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 12h3M18 12h3M12 3v3M12 18v3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/>
+                <circle cx="12" cy="12" r="4"/>
+            </svg>
+            Emergency Response Dashboard
+        </div>
+        <div id="connection-status" class="status-badge" style="background: #fee2e2; color: var(--accent-red);">
+            <div class="status-dot pulse-anim"></div>
+            <span id="connection-text">DISCONNECTED</span>
+        </div>
+    </header>
+
+    <main>
+        <!-- Control Panel -->
+        <div class="panel">
+            <div class="panel-title">Trip Configuration</div>
+            
+            <div class="control-group">
+                <label class="control-label">Emergency Status</label>
+                <div class="toggle-container">
+                    <label class="switch">
+                        <input type="checkbox" id="emergency-toggle" checked>
+                        <span class="slider"></span>
+                    </label>
+                    <span class="toggle-text" id="emergency-text">ON (Priority Allowed)</span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">Destination Hospital</label>
+                <select id="hospital-select">
+                    <option value="">Loading hospitals...</option>
+                </select>
+            </div>
+
+            <div style="margin-top: 2.5rem;">
+                <button id="btn-start" class="btn btn-start">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M5 3l14 9-14 9V3z"/></svg>
+                    START EMERGENCY TRIP
+                </button>
+                <button id="btn-stop" class="btn btn-stop" disabled>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h12v12H6z"/></svg>
+                    STOP TRIP
+                </button>
+            </div>
+            
+            <div style="margin-top: 2.5rem; background: #eff6ff; color: #1e3a8a; padding: 1.25rem; border-radius: 0.75rem; display: flex; gap: 1rem; border: 1px solid #bfdbfe; font-size: 0.85rem; line-height: 1.5;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 0.1rem;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                <div>
+                    <strong>System Note</strong><br>
+                    The AI will autonomously monitor the trip, predict traffic signal conflicts, and initiate preemptions before the ambulance is blocked. 
+                </div>
+            </div>
+        </div>
+
+        <!-- Telemetry Panel -->
+        <div class="panel">
+            <div class="panel-title" style="display: flex; justify-content: space-between; align-items: center;">
+                <span>Live AI Telemetry</span>
+            </div>
+            
+            <div id="empty-state">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 1rem; opacity: 0.5;">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+                <h3>Awaiting Trip Configuration</h3>
+                <p>Configure the trip parameters and press Start to monitor the ambulance.</p>
+            </div>
+
+            <div id="live-telemetry">
+                <div class="nav-grid">
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        <div class="panel-title" style="margin-bottom: 0;">Live Map</div>
+                        <div class="map-container" id="map-container" style="min-height: 400px; width: 100%; position: relative; border-radius: 0.5rem; overflow: hidden; border: 1px solid var(--border-color); box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);">
+                            <span id="trip-badge" class="status-badge pulse-anim" style="position: absolute; top: 1rem; right: 1rem; background: #fffbeb; color: var(--accent-yellow); border: 1px solid #fde68a; z-index: 10; display: none; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+                                <div class="status-dot"></div>
+                                TRIP ACTIVE
+                            </span>
+                            <canvas id="map-canvas" style="width: 100%; height: 100%; display: block;"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="nav-sidebar">
+                        <div>
+                            <div class="panel-title" style="margin-bottom: 1rem; color: var(--accent-blue);">Destination</div>
+                            <div class="metric-card" style="background: #eff6ff; border-color: #bfdbfe;">
+                                <span class="metric-value" id="val-dest-name" style="font-size: 1.25rem; margin-bottom: 0.75rem; color: #1e3a8a;">🏥 --</span>
+                                <div style="display: flex; justify-content: space-between; margin-top: 0.75rem; border-top: 1px solid #dbeafe; padding-top: 0.75rem;">
+                                    <div>
+                                        <span class="metric-label" style="color: #3b82f6;">Distance</span>
+                                        <div class="metric-value highlight" id="val-dest-dist" style="color: #1e3a8a;">-- m</div>
+                                    </div>
+                                    <div>
+                                        <span class="metric-label" style="color: #3b82f6;">ETA</span>
+                                        <div class="metric-value highlight" id="val-dest-eta" style="color: #1e3a8a;">-- min</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="panel-title" style="margin-bottom: 1rem;">Live Status</div>
+                            <div class="metrics-grid" style="grid-template-columns: 1fr;">
+                                <div class="metric-card">
+                                    <span class="metric-label">Speed</span>
+                                    <span class="metric-value" id="val-speed">-- km/h</span>
+                                </div>
+                                <div class="metric-card">
+                                    <span class="metric-label">Current Road</span>
+                                    <span class="metric-value" id="val-location" style="font-size: 1rem;">--</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const emergencyToggle = document.getElementById('emergency-toggle');
+        const emergencyText = document.getElementById('emergency-text');
+        const hospitalSelect = document.getElementById('hospital-select');
+        const btnStart = document.getElementById('btn-start');
+        const btnStop = document.getElementById('btn-stop');
+        const connectionStatus = document.getElementById('connection-status');
+        
+        // UI Views
+        const emptyState = document.getElementById('empty-state');
+        const liveTelemetry = document.getElementById('live-telemetry');
+        const tripBadge = document.getElementById('trip-badge');
+
+        // State variables
+        let isTripActive = false;
+        let ws = null;
+
+        // Fetch Hospitals
+        async function loadHospitals() {
+            try {
+                const res = await fetch('/hospitals');
+                const hospitals = await res.json();
+                hospitalSelect.innerHTML = '';
+                hospitals.forEach(h => {
+                    const opt = document.createElement('option');
+                    opt.value = h.id;
+                    opt.textContent = h.available ? h.name : `${h.name} (Unavailable: ${h.reason})`;
+                    if (!h.available) {
+                        opt.disabled = true;
+                    }
+                    hospitalSelect.appendChild(opt);
+                });
+            } catch (err) {
+                console.error("Failed to load hospitals", err);
+                hospitalSelect.innerHTML = '<option value="">Error loading hospitals</option>';
+            }
+        }
+
+        // Toggle text update
+        emergencyToggle.addEventListener('change', (e) => {
+            if(e.target.checked) {
+                emergencyText.textContent = "ON (Priority Allowed)";
+                emergencyText.style.color = "var(--accent-red)";
+            } else {
+                emergencyText.textContent = "OFF (Normal Traffic)";
+                emergencyText.style.color = "var(--text-secondary)";
+            }
+        });
+
+        // Start Trip
+        btnStart.addEventListener('click', async () => {
+            if(!hospitalSelect.value) return alert("Select a hospital first.");
+            
+            try {
+                await fetch('/trip/start', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        emergency: emergencyToggle.checked,
+                        hospital_id: hospitalSelect.value
+                    })
+                });
+                
+                isTripActive = true;
+                btnStart.disabled = true;
+                btnStop.disabled = false;
+                emergencyToggle.disabled = true;
+                hospitalSelect.disabled = true;
+                
+                emptyState.style.display = 'none';
+                liveTelemetry.style.display = 'flex';
+                tripBadge.style.display = 'block';
+                
+            } catch(e) {
+                alert("Failed to start trip.");
+            }
+        });
+
+        // Stop Trip
+        btnStop.addEventListener('click', async () => {
+            try {
+                await fetch('/trip/stop', { method: 'POST' });
+                
+                isTripActive = false;
+                btnStart.disabled = false;
+                btnStop.disabled = true;
+                emergencyToggle.disabled = false;
+                hospitalSelect.disabled = false;
+                
+                emptyState.style.display = 'flex';
+                liveTelemetry.style.display = 'none';
+                tripBadge.style.display = 'none';
+                
+            } catch(e) {
+                alert("Failed to stop trip.");
+            }
+        });
+
+        // WebSocket Connection
+        function connectWebSocket() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}/ws/state`;
+            
+            ws = new WebSocket(wsUrl);
+            
+            ws.onopen = () => {
+                connectionStatus.textContent = "CONNECTED";
+                connectionStatus.style.background = "rgba(16, 185, 129, 0.2)";
+                connectionStatus.style.color = "var(--accent-green)";
+            };
+            
+            ws.onclose = () => {
+                connectionStatus.textContent = "DISCONNECTED";
+                connectionStatus.style.background = "rgba(239, 68, 68, 0.2)";
+                connectionStatus.style.color = "var(--accent-red)";
+                setTimeout(connectWebSocket, 2000);
+            };
+            
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                if(data.status === "simulation unavailable") return;
+                
+                updateTelemetry(data);
+            };
+        }
+
+        const canvas = document.getElementById('map-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        let roadNetwork = null;
+        let mapBounds = { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity };
+        let camera = { x: 0, y: 0, scale: 1.5 }; // 1.5 pixels per SUMO meter (zoomed in)
+        
+        let currentAmbPos = null;
+        let currentHeading = 0;
+        let targetHeading = 0;
+        let activeRouteCoords = [];
+        
+        // Fetch the extracted OSM map (SUMO geometry)
+        async function loadRoadNetwork() {
+            try {
+                const response = await fetch('RoadNetwork.json');
+                roadNetwork = await response.json();
+                
+                // Calculate bounds
+                roadNetwork.edges.forEach(edge => {
+                    edge.lanes.forEach(lane => {
+                        lane.shape.forEach(pt => {
+                            if (pt.x < mapBounds.minX) mapBounds.minX = pt.x;
+                            if (pt.x > mapBounds.maxX) mapBounds.maxX = pt.x;
+                            if (pt.y < mapBounds.minY) mapBounds.minY = pt.y;
+                            if (pt.y > mapBounds.maxY) mapBounds.maxY = pt.y;
+                        });
+                    });
+                });
+                
+                // Add padding
+                const pad = 100;
+                mapBounds.minX -= pad;
+                mapBounds.maxX += pad;
+                mapBounds.minY -= pad;
+                mapBounds.maxY += pad;
+                
+                // Initial camera position (center of map)
+                camera.x = (mapBounds.minX + mapBounds.maxX) / 2;
+                camera.y = (mapBounds.minY + mapBounds.maxY) / 2;
+                
+                resizeCanvas();
+                requestAnimationFrame(renderLoop);
+            } catch (err) {
+                console.error("Failed to load RoadNetwork.json", err);
+            }
+        }
+        
+        function resizeCanvas() {
+            const container = document.getElementById('map-container');
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+            
+            if (roadNetwork) {
+                // Ensure we have a valid width/height
+                if (canvas.width === 0) canvas.width = 800;
+                if (canvas.height === 0) canvas.height = 400;
+            }
+        }
+        
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+        });
+        
+        function renderLoop() {
+            requestAnimationFrame(renderLoop);
+            
+            // Lerp heading
+            let delta = targetHeading - currentHeading;
+            // Normalize delta to [-PI, PI]
+            delta = Math.atan2(Math.sin(delta), Math.cos(delta));
+            currentHeading += delta * 0.15; // Smooth factor
+            
+            drawMap(activeRouteCoords);
+        }
+        
+        function toCanvasCoords(x, y) {
+            // SUMO y is up, Canvas y is down
+            // Center camera on canvas
+            const cx = (canvas.width / 2) + (x - camera.x) * camera.scale;
+            const cy = (canvas.height / 2) - (y - camera.y) * camera.scale;
+            return {x: cx, y: cy};
+        }
+        
+        function drawMap(routeCoords = []) {
+            if (!roadNetwork) return;
+            
+            // Draw background
+            ctx.fillStyle = '#f8fafc'; // Light background
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw subtle grid
+            ctx.strokeStyle = '#f1f5f9';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            const gridSize = 40;
+            const offsetX = (camera.x * camera.scale) % gridSize;
+            const offsetY = (camera.y * camera.scale) % gridSize;
+            for (let x = -offsetX; x < canvas.width; x += gridSize) {
+                ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height);
+            }
+            for (let y = -offsetY; y < canvas.height; y += gridSize) {
+                ctx.moveTo(0, y); ctx.lineTo(canvas.width, y);
+            }
+            ctx.stroke();
+            
+            // Draw all roads (SUMO style)
+            ctx.strokeStyle = '#e2e8f0'; // Light gray road color
+            ctx.lineWidth = 4;
+            ctx.lineJoin = 'round';
+            ctx.lineCap = 'round';
+            ctx.beginPath();
+            
+            roadNetwork.edges.forEach(edge => {
+                edge.lanes.forEach(lane => {
+                    const pts = lane.shape;
+                    if (pts.length === 0) return;
+                    const start = toCanvasCoords(pts[0].x, pts[0].y);
+                    ctx.moveTo(start.x, start.y);
+                    for (let i = 1; i < pts.length; i++) {
+                        const pt = toCanvasCoords(pts[i].x, pts[i].y);
+                        ctx.lineTo(pt.x, pt.y);
+                    }
+                });
+            });
+            ctx.stroke();
+            
+            // Draw active route (glowing cyan)
+            if (routeCoords && routeCoords.length > 0) {
+                ctx.strokeStyle = '#06b6d4'; // Cyan route
+                ctx.lineWidth = 6;
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = '#3b82f6';
+                ctx.beginPath();
+                const rStart = toCanvasCoords(routeCoords[0][0], routeCoords[0][1]);
+                ctx.moveTo(rStart.x, rStart.y);
+                for (let i = 1; i < routeCoords.length; i++) {
+                    const rPt = toCanvasCoords(routeCoords[i][0], routeCoords[i][1]);
+                    ctx.lineTo(rPt.x, rPt.y);
+                }
+                ctx.stroke();
+                ctx.shadowBlur = 0; // reset
+                
+                // Draw Destination Pin
+                const lastPt = routeCoords[routeCoords.length - 1];
+                const endPos = toCanvasCoords(lastPt[0], lastPt[1]);
+                
+                ctx.save();
+                ctx.translate(endPos.x, endPos.y);
+                ctx.shadowBlur = 4;
+                ctx.shadowColor = 'rgba(0,0,0,0.2)';
+                ctx.fillStyle = '#ef4444'; // Red pin
+                ctx.beginPath();
+                ctx.arc(0, -16, 10, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.moveTo(-10, -16);
+                ctx.lineTo(10, -16);
+                ctx.lineTo(0, 0);
+                ctx.closePath();
+                ctx.fill();
+                ctx.fillStyle = '#ffffff'; // White inner dot
+                ctx.beginPath();
+                ctx.arc(0, -16, 4, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+            
+            // Draw Ambulance Chevron
+            if (currentAmbPos) {
+                const cpos = toCanvasCoords(currentAmbPos.latitude, currentAmbPos.longitude);
+                
+                ctx.save();
+                ctx.translate(cpos.x, cpos.y);
+                ctx.rotate(currentHeading);
+                
+                // Add pulse glow based on time
+                const pulse = Math.abs(Math.sin(Date.now() / 300));
+                ctx.shadowBlur = 8 + pulse * 12;
+                ctx.shadowColor = '#06b6d4';
+                
+                ctx.fillStyle = '#ffffff';
+                ctx.strokeStyle = '#06b6d4';
+                ctx.lineWidth = 3;
+                
+                ctx.beginPath();
+                // Arrow pointing to +X axis (0 radians)
+                ctx.moveTo(14, 0); // nose
+                ctx.lineTo(-10, -9); // top tail
+                ctx.lineTo(-5, 0); // inner indent
+                ctx.lineTo(-10, 9); // bottom tail
+                ctx.closePath();
+                
+                ctx.fill();
+                ctx.stroke();
+                
+                ctx.restore();
+            }
+        }
+
+        function updateTelemetry(data) {
+            const amb = data.ambulance;
+            
+            if (data.route && data.route.coordinates) {
+                activeRouteCoords = data.route.coordinates;
+            }
+            
+            // Adjust camera to fit route
+            if (activeRouteCoords.length > 0) {
+                let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+                activeRouteCoords.forEach(pt => {
+                    if (pt[0] < minX) minX = pt[0];
+                    if (pt[0] > maxX) maxX = pt[0];
+                    if (pt[1] < minY) minY = pt[1];
+                    if (pt[1] > maxY) maxY = pt[1];
+                });
+                
+                const pad = 50; // padding around route
+                minX -= pad; maxX += pad; minY -= pad; maxY += pad;
+                
+                camera.x = (minX + maxX) / 2;
+                camera.y = (minY + maxY) / 2;
+                
+                const scaleX = canvas.width / (maxX - minX);
+                const scaleY = canvas.height / (maxY - minY);
+                camera.scale = Math.min(scaleX, scaleY);
+            }
+            
+            if(!amb) {
+                document.getElementById('val-speed').textContent = "-- km/h";
+                document.getElementById('val-location').textContent = "Connecting to simulation...";
+                currentAmbPos = null;
+                return;
+            }
+            
+            // Update ambulance heading
+            if (amb.latitude !== 0 && amb.longitude !== 0 && roadNetwork) {
+                if (currentAmbPos) {
+                    const cposPrev = toCanvasCoords(currentAmbPos.latitude, currentAmbPos.longitude);
+                    const cposCurr = toCanvasCoords(amb.latitude, amb.longitude);
+                    const dx = cposCurr.x - cposPrev.x;
+                    const dy = cposCurr.y - cposPrev.y;
+                    
+                    if (Math.abs(dx) > 0.1 || Math.abs(dy) > 0.1) {
+                        targetHeading = Math.atan2(dy, dx);
+                    }
+                } else if (activeRouteCoords.length >= 2) {
+                    // Deriving initial heading from route
+                    const p1 = toCanvasCoords(activeRouteCoords[0][0], activeRouteCoords[0][1]);
+                    const p2 = toCanvasCoords(activeRouteCoords[1][0], activeRouteCoords[1][1]);
+                    targetHeading = Math.atan2(p2.y - p1.y, p2.x - p1.x);
+                    currentHeading = targetHeading;
+                }
+                currentAmbPos = { latitude: amb.latitude, longitude: amb.longitude };
+            }
+            
+            const speedKmh = (amb.speed * 3.6).toFixed(1);
+            document.getElementById('val-speed').textContent = `${speedKmh} km/h`;
+            document.getElementById('val-location').textContent = amb.current_edge.replace('_', ' ') || "Unknown";
+            
+            document.getElementById('val-dest-name').textContent = "🏥 " + (amb.destination.replace(/_/g, ' ') || "Hospital");
+            
+            if (amb.remaining_distance < 20) {
+                document.getElementById('val-dest-dist').textContent = "ARRIVED";
+                document.getElementById('val-dest-eta').textContent = "--";
+            } else {
+                document.getElementById('val-dest-dist').textContent = amb.remaining_distance.toFixed(0) + " m";
+                document.getElementById('val-dest-eta').textContent = (amb.eta / 60).toFixed(1) + " min";
+            }
+        }
+
+        // Init
+        window.addEventListener('DOMContentLoaded', () => {
+            loadRoadNetwork();
+            loadHospitals();
+            connectWebSocket();
+        });
+    </script>
+</body>
+</html>

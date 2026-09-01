@@ -2,7 +2,7 @@ using UnityEngine;
 
 public static class MangaluruSceneBootstrapper
 {
-    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     public static void InitializeScene()
     {
         Debug.Log("MangaluruSceneBootstrapper: Verifying and assembling required hierarchy...");
@@ -24,6 +24,7 @@ public static class MangaluruSceneBootstrapper
         // Emergency
         GameObject emergency = GetOrCreate("Emergency", root.transform);
         GameObject ambulance = GetOrCreate("Ambulance", emergency.transform);
+        BuildProceduralAmbulance(ambulance);
 
         // Destinations
         GameObject destinations = GetOrCreate("Destinations", root.transform);
@@ -36,6 +37,7 @@ public static class MangaluruSceneBootstrapper
         EnsureComponent<RoadVisualizer>(visSys);
         EnsureComponent<TrafficReceiver>(visSys);
         EnsureComponent<TrafficSignalReceiver>(visSys);
+        EnsureComponent<RouteReceiver>(visSys);
         
         // Purge any stale AmbulanceReceivers (e.g. from previous manual setups)
         AmbulanceReceiver[] oldReceivers = Object.FindObjectsByType<AmbulanceReceiver>(FindObjectsSortMode.None);
@@ -99,5 +101,71 @@ public static class MangaluruSceneBootstrapper
             comp = go.AddComponent<T>();
         }
         return comp;
+    }
+
+    private static void BuildProceduralAmbulance(GameObject ambulance)
+    {
+        // 1. Setup Root Component
+        EnsureComponent<VehicleSmoother>(ambulance);
+
+        // 2. Clean up old problematic meshes
+        Transform oldElora = ambulance.transform.Find("EloraWhite(Clone)");
+        if (oldElora != null) Object.DestroyImmediate(oldElora.gameObject);
+
+        // Destroy placeholder meshes on root
+        if (ambulance.GetComponent<MeshRenderer>()) Object.DestroyImmediate(ambulance.GetComponent<MeshRenderer>());
+        if (ambulance.GetComponent<MeshFilter>()) Object.DestroyImmediate(ambulance.GetComponent<MeshFilter>());
+        if (ambulance.GetComponent<Collider>()) Object.DestroyImmediate(ambulance.GetComponent<Collider>());
+
+        // 3. Establish the strict Visual wrapper
+        Transform visualWrapper = ambulance.transform.Find("AmbulanceVisual");
+        GameObject visualObj;
+        if (visualWrapper == null)
+        {
+            visualObj = new GameObject("AmbulanceVisual");
+            visualObj.transform.SetParent(ambulance.transform);
+        }
+        else
+        {
+            visualObj = visualWrapper.gameObject;
+        }
+
+        // Clean out any old children in the visual wrapper
+        for (int i = visualObj.transform.childCount - 1; i >= 0; i--)
+        {
+            Object.DestroyImmediate(visualObj.transform.GetChild(i).gameObject);
+        }
+
+        // Align visual perfectly to root. No rotations needed since we build native +Z!
+        visualObj.transform.localPosition = Vector3.zero;
+        visualObj.transform.localRotation = Quaternion.identity;
+
+        // 4. Load the proper Ambulance Prefab
+        GameObject prefab = Resources.Load<GameObject>("Cars/AmbulancePrefab");
+        if (prefab != null)
+        {
+            GameObject newAmbulance = Object.Instantiate(prefab, visualObj.transform);
+            newAmbulance.name = "AmbulancePrefab";
+            
+            // Dimensional Verification:
+            // Ambulance.glb length is 20.09m. Target realistic length is ~5.0m (matching normal cars).
+            // Required scale: 5.0 / 20.09 = ~0.25
+            visualObj.transform.localScale = new Vector3(0.25f, 0.25f, 0.25f);
+            
+            // Orientation Verification:
+            // Ambulance.glb length aligns with Z-axis and inherently points forward (+Z).
+            // No rotation hacks needed.
+            visualObj.transform.localRotation = Quaternion.identity;
+            
+            // Pivot Verification:
+            // The model's origin is roughly 1m from the rear bumper, aligning perfectly with standard rear-axle pivot setups.
+            visualObj.transform.localPosition = Vector3.zero;
+        }
+        else
+        {
+            Debug.LogWarning("Ambulance model not assigned. AmbulanceVisual is waiting for Assets/Resources/Cars/AmbulancePrefab.glb");
+        }
+        
+        visualObj.SetActive(true);
     }
 }

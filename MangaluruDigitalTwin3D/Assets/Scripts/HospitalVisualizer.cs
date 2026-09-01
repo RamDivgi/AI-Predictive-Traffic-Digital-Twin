@@ -1,28 +1,45 @@
 using UnityEngine;
+using System.IO;
 
 public class HospitalVisualizer : MonoBehaviour
 {
-    // Exact destination coordinate from SUMO hospitals.add.xml
-    public float sumoX = 1687.469f;
-    public float sumoY = 1134.98f;
-    
+    public string jsonFileName = "RoadNetwork.json";
+
     void Start()
     {
-        CreateHospitalModel();
+        LoadAndCreateHospitals();
     }
     
-    void CreateHospitalModel()
+    void LoadAndCreateHospitals()
     {
-        // 1. Convert to Unity coordinates
-        // Unity.X = SUMO.X
-        // Unity.Y = 0 (ground)
-        // Unity.Z = SUMO.Y
+        string filePath = Path.Combine(Application.dataPath, "Generated", jsonFileName);
+        
+        if (!File.Exists(filePath))
+        {
+            Debug.LogWarning("RoadNetwork.json not found, cannot load hospitals.");
+            return;
+        }
+
+        string jsonContent = File.ReadAllText(filePath);
+        RoadNetworkData networkData = JsonUtility.FromJson<RoadNetworkData>(jsonContent);
+
+        if (networkData != null && networkData.hospitals != null)
+        {
+            foreach (var hosp in networkData.hospitals)
+            {
+                CreateHospitalModel(hosp.id, hosp.name, hosp.x, hosp.y);
+            }
+            Debug.Log($"Successfully rendered {networkData.hospitals.Length} hospitals.");
+        }
+    }
+    
+    void CreateHospitalModel(string id, string name, float sumoX, float sumoY)
+    {
         Vector3 position = new Vector3(sumoX, 0f, sumoY);
         
-        // 2. Create the main hospital building (large compound object)
-        GameObject hospital = new GameObject("HighlandHospital");
-        hospital.transform.position = position;
+        GameObject hospital = new GameObject("Hospital_" + id);
         hospital.transform.parent = this.transform;
+        hospital.transform.localPosition = position;
         
         // Main block
         GameObject mainBlock = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -48,14 +65,12 @@ public class HospitalVisualizer : MonoBehaviour
         signObj.transform.localPosition = new Vector3(0, 26f, 0);
         
         TextMesh tm = signObj.AddComponent<TextMesh>();
-        tm.text = "HIGHLAND HOSPITAL";
+        tm.text = string.IsNullOrEmpty(name) ? "HOSPITAL" : name.ToUpper();
         tm.characterSize = 2f;
         tm.fontSize = 48;
         tm.anchor = TextAnchor.MiddleCenter;
         tm.alignment = TextAlignment.Center;
         tm.color = Color.red;
-        
-        Debug.Log($"Highland Hospital created at Unity({position.x}, {position.y}, {position.z})");
     }
     
     private void CreateCross(Transform parent, Vector3 localPosition, Vector3 forward, Material mat, float scale)
