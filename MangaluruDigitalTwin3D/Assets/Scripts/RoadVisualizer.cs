@@ -162,10 +162,10 @@ public class RoadVisualizer : MonoBehaviour
         ground.transform.localPosition = new Vector3(1600f, -0.35f, 1600f); // Center of Mangaluru coords
         ground.transform.localScale = new Vector3(1000f, 1f, 1000f); // 10km x 10km
         Material groundMat = new Material(Shader.Find("Universal Render Pipeline/Lit"));
-        Color terrainColor = new Color(0.20f, 0.23f, 0.19f, 1.0f); // Soft natural urban terrain base
+        Color terrainColor = new Color(0.18f, 0.20f, 0.17f, 1.0f); // Soft natural urban terrain base
         groundMat.color = terrainColor;
         if (groundMat.HasProperty("_BaseColor")) groundMat.SetColor("_BaseColor", terrainColor);
-        if (groundMat.HasProperty("_Smoothness")) groundMat.SetFloat("_Smoothness", 0.1f);
+        if (groundMat.HasProperty("_Smoothness")) groundMat.SetFloat("_Smoothness", 0.05f);
         ground.GetComponent<Renderer>().material = groundMat;
         Destroy(ground.GetComponent<Collider>()); // Don't need physics for ground
         
@@ -448,10 +448,10 @@ public class RoadVisualizer : MonoBehaviour
             // Refined architectural materials for procedural fallback buildings
             Material[] fallbackMats = new Material[4];
             Color[] colors = { 
-                new Color(0.82f, 0.80f, 0.76f), // Light sandstone
-                new Color(0.72f, 0.70f, 0.66f), // Warm concrete
-                new Color(0.68f, 0.72f, 0.75f), // Urban muted slate
-                new Color(0.78f, 0.74f, 0.70f)  // Soft beige stucco
+                new Color(0.58f, 0.55f, 0.50f), // Warm sandstone
+                new Color(0.50f, 0.50f, 0.48f), // Concrete
+                new Color(0.46f, 0.50f, 0.54f), // Urban muted slate
+                new Color(0.54f, 0.52f, 0.48f)  // Warm beige stucco
             };
             for (int i = 0; i < 4; i++) {
                 Shader fbShader = Shader.Find("Universal Render Pipeline/Lit");
@@ -459,7 +459,7 @@ public class RoadVisualizer : MonoBehaviour
                 fallbackMats[i] = new Material(fbShader);
                 fallbackMats[i].color = colors[i];
                 if (fallbackMats[i].HasProperty("_BaseColor")) fallbackMats[i].SetColor("_BaseColor", colors[i]);
-                if (fallbackMats[i].HasProperty("_Smoothness")) fallbackMats[i].SetFloat("_Smoothness", 0.2f);
+                if (fallbackMats[i].HasProperty("_Smoothness")) fallbackMats[i].SetFloat("_Smoothness", 0.10f);
             }
             
             // Deterministic random state to prevent building jitter across runs
@@ -701,9 +701,9 @@ public class RoadVisualizer : MonoBehaviour
     {
         int numPoints = shape.Length;
         Vector3[] vertices = new Vector3[numPoints + 1];
-        // Double-sided fan triangulation: 6 indices per segment to ensure top surface renders regardless of SUMO CW/CCW ordering
-        int[] triangles = new int[numPoints * 6];
+        int[] triangles = new int[numPoints * 3];
         Vector2[] uvs = new Vector2[numPoints + 1];
+        Vector3[] normals = new Vector3[numPoints + 1];
         
         Vector3 centroid = Vector3.zero;
         for (int i = 0; i < numPoints; i++)
@@ -711,32 +711,53 @@ public class RoadVisualizer : MonoBehaviour
             vertices[i] = new Vector3(shape[i].x, 0.02f, shape[i].y);
             centroid += vertices[i];
             uvs[i] = new Vector2(shape[i].x / 4.0f, shape[i].y / 4.0f);
+            normals[i] = Vector3.up;
         }
         centroid /= numPoints;
         vertices[numPoints] = centroid; // Center vertex
         uvs[numPoints] = new Vector2(centroid.x / 4.0f, centroid.z / 4.0f);
+        normals[numPoints] = Vector3.up;
+
+        // Calculate signed 2D area in XZ plane (SUMO X, Y) to determine winding
+        float signedArea = 0f;
+        for (int i = 0; i < numPoints; i++)
+        {
+            int next = (i + 1) % numPoints;
+            signedArea += (shape[i].x * shape[next].y - shape[next].x * shape[i].y);
+        }
         
         for (int i = 0; i < numPoints; i++)
         {
             int next = (i + 1) % numPoints;
-            int tIdx = i * 6;
+            int tIdx = i * 3;
             
-            // Front face (Centroid -> Next -> Current)
-            triangles[tIdx] = numPoints;
-            triangles[tIdx + 1] = next;
-            triangles[tIdx + 2] = i;
-            
-            // Back face (Centroid -> Current -> Next)
-            triangles[tIdx + 3] = numPoints;
-            triangles[tIdx + 4] = i;
-            triangles[tIdx + 5] = next;
+            // Check orientation of this specific triangle relative to centroid
+            float uX = shape[next].x - centroid.x;
+            float uZ = shape[next].y - centroid.z;
+            float vX = shape[i].x - centroid.x;
+            float vZ = shape[i].y - centroid.z;
+            float crossY = uZ * vX - uX * vZ;
+
+            // Single-sided upward winding facing +Y
+            if (crossY >= 0f)
+            {
+                triangles[tIdx] = numPoints;
+                triangles[tIdx + 1] = next;
+                triangles[tIdx + 2] = i;
+            }
+            else
+            {
+                triangles[tIdx] = numPoints;
+                triangles[tIdx + 1] = i;
+                triangles[tIdx + 2] = next;
+            }
         }
         
         Mesh mesh = new Mesh();
         mesh.vertices = vertices;
         mesh.triangles = triangles;
         mesh.uv = uvs;
-        mesh.RecalculateNormals();
+        mesh.normals = normals;
         mesh.RecalculateBounds();
         return mesh;
     }
@@ -747,6 +768,15 @@ public class RoadVisualizer : MonoBehaviour
         List<Vector3> verts = new List<Vector3>();
         List<int> tris = new List<int>();
         List<Vector2> uvs = new List<Vector2>();
+        List<Vector3> normals = new List<Vector3>();
+
+        // Calculate signed 2D area in XZ plane to determine boundary winding
+        float signedArea = 0f;
+        for (int i = 0; i < numPoints; i++)
+        {
+            int next = (i + 1) % numPoints;
+            signedArea += (shape[i].x * shape[next].y - shape[next].x * shape[i].y);
+        }
 
         // Roof centroid
         Vector3 centroid = Vector3.zero;
@@ -759,29 +789,40 @@ public class RoadVisualizer : MonoBehaviour
         int roofStartIndex = verts.Count;
         verts.Add(centroid);
         uvs.Add(new Vector2(centroid.x / 4.0f, centroid.z / 4.0f));
+        normals.Add(Vector3.up);
         
         for (int i = 0; i < numPoints; i++)
         {
             verts.Add(new Vector3(shape[i].x, height, shape[i].y));
             uvs.Add(new Vector2(shape[i].x / 4.0f, shape[i].y / 4.0f));
+            normals.Add(Vector3.up);
         }
 
-        // Roof Triangles (Double-sided to guarantee top face renders regardless of SUMO vertex winding)
+        // Roof Triangles (Single-sided facing +Y)
         for (int i = 0; i < numPoints; i++)
         {
             int next = (i + 1) % numPoints;
-            // Face 1
-            tris.Add(roofStartIndex);
-            tris.Add(roofStartIndex + 1 + i);
-            tris.Add(roofStartIndex + 1 + next);
+            float uX = shape[next].x - centroid.x;
+            float uZ = shape[next].y - centroid.z;
+            float vX = shape[i].x - centroid.x;
+            float vZ = shape[i].y - centroid.z;
+            float crossY = uZ * vX - uX * vZ;
 
-            // Face 2 (Reverse winding)
-            tris.Add(roofStartIndex);
-            tris.Add(roofStartIndex + 1 + next);
-            tris.Add(roofStartIndex + 1 + i);
+            if (crossY >= 0f)
+            {
+                tris.Add(roofStartIndex);
+                tris.Add(roofStartIndex + 1 + next);
+                tris.Add(roofStartIndex + 1 + i);
+            }
+            else
+            {
+                tris.Add(roofStartIndex);
+                tris.Add(roofStartIndex + 1 + i);
+                tris.Add(roofStartIndex + 1 + next);
+            }
         }
 
-        // Walls (Double-sided quads)
+        // Walls (Single-sided quads with outward-facing normals)
         for (int i = 0; i < numPoints; i++)
         {
             int next = (i + 1) % numPoints;
@@ -790,11 +831,19 @@ public class RoadVisualizer : MonoBehaviour
             Vector3 tl = new Vector3(shape[i].x, height, shape[i].y);
             Vector3 tr = new Vector3(shape[next].x, height, shape[next].y);
 
+            Vector3 wallDir = (br - bl).normalized;
+            Vector3 outNormal = (signedArea >= 0f) ? Vector3.Cross(Vector3.up, wallDir).normalized : -Vector3.Cross(Vector3.up, wallDir).normalized;
+
             int wStart = verts.Count;
             verts.Add(bl);
             verts.Add(br);
             verts.Add(tl);
             verts.Add(tr);
+
+            normals.Add(outNormal);
+            normals.Add(outNormal);
+            normals.Add(outNormal);
+            normals.Add(outNormal);
 
             float wallDist = Vector3.Distance(bl, br);
             uvs.Add(new Vector2(0f, 0f));
@@ -802,30 +851,33 @@ public class RoadVisualizer : MonoBehaviour
             uvs.Add(new Vector2(0f, height / 4f));
             uvs.Add(new Vector2(wallDist / 4f, height / 4f));
 
-            // Face 1
-            tris.Add(wStart);
-            tris.Add(wStart + 2);
-            tris.Add(wStart + 1);
+            if (signedArea >= 0f)
+            {
+                tris.Add(wStart);
+                tris.Add(wStart + 2);
+                tris.Add(wStart + 1);
 
-            tris.Add(wStart + 1);
-            tris.Add(wStart + 2);
-            tris.Add(wStart + 3);
+                tris.Add(wStart + 1);
+                tris.Add(wStart + 2);
+                tris.Add(wStart + 3);
+            }
+            else
+            {
+                tris.Add(wStart);
+                tris.Add(wStart + 1);
+                tris.Add(wStart + 2);
 
-            // Face 2 (Reverse)
-            tris.Add(wStart);
-            tris.Add(wStart + 1);
-            tris.Add(wStart + 2);
-
-            tris.Add(wStart + 1);
-            tris.Add(wStart + 3);
-            tris.Add(wStart + 2);
+                tris.Add(wStart + 1);
+                tris.Add(wStart + 3);
+                tris.Add(wStart + 2);
+            }
         }
 
         Mesh mesh = new Mesh();
         mesh.vertices = verts.ToArray();
         mesh.triangles = tris.ToArray();
         mesh.uv = uvs.ToArray();
-        mesh.RecalculateNormals();
+        mesh.normals = normals.ToArray();
         mesh.RecalculateBounds();
         return mesh;
     }
@@ -834,9 +886,9 @@ public class RoadVisualizer : MonoBehaviour
     {
         int numPoints = shape.Length;
         Vector3[] vertices = new Vector3[numPoints * 2];
-        // Double-sided quad: 12 indices per segment to guarantee rendering even on sharp curve inflections
-        int[] triangles = new int[(numPoints - 1) * 12];
+        int[] triangles = new int[(numPoints - 1) * 6];
         Vector2[] uvs = new Vector2[numPoints * 2];
+        Vector3[] normals = new Vector3[numPoints * 2];
 
         float halfWidth = width / 2f;
 
@@ -870,6 +922,10 @@ public class RoadVisualizer : MonoBehaviour
             vertices[i * 2] = pathPoints[i] - right * halfWidth;     // Left vertex
             vertices[i * 2 + 1] = pathPoints[i] + right * halfWidth; // Right vertex
 
+            // All road surface normals point directly upward (+Y)
+            normals[i * 2] = Vector3.up;
+            normals[i * 2 + 1] = Vector3.up;
+
             // Distance-based UV mapping: tiles asphalt texture every 4 meters
             float v = accumulatedDist / 4.0f;
             uvs[i * 2] = new Vector2(0f, v);
@@ -879,9 +935,9 @@ public class RoadVisualizer : MonoBehaviour
         for (int i = 0; i < numPoints - 1; i++)
         {
             int vIndex = i * 2;
-            int tIndex = i * 12;
+            int tIndex = i * 6;
 
-            // Face 1 (Top)
+            // Single-sided upward quad (Clockwise looking down from +Y)
             triangles[tIndex] = vIndex;
             triangles[tIndex + 1] = vIndex + 2;
             triangles[tIndex + 2] = vIndex + 1;
@@ -889,22 +945,13 @@ public class RoadVisualizer : MonoBehaviour
             triangles[tIndex + 3] = vIndex + 1;
             triangles[tIndex + 4] = vIndex + 2;
             triangles[tIndex + 5] = vIndex + 3;
-
-            // Face 2 (Bottom / Reverse winding)
-            triangles[tIndex + 6] = vIndex;
-            triangles[tIndex + 7] = vIndex + 1;
-            triangles[tIndex + 8] = vIndex + 2;
-
-            triangles[tIndex + 9] = vIndex + 1;
-            triangles[tIndex + 10] = vIndex + 3;
-            triangles[tIndex + 11] = vIndex + 2;
         }
 
         Mesh mesh = new Mesh();
         mesh.vertices = vertices;
         mesh.triangles = triangles;
         mesh.uv = uvs;
-        mesh.RecalculateNormals();
+        mesh.normals = normals;
         mesh.RecalculateBounds();
 
         return mesh;

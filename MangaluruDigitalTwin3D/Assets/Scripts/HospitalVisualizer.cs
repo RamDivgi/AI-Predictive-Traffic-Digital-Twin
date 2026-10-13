@@ -115,10 +115,10 @@ public class HospitalVisualizer : MonoBehaviour
         if (unlitShader == null) unlitShader = Shader.Find("Unlit/Color");
 
         Material whiteExteriorMat = new Material(litShader);
-        Color whiteCol = new Color(0.93f, 0.95f, 0.98f);
+        Color whiteCol = new Color(0.68f, 0.72f, 0.76f);
         whiteExteriorMat.color = whiteCol;
         if (whiteExteriorMat.HasProperty("_BaseColor")) whiteExteriorMat.SetColor("_BaseColor", whiteCol);
-        if (whiteExteriorMat.HasProperty("_Smoothness")) whiteExteriorMat.SetFloat("_Smoothness", 0.25f);
+        if (whiteExteriorMat.HasProperty("_Smoothness")) whiteExteriorMat.SetFloat("_Smoothness", 0.15f);
 
         Material accentCanopyMat = new Material(litShader);
         Color canopyCol = new Color(0.18f, 0.26f, 0.36f);
