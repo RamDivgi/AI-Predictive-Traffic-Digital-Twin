@@ -136,21 +136,30 @@ public class RoadVisualizer : MonoBehaviour
         Material mat = roadMaterial;
         if (mat == null)
         {
+            mat = Resources.Load<Material>("Asphalt");
+        }
+        if (mat == null)
+        {
             Shader shader = Shader.Find("Universal Render Pipeline/Lit");
-            if (shader != null) {
-                mat = new Material(shader);
-                mat.color = new Color(0.2f, 0.2f, 0.2f); // Dark gray for roads
-            }
+            if (shader == null) shader = Shader.Find("Standard");
+            mat = new Material(shader);
+            Color asphaltColor = new Color(0.18f, 0.18f, 0.20f, 1.0f);
+            mat.color = asphaltColor;
+            if (mat.HasProperty("_BaseColor")) mat.SetColor("_BaseColor", asphaltColor);
+            if (mat.HasProperty("_Smoothness")) mat.SetFloat("_Smoothness", 0.15f);
         }
         
-        // Create a massive ground plane to anchor the city visually
+        // Create an urban ground plane anchored below the road network (-0.35m) to prevent Z-fighting
         GameObject ground = GameObject.CreatePrimitive(PrimitiveType.Plane);
         ground.name = "CityGround";
         ground.transform.parent = roadsParent.transform;
-        ground.transform.localPosition = new Vector3(2000f, -0.1f, 1500f); // Center of typical Mangaluru coords
+        ground.transform.localPosition = new Vector3(1600f, -0.35f, 1600f); // Center of Mangaluru coords
         ground.transform.localScale = new Vector3(1000f, 1f, 1000f); // 10km x 10km
         Material groundMat = new Material(Shader.Find("Universal Render Pipeline/Lit"));
-        groundMat.color = new Color(0.15f, 0.2f, 0.15f); // Dark greenish-gray base
+        Color terrainColor = new Color(0.20f, 0.23f, 0.19f, 1.0f); // Soft natural urban terrain base
+        groundMat.color = terrainColor;
+        if (groundMat.HasProperty("_BaseColor")) groundMat.SetColor("_BaseColor", terrainColor);
+        if (groundMat.HasProperty("_Smoothness")) groundMat.SetFloat("_Smoothness", 0.1f);
         ground.GetComponent<Renderer>().material = groundMat;
         Destroy(ground.GetComponent<Collider>()); // Don't need physics for ground
         
@@ -439,8 +448,12 @@ public class RoadVisualizer : MonoBehaviour
                 new Color(0.78f, 0.74f, 0.70f)  // Soft beige stucco
             };
             for (int i = 0; i < 4; i++) {
-                fallbackMats[i] = new Material(Shader.Find("Universal Render Pipeline/Lit"));
+                Shader fbShader = Shader.Find("Universal Render Pipeline/Lit");
+                if (fbShader == null) fbShader = Shader.Find("Standard");
+                fallbackMats[i] = new Material(fbShader);
                 fallbackMats[i].color = colors[i];
+                if (fallbackMats[i].HasProperty("_BaseColor")) fallbackMats[i].SetColor("_BaseColor", colors[i]);
+                if (fallbackMats[i].HasProperty("_Smoothness")) fallbackMats[i].SetFloat("_Smoothness", 0.2f);
             }
             
             // Deterministic random state to prevent building jitter across runs
@@ -474,14 +487,14 @@ public class RoadVisualizer : MonoBehaviour
                 float minDim = Mathf.Min(sizeX, sizeZ);
 
                 // Check suitability for placing a real 3D building model:
-                // Plot must be standard proportions (10m to 46m dimensions, aspect ratio <= 2.2)
-                bool fits3DModel = (minDim >= 10.0f && maxDim <= 46.0f && aspect <= 2.2f);
+                // Plot must be standard proportions (10m to 50m dimensions, aspect ratio <= 2.5)
+                bool fits3DModel = (minDim >= 10.0f && maxDim <= 50.0f && aspect <= 2.5f);
                 bool modelPlaced = false;
 
                 if (fits3DModel && (validRes.Count > 0 || validCom.Count > 0))
                 {
                     GameObject chosenPrefab = null;
-                    float nativeSpan = 16.0f; // Typical base span of models
+                    float nativeSpan = 15.0f; // Typical base span of residential models
 
                     if (maxDim < 26.0f && validRes.Count > 0)
                     {
@@ -491,17 +504,18 @@ public class RoadVisualizer : MonoBehaviour
                     else if (validCom.Count > 0)
                     {
                         chosenPrefab = validCom[Random.Range(0, validCom.Count)];
-                        nativeSpan = 24.0f;
+                        nativeSpan = 26.0f;
                     }
 
                     if (chosenPrefab != null)
                     {
-                        // Safe placement: Scale conservatively (80% of footprint) to guarantee zero road intrusion
-                        float targetSpan = minDim * 0.80f;
-                        float scale = Mathf.Clamp(targetSpan / nativeSpan, 0.45f, 1.4f);
+                        // Target span fills 85% of plot footprint for realistic urban street wall
+                        float targetSpan = minDim * 0.85f;
+                        // Clamp scale conservatively (0.70 to 1.35) so buildings retain true architectural proportions
+                        float scale = Mathf.Clamp(targetSpan / nativeSpan, 0.70f, 1.35f);
 
-                        // Align building to cardinal / plot orientation with 90-degree step
-                        float rotY = (Random.Range(0, 4)) * 90f;
+                        // Align building's primary axis along the plot's primary orientation
+                        float rotY = (sizeX >= sizeZ ? 0f : 90f) + ((Random.value > 0.5f) ? 180f : 0f);
 
                         Vector3 bldgPos = new Vector3(centerX, 0f, centerZ);
                         GameObject bldgObj = Instantiate(chosenPrefab, buildingsParent.transform);
@@ -608,34 +622,44 @@ public class RoadVisualizer : MonoBehaviour
     Mesh GenerateJunctionMesh(Point2D[] shape)
     {
         int numPoints = shape.Length;
-        // Simple fan triangulation from centroid
         Vector3[] vertices = new Vector3[numPoints + 1];
-        int[] triangles = new int[numPoints * 3];
+        // Double-sided fan triangulation: 6 indices per segment to ensure top surface renders regardless of SUMO CW/CCW ordering
+        int[] triangles = new int[numPoints * 6];
+        Vector2[] uvs = new Vector2[numPoints + 1];
         
         Vector3 centroid = Vector3.zero;
         for (int i = 0; i < numPoints; i++)
         {
-            vertices[i] = new Vector3(shape[i].x, 0f, shape[i].y);
+            vertices[i] = new Vector3(shape[i].x, 0.02f, shape[i].y);
             centroid += vertices[i];
+            uvs[i] = new Vector2(shape[i].x / 4.0f, shape[i].y / 4.0f);
         }
         centroid /= numPoints;
         vertices[numPoints] = centroid; // Center vertex
+        uvs[numPoints] = new Vector2(centroid.x / 4.0f, centroid.z / 4.0f);
         
         for (int i = 0; i < numPoints; i++)
         {
             int next = (i + 1) % numPoints;
-            triangles[i * 3] = numPoints; // center
-            triangles[i * 3 + 1] = next;
-            triangles[i * 3 + 2] = i; // Ensure correct winding (might need swap depending on shape order, usually SUMO is CCW/CW consistent)
+            int tIdx = i * 6;
             
-            // To be safe and render both sides (since it's flat), we could just duplicate triangles, 
-            // but typical SUMO polygons are ordered CCW or CW. If invisible, we'd adjust winding.
+            // Front face (Centroid -> Next -> Current)
+            triangles[tIdx] = numPoints;
+            triangles[tIdx + 1] = next;
+            triangles[tIdx + 2] = i;
+            
+            // Back face (Centroid -> Current -> Next)
+            triangles[tIdx + 3] = numPoints;
+            triangles[tIdx + 4] = i;
+            triangles[tIdx + 5] = next;
         }
         
         Mesh mesh = new Mesh();
         mesh.vertices = vertices;
         mesh.triangles = triangles;
+        mesh.uv = uvs;
         mesh.RecalculateNormals();
+        mesh.RecalculateBounds();
         return mesh;
     }
 
@@ -644,6 +668,7 @@ public class RoadVisualizer : MonoBehaviour
         int numPoints = shape.Length;
         List<Vector3> verts = new List<Vector3>();
         List<int> tris = new List<int>();
+        List<Vector2> uvs = new List<Vector2>();
 
         // Roof centroid
         Vector3 centroid = Vector3.zero;
@@ -655,21 +680,30 @@ public class RoadVisualizer : MonoBehaviour
 
         int roofStartIndex = verts.Count;
         verts.Add(centroid);
+        uvs.Add(new Vector2(centroid.x / 4.0f, centroid.z / 4.0f));
+        
         for (int i = 0; i < numPoints; i++)
         {
             verts.Add(new Vector3(shape[i].x, height, shape[i].y));
+            uvs.Add(new Vector2(shape[i].x / 4.0f, shape[i].y / 4.0f));
         }
 
-        // Roof Triangles
+        // Roof Triangles (Double-sided to guarantee top face renders regardless of SUMO vertex winding)
         for (int i = 0; i < numPoints; i++)
         {
             int next = (i + 1) % numPoints;
+            // Face 1
             tris.Add(roofStartIndex);
             tris.Add(roofStartIndex + 1 + i);
             tris.Add(roofStartIndex + 1 + next);
+
+            // Face 2 (Reverse winding)
+            tris.Add(roofStartIndex);
+            tris.Add(roofStartIndex + 1 + next);
+            tris.Add(roofStartIndex + 1 + i);
         }
 
-        // Walls
+        // Walls (Double-sided quads)
         for (int i = 0; i < numPoints; i++)
         {
             int next = (i + 1) % numPoints;
@@ -684,6 +718,13 @@ public class RoadVisualizer : MonoBehaviour
             verts.Add(tl);
             verts.Add(tr);
 
+            float wallDist = Vector3.Distance(bl, br);
+            uvs.Add(new Vector2(0f, 0f));
+            uvs.Add(new Vector2(wallDist / 4f, 0f));
+            uvs.Add(new Vector2(0f, height / 4f));
+            uvs.Add(new Vector2(wallDist / 4f, height / 4f));
+
+            // Face 1
             tris.Add(wStart);
             tris.Add(wStart + 2);
             tris.Add(wStart + 1);
@@ -691,12 +732,23 @@ public class RoadVisualizer : MonoBehaviour
             tris.Add(wStart + 1);
             tris.Add(wStart + 2);
             tris.Add(wStart + 3);
+
+            // Face 2 (Reverse)
+            tris.Add(wStart);
+            tris.Add(wStart + 1);
+            tris.Add(wStart + 2);
+
+            tris.Add(wStart + 1);
+            tris.Add(wStart + 3);
+            tris.Add(wStart + 2);
         }
 
         Mesh mesh = new Mesh();
         mesh.vertices = verts.ToArray();
         mesh.triangles = tris.ToArray();
+        mesh.uv = uvs.ToArray();
         mesh.RecalculateNormals();
+        mesh.RecalculateBounds();
         return mesh;
     }
 
@@ -704,20 +756,24 @@ public class RoadVisualizer : MonoBehaviour
     {
         int numPoints = shape.Length;
         Vector3[] vertices = new Vector3[numPoints * 2];
-        int[] triangles = new int[(numPoints - 1) * 6];
+        // Double-sided quad: 12 indices per segment to guarantee rendering even on sharp curve inflections
+        int[] triangles = new int[(numPoints - 1) * 12];
         Vector2[] uvs = new Vector2[numPoints * 2];
 
         float halfWidth = width / 2f;
 
-        // Convert SUMO points to Unity points
+        // Convert SUMO points to Unity points, elevated slightly to Y=0.02m to avoid ground Z-fighting
         Vector3[] pathPoints = new Vector3[numPoints];
         for (int i = 0; i < numPoints; i++)
         {
-            pathPoints[i] = new Vector3(shape[i].x, 0f, shape[i].y);
+            pathPoints[i] = new Vector3(shape[i].x, 0.02f, shape[i].y);
         }
 
+        float accumulatedDist = 0f;
         for (int i = 0; i < numPoints; i++)
         {
+            if (i > 0) accumulatedDist += Vector3.Distance(pathPoints[i], pathPoints[i - 1]);
+
             Vector3 forward = Vector3.forward;
 
             if (i < numPoints - 1)
@@ -736,26 +792,34 @@ public class RoadVisualizer : MonoBehaviour
             vertices[i * 2] = pathPoints[i] - right * halfWidth;     // Left vertex
             vertices[i * 2 + 1] = pathPoints[i] + right * halfWidth; // Right vertex
 
-            // Basic UV mapping
-            float v = (float)i / (numPoints - 1);
-            uvs[i * 2] = new Vector2(0, v);
-            uvs[i * 2 + 1] = new Vector2(1, v);
+            // Distance-based UV mapping: tiles asphalt texture every 4 meters
+            float v = accumulatedDist / 4.0f;
+            uvs[i * 2] = new Vector2(0f, v);
+            uvs[i * 2 + 1] = new Vector2(1f, v);
         }
 
         for (int i = 0; i < numPoints - 1; i++)
         {
             int vIndex = i * 2;
-            int tIndex = i * 6;
+            int tIndex = i * 12;
 
-            // First triangle (Left, Next Left, Right)
+            // Face 1 (Top)
             triangles[tIndex] = vIndex;
             triangles[tIndex + 1] = vIndex + 2;
             triangles[tIndex + 2] = vIndex + 1;
 
-            // Second triangle (Right, Next Left, Next Right)
             triangles[tIndex + 3] = vIndex + 1;
             triangles[tIndex + 4] = vIndex + 2;
             triangles[tIndex + 5] = vIndex + 3;
+
+            // Face 2 (Bottom / Reverse winding)
+            triangles[tIndex + 6] = vIndex;
+            triangles[tIndex + 7] = vIndex + 1;
+            triangles[tIndex + 8] = vIndex + 2;
+
+            triangles[tIndex + 9] = vIndex + 1;
+            triangles[tIndex + 10] = vIndex + 3;
+            triangles[tIndex + 11] = vIndex + 2;
         }
 
         Mesh mesh = new Mesh();

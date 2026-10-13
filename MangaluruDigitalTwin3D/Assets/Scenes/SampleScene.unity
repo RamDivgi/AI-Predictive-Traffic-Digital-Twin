@@ -541,7 +541,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RoadVisualizer
   jsonFileName: RoadNetwork.json
-  roadMaterial: {fileID: 0}
+  roadMaterial: {fileID: 2100000, guid: c4d987505af922e4c9fb26f774820e32, type: 2}
   defaultLineWidth: 3.2
 --- !u!4 &584478277
 Transform:
