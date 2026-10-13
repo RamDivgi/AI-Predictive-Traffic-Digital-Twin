@@ -19,7 +19,11 @@ _SUMO_NETWORK = None
 def _get_network() -> sumolib.net.Net:
     global _SUMO_NETWORK
     if _SUMO_NETWORK is None:
-        _SUMO_NETWORK = sumolib.net.readNet(str(NETWORK_FILE))
+        try:
+            import config
+            _SUMO_NETWORK = sumolib.net.readNet(str(config.NET_FILE))
+        except Exception:
+            _SUMO_NETWORK = sumolib.net.readNet(str(NETWORK_FILE))
     return _SUMO_NETWORK
 
 
@@ -46,6 +50,49 @@ def _get_destination_junction(edge_id: str) -> str | None:
         return None
 
 
+_CACHED_TLS_IDS: set[str] | None = None
+_CACHED_TLS_CONNECTION = None
+
+_STEP_SIGNAL_DELAY_CACHE: dict[tuple[str, str, str], float] = {}
+_STEP_SIGNAL_DELAY_TIME: float = -1.0
+_STEP_SIGNAL_DELAY_CONN = None
+
+
+def get_network_tls_ids() -> set[str]:
+    """
+    Return the set of TLS IDs for the active SUMO network.
+    Caches TLS IDs per TraCI connection so that static network topology
+    is not repeatedly queried over the socket on every junction transition,
+    while automatically invalidating if TraCI reconnects.
+    """
+    global _CACHED_TLS_IDS, _CACHED_TLS_CONNECTION
+    try:
+        current_conn = traci.getConnection()
+    except Exception:
+        _CACHED_TLS_IDS = None
+        _CACHED_TLS_CONNECTION = None
+        return set()
+
+    if _CACHED_TLS_IDS is None or _CACHED_TLS_CONNECTION is not current_conn:
+        try:
+            _CACHED_TLS_IDS = set(traci.trafficlight.getIDList())
+            _CACHED_TLS_CONNECTION = current_conn
+        except Exception:
+            return set()
+
+    return _CACHED_TLS_IDS
+
+
+def clear_network_tls_ids_cache() -> None:
+    """Explicitly invalidate the TLS IDs and signal delay cache if needed."""
+    global _CACHED_TLS_IDS, _CACHED_TLS_CONNECTION, _STEP_SIGNAL_DELAY_CACHE, _STEP_SIGNAL_DELAY_TIME, _STEP_SIGNAL_DELAY_CONN
+    _CACHED_TLS_IDS = None
+    _CACHED_TLS_CONNECTION = None
+    _STEP_SIGNAL_DELAY_CACHE.clear()
+    _STEP_SIGNAL_DELAY_TIME = -1.0
+    _STEP_SIGNAL_DELAY_CONN = None
+
+
 def get_signal_delay(
     junction_id: str,
     incoming_edge: str,
@@ -54,12 +101,36 @@ def get_signal_delay(
     """
     Determine the expected signal delay for a specific movement,
     reusing the existing movement-specific signal mapping.
+    Results are cached within each simulation step to eliminate thousands of
+    redundant socket queries during A* path search.
     """
+    global _STEP_SIGNAL_DELAY_CACHE, _STEP_SIGNAL_DELAY_TIME, _STEP_SIGNAL_DELAY_CONN
 
-    if junction_id not in traci.trafficlight.getIDList():
+    tls_ids = get_network_tls_ids()
+    if junction_id not in tls_ids:
         return 0.0
 
-    state = traci.trafficlight.getRedYellowGreenState(junction_id)
+    try:
+        current_conn = traci.getConnection()
+        current_time = traci.simulation.getTime()
+    except Exception:
+        current_conn = None
+        current_time = -1.0
+
+    if current_conn != _STEP_SIGNAL_DELAY_CONN or current_time != _STEP_SIGNAL_DELAY_TIME:
+        _STEP_SIGNAL_DELAY_CACHE.clear()
+        _STEP_SIGNAL_DELAY_CONN = current_conn
+        _STEP_SIGNAL_DELAY_TIME = current_time
+
+    cache_key = (junction_id, incoming_edge, outgoing_edge)
+    cached = _STEP_SIGNAL_DELAY_CACHE.get(cache_key)
+    if cached is not None:
+        return cached
+
+    try:
+        state = traci.trafficlight.getRedYellowGreenState(junction_id)
+    except Exception:
+        return 0.0
     
     indices = get_signal_indices_for_movement(
         junction_id,
@@ -68,6 +139,7 @@ def get_signal_delay(
     )
 
     if not indices:
+        _STEP_SIGNAL_DELAY_CACHE[cache_key] = 0.0
         return 0.0
 
     movement_chars = []
@@ -78,16 +150,22 @@ def get_signal_delay(
     movement_state = "".join(movement_chars).strip().lower()
 
     if not movement_state:
+        _STEP_SIGNAL_DELAY_CACHE[cache_key] = 0.0
         return 0.0
 
     is_unfavorable = any(c != "g" for c in movement_state)
 
     if is_unfavorable:
-        current_time = traci.simulation.getTime()
-        next_switch = traci.trafficlight.getNextSwitch(junction_id)
-        delay = max(0.0, next_switch - current_time)
-        return delay if delay > 0.0 else 5.0
+        try:
+            next_switch = traci.trafficlight.getNextSwitch(junction_id)
+            delay = max(0.0, next_switch - current_time)
+            res = delay if delay > 0.0 else 5.0
+        except Exception:
+            res = 5.0
+        _STEP_SIGNAL_DELAY_CACHE[cache_key] = res
+        return res
 
+    _STEP_SIGNAL_DELAY_CACHE[cache_key] = 0.0
     return 0.0
 
 
@@ -165,13 +243,15 @@ def evaluate_route(
             occupancy_percent,
         ) = get_edge_traffic_features(edge_id)
         
-        mean_speed_mps = max(0.1, mean_speed_kmh / 3.6)
+        mean_speed_mps = max(0.1, mean_speed_kmh / 3.6) if vehicle_count > 0 else max(ambulance_speed_mps, 15.0)
         
         if halted_vehicle_count > 0:
-            speed = min(ambulance_speed_mps, mean_speed_mps)
+            speed = min(max(5.0, ambulance_speed_mps), mean_speed_mps)
             speed = max(speed, 0.1)
+        elif vehicle_count > 0:
+            speed = max(ambulance_speed_mps, mean_speed_mps, 1.0)
         else:
-            speed = max(ambulance_speed_mps, mean_speed_mps, 0.1)
+            speed = max(ambulance_speed_mps, 15.0)
             
         road_time = distance_to_travel / speed
         

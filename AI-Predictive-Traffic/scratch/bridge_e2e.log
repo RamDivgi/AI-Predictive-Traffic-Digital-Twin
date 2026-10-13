@@ -1,0 +1,144 @@
+Starting UDP server, targeting Unity at 127.0.0.1:5005
+Listening for commands from Unity on port 5009
+============================================================
+STARTING SUMO -> UNITY BRIDGE
+============================================================
+Base presentation route definition initialized.
+Initializing AI Controller...
+C:\Program Files (x86)\Eclipse\Sumo\tools\sumolib\net\__init__.py:388: UserWarning: Module 'rtree' not available. Using brute-force fallback.
+  warnings.warn("Module 'rtree' not available. Using brute-force fallback.")
+ControlEgress MQTT connect error: [WinError 10061] No connection could be made because the target machine actively refused it
+[SYSTEM] Starting Web Dashboard API on port 8000...
+INFO:     Started server process [5304]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:54986 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54989 - "GET /starting-points HTTP/1.1" 200 OK
+C:\Program Files (x86)\Eclipse\Sumo\tools\sumolib\net\__init__.py:388: UserWarning: Module 'rtree' not available. Using brute-force fallback.
+  warnings.warn("Module 'rtree' not available. Using brute-force fallback.")
+INFO:     127.0.0.1:54990 - "GET /hospitals HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54991 - "POST /trip/start HTTP/1.1" 200 OK
+[SYSTEM] Opening Web Dashboard in Browser...
+[22:15:09] Entering simulation loop...
+INFO:     127.0.0.1:54992 - "GET /ambulance HTTP/1.1" 503 Service Unavailable
+
+[ROUND_TRAFFIC] Round 0 traffic generated (medium): 68 vehicles scheduled (incl. 4 queue).
+
+[UNITY] Status: DISCONNECTED | Packets Sent: 0 | Packets Received: 0
+
+[TRIP]
+Selected hospital: Father Muller Hospital
+Hospital ID: father_muller_hospital
+Destination edge: 26209723#3
+
+[ROUND_TRAFFIC] Round 1 traffic generated (medium): 68 vehicles scheduled (incl. 4 queue).
+
+[ROUTING]
+Ambulance: ambulance
+Spawn edge: 1096889856
+Emergency Priority: True
+[SUCCESS] Ambulance queued for next simulation step. A* init deferred.
+[ROUTE_SELECTED] Ambulance dispatched.
+[MODE_TRANSITION] Mode switched to EMERGENCY
+[ROUTING] Ambulance confirmed in simulation. Initialising A* route to father_muller_hospital.
+INFO:     127.0.0.1:54993 - "GET /ambulance HTTP/1.1" 503 Service Unavailable
+INFO:     127.0.0.1:54995 - "GET /ambulance HTTP/1.1" 503 Service Unavailable
+INFO:     127.0.0.1:54996 - "GET /ambulance HTTP/1.1" 503 Service Unavailable
+INFO:     127.0.0.1:54997 - "GET /ambulance HTTP/1.1" 503 Service Unavailable
+INFO:     127.0.0.1:60427 - "GET /ambulance HTTP/1.1" 503 Service Unavailable
+INFO:     127.0.0.1:60428 - "GET /ambulance HTTP/1.1" 503 Service Unavailable
+INFO:     127.0.0.1:60429 - "GET /ambulance HTTP/1.1" 503 Service Unavailable
+INFO:     127.0.0.1:60430 - "GET /ambulance HTTP/1.1" 503 Service Unavailable
+INFO:     127.0.0.1:60431 - "GET /ambulance HTTP/1.1" 503 Service Unavailable
+INFO:     127.0.0.1:60432 - "GET /ambulance HTTP/1.1" 503 Service Unavailable
+INFO:     127.0.0.1:60433 - "GET /ambulance HTTP/1.1" 503 Service Unavailable
+INFO:     127.0.0.1:60434 - "GET /ambulance HTTP/1.1" 503 Service Unavailable
+INFO:     127.0.0.1:60435 - "GET /ambulance HTTP/1.1" 503 Service Unavailable
+INFO:     127.0.0.1:60436 - "GET /ambulance HTTP/1.1" 503 Service Unavailable
+INFO:     127.0.0.1:60437 - "GET /ambulance HTTP/1.1" 503 Service Unavailable
+INFO:     127.0.0.1:60438 - "GET /ambulance HTTP/1.1" 503 Service Unavailable
+INFO:     127.0.0.1:60439 - "GET /ambulance HTTP/1.1" 503 Service Unavailable
+INFO:     127.0.0.1:60440 - "GET /ambulance HTTP/1.1" 503 Service Unavailable
+INFO:     127.0.0.1:60441 - "GET /ambulance HTTP/1.1" 503 Service Unavailable
+INFO:     127.0.0.1:60442 - "GET /ambulance HTTP/1.1" 503 Service Unavailable
+INFO:     127.0.0.1:60443 - "GET /ambulance HTTP/1.1" 503 Service Unavailable
+INFO:     127.0.0.1:60444 - "GET /ambulance HTTP/1.1" 503 Service Unavailable
+INFO:     127.0.0.1:60445 - "GET /ambulance HTTP/1.1" 503 Service Unavailable
+INFO:     127.0.0.1:60446 - "GET /ambulance HTTP/1.1" 503 Service Unavailable
+INFO:     127.0.0.1:60447 - "GET /ambulance HTTP/1.1" 503 Service Unavailable
+
+[ROUTE_SELECTION] Evaluated 2 candidate routes to Father Muller Hospital:
+  Candidate 0 (SELECTED): 6 edges | 165.3m | Total Est: 26.5s [Free-flow: 11.2s, Congestion: 15.3s, Signal: 0.0s]
+  Candidate 1 (Alternative 1): 7 edges | 186.0m | Total Est: 27.8s [Free-flow: 12.6s, Congestion: 15.3s, Signal: 0.0s]
+Selection Reason: Primary route selected: estimated duration 26.5s is the lowest cost path.
+
+[ROUTING] Route length: 6 edges | Final edge: 26209723#3
+[ROUTING] Candidate routes stored: 2
+
+[SUCCESS] Ambulance found!
+
+[UNITY] Status: DISCONNECTED | Packets Sent: 2 | Packets Received: 0
+
+[A*]
+Current route: fixed_astar_father_muller_hospital_0_1
+A* route: 1096889856 -> -1096889856 -> -184750315#1 -> 1368365880 -> 26209723#2 -> 26209723#3
+Current estimated ETA: 11.4 s
+A* estimated ETA: 11.4 s (Identical to current)
+Improvement: 0.0 s (0.0%)
+
+[REROUTING]
+Reroute decision: NO
+Reason: Current route is already the best.
+
+INFO:     127.0.0.1:60448 - "GET /ambulance HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60449 - "GET /decisions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60450 - "GET /state HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60451 - "POST /trip/stop HTTP/1.1" 200 OK
+
+[INFO] Stop trip command received. Removing ambulance and restoring signals.
+INFO:     127.0.0.1:60453 - "GET /ambulance HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60454 - "GET /ambulance HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:60455 - "POST /trip/start HTTP/1.1" 200 OK
+
+[TRIP]
+Selected hospital: KMC Hospital
+Hospital ID: kmc_hospital
+Destination edge: 1538932912#4
+
+[ROUND_TRAFFIC] Round 2 traffic generated (low): 25 vehicles scheduled (incl. 4 queue).
+
+[ROUTING]
+Ambulance: ambulance
+Spawn edge: 1096889856
+Emergency Priority: True
+[SUCCESS] Ambulance queued for next simulation step. A* init deferred.
+[ROUTE_SELECTED] Ambulance dispatched.
+[MODE_TRANSITION] Mode switched to EMERGENCY
+[ROUTING] Ambulance confirmed in simulation. Initialising A* route to kmc_hospital.
+INFO:     127.0.0.1:60456 - "GET /ambulance HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:60461 - "GET /ambulance HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:60462 - "GET /ambulance HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:60464 - "GET /ambulance HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:60472 - "GET /ambulance HTTP/1.1" 503 Service Unavailable
+INFO:     127.0.0.1:60473 - "GET /ambulance HTTP/1.1" 503 Service Unavailable
+INFO:     127.0.0.1:52233 - "GET /ambulance HTTP/1.1" 503 Service Unavailable
+INFO:     127.0.0.1:52234 - "GET /ambulance HTTP/1.1" 503 Service Unavailable
+INFO:     127.0.0.1:52235 - "GET /ambulance HTTP/1.1" 503 Service Unavailable
+
+[ROUTE_SELECTION] Evaluated 4 candidate routes to KMC Hospital:
+  Candidate 0 (SELECTED): 17 edges | 1345.6m | Total Est: 112.5s [Free-flow: 97.2s, Congestion: 15.3s, Signal: 0.0s]
+  Candidate 1 (Alternative 1): 27 edges | 1671.9m | Total Est: 158.1s [Free-flow: 142.8s, Congestion: 15.3s, Signal: 0.0s]
+  Candidate 2 (Alternative 2): 21 edges | 2338.5m | Total Est: 332.6s [Free-flow: 237.7s, Congestion: 15.3s, Signal: 79.6s]
+  Candidate 3 (Alternative 3): 30 edges | 2909.7m | Total Est: 454.6s [Free-flow: 280.1s, Congestion: 15.3s, Signal: 159.2s]
+Selection Reason: Primary route selected: estimated duration 112.5s is the lowest cost path.
+
+[ROUTING] Route length: 17 edges | Final edge: 1538932912#4
+[ROUTING] Candidate routes stored: 4
+
+[SUCCESS] Ambulance found!
+
+[UNITY] Status: DISCONNECTED | Packets Sent: 36 | Packets Received: 0
+INFO:     127.0.0.1:52236 - "GET /ambulance HTTP/1.1" 200 OK
+Step #0.00 (0ms ?*RT. ?UPS, TraCI: 6067ms, vehicles TOT 0 ACT 0 BUF 0)                    Error: tcpip::Socket::recvAndCheck @ recv: Socket reset by peer
+Quitting (on error).

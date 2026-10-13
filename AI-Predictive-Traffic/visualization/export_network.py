@@ -45,17 +45,48 @@ def export_network():
     junctions = []
     for node in net.getNodes():
         shape = node.getShape()
-        is_tls = node.getType() == "traffic_light"
         
         # Only export junctions that have a defined polygon shape
         if shape and len(shape) >= 3:
             junctions.append({
                 "id": node.getID(),
-                "is_tls": is_tls,
                 "shape": [{"x": p[0], "y": p[1]} for p in shape],
                 "x": node.getCoord()[0],
                 "y": node.getCoord()[1]
             })
+
+    traffic_lights = []
+    for tl in net.getTrafficLights():
+        tl_id = tl.getID()
+        controlled_nodes = set()
+        controlled_links = []
+        
+        for link_idx, conn_list in tl.getLinks().items():
+            for conn in conn_list:
+                from_lane = conn[0]
+                to_lane = conn[1]
+                node = from_lane.getEdge().getToNode()
+                controlled_nodes.add(node)
+                controlled_links.append({
+                    "link_index": link_idx,
+                    "from_lane": from_lane.getID(),
+                    "to_lane": to_lane.getID(),
+                    "junction": node.getID()
+                })
+        
+        if controlled_nodes:
+            cx = sum(n.getCoord()[0] for n in controlled_nodes) / len(controlled_nodes)
+            cy = sum(n.getCoord()[1] for n in controlled_nodes) / len(controlled_nodes)
+        else:
+            cx, cy = 0.0, 0.0
+            
+        traffic_lights.append({
+            "id": tl_id,
+            "x": cx,
+            "y": cy,
+            "controlled_junctions": [n.getID() for n in controlled_nodes],
+            "controlled_links": controlled_links
+        })
 
     (min_x, min_y), (max_x, max_y) = net.getBBoxXY()
     
@@ -124,13 +155,14 @@ def export_network():
         "junctions": junctions,
         "buildings": buildings,
         "hospitals": hospitals,
-        "road_labels": road_labels
+        "road_labels": road_labels,
+        "traffic_lights": traffic_lights
     }
     
     # Save locally
     with open(OUTPUT_FILE, 'w') as f:
         json.dump(data, f)
-    print(f"Exported {len(roads)} edges, {len(junctions)} junctions, {len(buildings)} buildings, and {len(hospitals)} hospitals to {OUTPUT_FILE}")
+    print(f"Exported {len(roads)} edges, {len(junctions)} junctions, {len(buildings)} buildings, {len(hospitals)} hospitals, and {len(traffic_lights)} traffic lights to {OUTPUT_FILE}")
     
     # Try saving to Unity
     os.makedirs(UNITY_OUTPUT_FILE.parent, exist_ok=True)

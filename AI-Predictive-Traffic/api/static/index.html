@@ -469,10 +469,10 @@
                 <label class="control-label">Emergency Status</label>
                 <div class="toggle-container">
                     <label class="switch">
-                        <input type="checkbox" id="emergency-toggle" checked>
+                        <input type="checkbox" id="emergency-toggle">
                         <span class="slider"></span>
                     </label>
-                    <span class="toggle-text" id="emergency-text">ON (Priority Allowed)</span>
+                    <span class="toggle-text" id="emergency-text" style="color: var(--text-secondary);">OFF (Normal Traffic)</span>
                 </div>
             </div>
 
@@ -480,6 +480,26 @@
                 <label class="control-label">Destination Hospital</label>
                 <select id="hospital-select">
                     <option value="">Loading hospitals...</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">Starting Location</label>
+                <select id="start-edge-select">
+                    <option value="-26209727#1">Starting Point 1</option>
+                    <option value="1213225868">Starting Point 2</option>
+                    <option value="-1154699531">Starting Point 3</option>
+                    <option value="1096889856" selected>Starting Point 4</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">Traffic Scenario</label>
+                <select id="scenario-select">
+                    <option value="low">Low Traffic (~25 veh)</option>
+                    <option value="medium" selected>Medium Traffic (~68 veh - Baseline)</option>
+                    <option value="high">High Traffic (~110 veh)</option>
+                    <option value="bottleneck">Bottleneck Congestion (~74 veh)</option>
                 </select>
             </div>
 
@@ -531,6 +551,17 @@
                                 TRIP ACTIVE
                             </span>
                             <canvas id="map-canvas" style="width: 100%; height: 100%; display: block;"></canvas>
+                            <!-- Route legend -->
+                            <div id="route-legend" style="position:absolute;bottom:0.75rem;left:0.75rem;background:rgba(255,255,255,0.92);border:1px solid #e2e8f0;border-radius:0.5rem;padding:0.5rem 0.75rem;font-size:0.75rem;font-weight:600;display:none;gap:0.75rem;flex-direction:column;z-index:9;">
+                                <div style="display:flex;align-items:center;gap:0.5rem;">
+                                    <span style="display:inline-block;width:28px;height:4px;background:#06b6d4;border-radius:2px;box-shadow:0 0 6px #3b82f6;"></span>
+                                    <span style="color:#0f172a;">Selected Route</span>
+                                </div>
+                                <div style="display:flex;align-items:center;gap:0.5rem;">
+                                    <span style="display:inline-block;width:28px;height:4px;background:rgba(239,68,68,0.7);border-radius:2px;"></span>
+                                    <span style="color:#0f172a;">Alternative Routes</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     
@@ -565,6 +596,28 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div style="margin-top: 1rem;">
+                            <div class="panel-title" style="margin-bottom: 0.75rem;">Traffic Scenario & Fleet</div>
+                            <div class="metrics-grid" style="grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                                <div class="metric-card" style="padding: 0.75rem;">
+                                    <span class="metric-label">Scenario</span>
+                                    <span class="metric-value" id="val-traffic-scenario" style="font-size: 1rem; text-transform: capitalize;">Medium</span>
+                                </div>
+                                <div class="metric-card" style="padding: 0.75rem;">
+                                    <span class="metric-label">Active / Sched</span>
+                                    <span class="metric-value" id="val-traffic-active" style="font-size: 1rem;">-- / --</span>
+                                </div>
+                                <div class="metric-card" style="padding: 0.75rem;">
+                                    <span class="metric-label">Waiting / Queued</span>
+                                    <span class="metric-value" id="val-traffic-waiting" style="font-size: 1rem;">--</span>
+                                </div>
+                                <div class="metric-card" style="padding: 0.75rem;">
+                                    <span class="metric-label">Fleet Avg Speed</span>
+                                    <span class="metric-value" id="val-traffic-speed" style="font-size: 1rem;">-- km/h</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     </div>
                 </div>
@@ -576,6 +629,8 @@
         const emergencyToggle = document.getElementById('emergency-toggle');
         const emergencyText = document.getElementById('emergency-text');
         const hospitalSelect = document.getElementById('hospital-select');
+        const startEdgeSelect = document.getElementById('start-edge-select');
+        const scenarioSelect = document.getElementById('scenario-select');
         const btnStart = document.getElementById('btn-start');
         const btnStop = document.getElementById('btn-stop');
         const connectionStatus = document.getElementById('connection-status');
@@ -610,14 +665,38 @@
             }
         }
 
-        // Toggle text update
-        emergencyToggle.addEventListener('change', (e) => {
-            if(e.target.checked) {
+        // Toggle text update & mid-trip mode switching
+        emergencyToggle.addEventListener('change', async (e) => {
+            const isEmg = e.target.checked;
+            if(isEmg) {
                 emergencyText.textContent = "ON (Priority Allowed)";
                 emergencyText.style.color = "var(--accent-red)";
             } else {
                 emergencyText.textContent = "OFF (Normal Traffic)";
                 emergencyText.style.color = "var(--text-secondary)";
+            }
+
+            if(isTripActive) {
+                try {
+                    const resp = await fetch('/trip/mode', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ emergency: isEmg })
+                    });
+                    if(!resp.ok) throw new Error("HTTP " + resp.status);
+                } catch(err) {
+                    console.error("Failed to update emergency mode mid-trip", err);
+                    // Revert UI state on failure
+                    e.target.checked = !isEmg;
+                    if(!isEmg) {
+                        emergencyText.textContent = "ON (Priority Allowed)";
+                        emergencyText.style.color = "var(--accent-red)";
+                    } else {
+                        emergencyText.textContent = "OFF (Normal Traffic)";
+                        emergencyText.style.color = "var(--text-secondary)";
+                    }
+                    alert("Failed to update emergency mode.");
+                }
             }
         });
 
@@ -631,15 +710,19 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         emergency: emergencyToggle.checked,
-                        hospital_id: hospitalSelect.value
+                        hospital_id: hospitalSelect.value,
+                        start_edge: startEdgeSelect.value,
+                        traffic_scenario: scenarioSelect ? scenarioSelect.value : 'medium'
                     })
                 });
                 
                 isTripActive = true;
                 btnStart.disabled = true;
                 btnStop.disabled = false;
-                emergencyToggle.disabled = true;
+                emergencyToggle.disabled = false; // Keep enabled for mid-trip switching
                 hospitalSelect.disabled = true;
+                startEdgeSelect.disabled = true;
+                if (scenarioSelect) scenarioSelect.disabled = true;
                 
                 emptyState.style.display = 'none';
                 liveTelemetry.style.display = 'flex';
@@ -660,6 +743,14 @@
                 btnStop.disabled = true;
                 emergencyToggle.disabled = false;
                 hospitalSelect.disabled = false;
+                startEdgeSelect.disabled = false;
+                if (scenarioSelect) scenarioSelect.disabled = false;
+
+                // Clear route visualizations so old paths don't persist.
+                activeRouteCoords = [];
+                candidateRoutes = [];
+                const legend = document.getElementById('route-legend');
+                if (legend) legend.style.display = 'none';
                 
                 emptyState.style.display = 'flex';
                 liveTelemetry.style.display = 'none';
@@ -709,6 +800,11 @@
         let currentHeading = 0;
         let targetHeading = 0;
         let activeRouteCoords = [];
+        // Candidate routes from state.route.candidates.
+        // Each entry: { route_index, selected, edge_ids, coordinates }
+        // index 0 = selected (blue), index 1+ = alternatives (red).
+        // Populated by updateTelemetry(); never calculated in JS.
+        let candidateRoutes = [];
         
         // Fetch the extracted OSM map (SUMO geometry)
         async function loadRoadNetwork() {
@@ -771,7 +867,7 @@
             delta = Math.atan2(Math.sin(delta), Math.cos(delta));
             currentHeading += delta * 0.15; // Smooth factor
             
-            drawMap(activeRouteCoords);
+            drawMap(activeRouteCoords, candidateRoutes);
         }
         
         function toCanvasCoords(x, y) {
@@ -782,8 +878,34 @@
             return {x: cx, y: cy};
         }
         
-        function drawMap(routeCoords = []) {
+        // Draw a polyline from a flat [[x,y],...] coordinate array.
+        // color: CSS color string, lineWidth: px, glowColor: optional CSS shadow color.
+        function drawPolyline(coords, color, lineWidth, glowColor) {
+            if (!coords || coords.length < 2) return;
+            ctx.save();
+            ctx.strokeStyle = color;
+            ctx.lineWidth = lineWidth;
+            ctx.lineJoin = 'round';
+            ctx.lineCap = 'round';
+            if (glowColor) {
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = glowColor;
+            }
+            ctx.beginPath();
+            const s = toCanvasCoords(coords[0][0], coords[0][1]);
+            ctx.moveTo(s.x, s.y);
+            for (let i = 1; i < coords.length; i++) {
+                const p = toCanvasCoords(coords[i][0], coords[i][1]);
+                ctx.lineTo(p.x, p.y);
+            }
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        function drawMap(routeCoords, candidates) {
             if (!roadNetwork) return;
+            // Normalise optional argument
+            if (!Array.isArray(candidates)) candidates = [];
             
             // Draw background
             ctx.fillStyle = '#f8fafc'; // Light background
@@ -825,6 +947,27 @@
             });
             ctx.stroke();
             
+            // --- LAYER 1: Alternative candidate routes (RED) ---
+            // Drawn before the primary route so the blue route remains on top.
+            // These come exclusively from state.route.candidates (route_index >= 1).
+            // They are visualization only; the ambulance does NOT follow them.
+            candidates.forEach(function(cand) {
+                if (cand.selected || cand.route_index === 0) return; // skip primary
+                const coords = cand.coordinates;
+                if (!coords || coords.length < 2) return;
+                drawPolyline(coords, 'rgba(239, 68, 68, 0.7)', 3, null);
+                // Route-index label at midpoint
+                const mid = coords[Math.floor(coords.length / 2)];
+                const mpos = toCanvasCoords(mid[0], mid[1]);
+                ctx.save();
+                ctx.fillStyle = '#ef4444';
+                ctx.font = 'bold 11px Inter, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('Alt ' + cand.route_index, mpos.x, mpos.y - 6);
+                ctx.restore();
+            });
+
+            // --- LAYER 2: Primary/selected route (BLUE) ---
             // Draw active route (glowing cyan)
             if (routeCoords && routeCoords.length > 0) {
                 ctx.strokeStyle = '#06b6d4'; // Cyan route
@@ -901,8 +1044,24 @@
         function updateTelemetry(data) {
             const amb = data.ambulance;
             
+            // --- Primary route (existing behavior, unchanged) ---
             if (data.route && data.route.coordinates) {
                 activeRouteCoords = data.route.coordinates;
+            }
+
+            // --- Candidate routes (new, additive, backward-compatible) ---
+            // Read state.route.candidates produced by unity_bridge.py.
+            // Each entry: { route_index, selected, edge_ids, coordinates }.
+            // Do NOT calculate routes here; only consume what the server provides.
+            if (data.route && Array.isArray(data.route.candidates) && data.route.candidates.length > 0) {
+                candidateRoutes = data.route.candidates;
+                const legend = document.getElementById('route-legend');
+                if (legend) legend.style.display = 'flex';
+            } else {
+                // Missing, null, or empty — clear without crashing.
+                candidateRoutes = [];
+                const legend = document.getElementById('route-legend');
+                if (legend) legend.style.display = 'none';
             }
             
             // Adjust camera to fit route
@@ -966,6 +1125,19 @@
             } else {
                 document.getElementById('val-dest-dist').textContent = amb.remaining_distance.toFixed(0) + " m";
                 document.getElementById('val-dest-eta').textContent = (amb.eta / 60).toFixed(1) + " min";
+            }
+
+            // Update Traffic Metrics if present
+            if (data.traffic_metrics) {
+                const tm = data.traffic_metrics;
+                const elScen = document.getElementById('val-traffic-scenario');
+                const elAct = document.getElementById('val-traffic-active');
+                const elWait = document.getElementById('val-traffic-waiting');
+                const elSpd = document.getElementById('val-traffic-speed');
+                if (elScen) elScen.textContent = tm.scenario || "Medium";
+                if (elAct) elAct.textContent = `${tm.active} / ${tm.scheduled}`;
+                if (elWait) elWait.textContent = `${tm.waiting}`;
+                if (elSpd) elSpd.textContent = `${tm.mean_speed_kmh} km/h`;
             }
         }
 

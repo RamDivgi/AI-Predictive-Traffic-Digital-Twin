@@ -154,7 +154,6 @@ def get_upcoming_junctions(
         # ONLY add if it is a valid traffic light mapping with signal indices
         tls_id, indices = signal_mapping.get_tls_and_indices_for_movement(incoming_edge, outgoing_edge)
         if not tls_id or not indices:
-            print(f"DEBUG_JUNC: No TLS for {incoming_edge} -> {outgoing_edge} (tls_id={tls_id}, indices={indices})")
             continue
 
         junctions.append(
@@ -169,9 +168,6 @@ def get_upcoming_junctions(
         if len(junctions) >= max_junctions:
             break
 
-    print(f"DEBUG_JUNC: Returning {len(junctions)} junctions. First element valid? {len(junctions) > 0}")
-    if junctions:
-        print(f"DEBUG_JUNC: First junction: {junctions[0]}")
     return junctions[:max_junctions]
 
 

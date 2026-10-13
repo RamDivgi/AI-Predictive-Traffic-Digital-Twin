@@ -31,11 +31,56 @@ class TrafficFeatures:
     signal_time_to_switch_s: float
 
 
+_CACHED_EDGE_IDS: set[str] | None = None
+_CACHED_CONNECTION = None
+
+_STEP_TRAFFIC_CACHE: dict[str, tuple[int, int, float, float]] = {}
+_STEP_TRAFFIC_TIME: float = -1.0
+_STEP_TRAFFIC_CONN = None
+
+
+def get_network_edge_ids() -> set[str]:
+    """
+    Return the set of edge IDs for the active SUMO network.
+    Caches edge IDs per TraCI connection so that static network topology
+    is not repeatedly transferred over the socket on every edge evaluation,
+    while automatically invalidating if TraCI reconnects.
+    """
+    global _CACHED_EDGE_IDS, _CACHED_CONNECTION
+    try:
+        current_conn = traci.getConnection()
+    except Exception:
+        _CACHED_EDGE_IDS = None
+        _CACHED_CONNECTION = None
+        return set()
+
+    if _CACHED_EDGE_IDS is None or _CACHED_CONNECTION is not current_conn:
+        try:
+            _CACHED_EDGE_IDS = set(traci.edge.getIDList())
+            _CACHED_CONNECTION = current_conn
+        except Exception:
+            return set()
+
+    return _CACHED_EDGE_IDS
+
+
+def clear_network_edge_ids_cache() -> None:
+    """Explicitly invalidate the edge IDs cache if needed."""
+    global _CACHED_EDGE_IDS, _CACHED_CONNECTION, _STEP_TRAFFIC_CACHE, _STEP_TRAFFIC_TIME, _STEP_TRAFFIC_CONN
+    _CACHED_EDGE_IDS = None
+    _CACHED_CONNECTION = None
+    _STEP_TRAFFIC_CACHE.clear()
+    _STEP_TRAFFIC_TIME = -1.0
+    _STEP_TRAFFIC_CONN = None
+
+
 def get_edge_traffic_features(
     edge_id: str,
 ) -> tuple[int, int, float, float]:
     """
     Collect traffic statistics for a SUMO edge.
+    Results are cached per simulation step to avoid thousands of redundant
+    synchronous TraCI socket round-trips during A* search and route evaluations.
 
     Returns:
         vehicle_count
@@ -43,27 +88,46 @@ def get_edge_traffic_features(
         mean_speed_kmh
         occupancy_percent
     """
+    global _STEP_TRAFFIC_CACHE, _STEP_TRAFFIC_TIME, _STEP_TRAFFIC_CONN
+    try:
+        current_conn = traci.getConnection()
+        current_time = traci.simulation.getTime()
+    except Exception:
+        current_conn = None
+        current_time = -1.0
 
-    edge_ids = traci.edge.getIDList()
+    if current_conn != _STEP_TRAFFIC_CONN or current_time != _STEP_TRAFFIC_TIME:
+        _STEP_TRAFFIC_CACHE.clear()
+        _STEP_TRAFFIC_CONN = current_conn
+        _STEP_TRAFFIC_TIME = current_time
+
+    cached = _STEP_TRAFFIC_CACHE.get(edge_id)
+    if cached is not None:
+        return cached
+
+    edge_ids = get_network_edge_ids()
 
     if edge_id not in edge_ids:
         return 0, 0, 0.0, 0.0
 
-    vehicle_count = traci.edge.getLastStepVehicleNumber(
-        edge_id
-    )
+    try:
+        vehicle_count = traci.edge.getLastStepVehicleNumber(
+            edge_id
+        )
 
-    halted_vehicle_count = traci.edge.getLastStepHaltingNumber(
-        edge_id
-    )
+        halted_vehicle_count = traci.edge.getLastStepHaltingNumber(
+            edge_id
+        )
 
-    mean_speed_mps = traci.edge.getLastStepMeanSpeed(
-        edge_id
-    )
+        mean_speed_mps = traci.edge.getLastStepMeanSpeed(
+            edge_id
+        )
 
-    occupancy = traci.edge.getLastStepOccupancy(
-        edge_id
-    )
+        occupancy = traci.edge.getLastStepOccupancy(
+            edge_id
+        )
+    except traci.TraCIException:
+        return 0, 0, 0.0, 0.0
 
     mean_speed_kmh = max(
         0.0,
@@ -75,12 +139,14 @@ def get_edge_traffic_features(
         occupancy * 100.0,
     )
 
-    return (
+    result = (
         vehicle_count,
         halted_vehicle_count,
         mean_speed_kmh,
         occupancy_percent,
     )
+    _STEP_TRAFFIC_CACHE[edge_id] = result
+    return result
 
 
 def get_signal_features(

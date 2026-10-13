@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -14,7 +15,6 @@ public class SignalData
 }
 
 [System.Serializable]
-
 public class SignalPayload
 {
     public SignalData[] signals;
@@ -39,7 +39,10 @@ public class TrafficSignalReceiver : MonoBehaviour
     private Material matGreenActive, matGreenDim;
 
     private Dictionary<string, Renderer[]> signalRenderers = new Dictionary<string, Renderer[]>();
-    private Dictionary<string, string> signalStateCache = new Dictionary<string, string>(); // NEW: State cache
+    private Dictionary<string, string> signalStateCache = new Dictionary<string, string>();
+
+    // Mapping: tlsID -> fromEdge -> list of link indices
+    private Dictionary<string, Dictionary<string, List<int>>> tlsEdgeToLinks = new Dictionary<string, Dictionary<string, List<int>>>();
 
     void Start()
     {
@@ -59,7 +62,47 @@ public class TrafficSignalReceiver : MonoBehaviour
         matGreenActive = new Material(unlitShader) { color = Color.green };
         matGreenDim = new Material(litShader) { color = new Color(0, 0.1f, 0) };
 
+        LoadRoadNetwork();
         StartUDPReceiver();
+    }
+
+    private void LoadRoadNetwork()
+    {
+        string filePath = Path.Combine(Application.dataPath, "Generated", "RoadNetwork.json");
+        if (!File.Exists(filePath))
+        {
+            Debug.LogError("TrafficSignalReceiver: RoadNetwork.json not found!");
+            return;
+        }
+
+        string jsonContent = File.ReadAllText(filePath);
+        RoadNetworkData networkData = JsonUtility.FromJson<RoadNetworkData>(jsonContent);
+
+        if (networkData != null && networkData.traffic_lights != null)
+        {
+            foreach (TlsData tls in networkData.traffic_lights)
+            {
+                if (!tlsEdgeToLinks.ContainsKey(tls.id))
+                    tlsEdgeToLinks[tls.id] = new Dictionary<string, List<int>>();
+
+                if (tls.controlled_links != null)
+                {
+                    foreach (TlsLinkData link in tls.controlled_links)
+                    {
+                        if (string.IsNullOrEmpty(link.from_lane) || link.from_lane.StartsWith(":"))
+                            continue;
+
+                        int lastUnderscore = link.from_lane.LastIndexOf('_');
+                        string fromEdge = lastUnderscore > 0 ? link.from_lane.Substring(0, lastUnderscore) : link.from_lane;
+
+                        if (!tlsEdgeToLinks[tls.id].ContainsKey(fromEdge))
+                            tlsEdgeToLinks[tls.id][fromEdge] = new List<int>();
+
+                        tlsEdgeToLinks[tls.id][fromEdge].Add(link.link_index);
+                    }
+                }
+            }
+        }
     }
 
     private void StartUDPReceiver()
@@ -130,7 +173,10 @@ public class TrafficSignalReceiver : MonoBehaviour
             int updatedSignals = 0;
             foreach (SignalData sig in payload.signals)
             {
-                // Cache check: Skip material assignment if state hasn't changed
+                // Skip if we don't have mapping for this TLS
+                if (!tlsEdgeToLinks.ContainsKey(sig.id)) continue;
+                
+                // Cache check: Skip material assignment if the state string hasn't changed for this TLS
                 if (signalStateCache.TryGetValue(sig.id, out string cachedState))
                 {
                     if (cachedState == sig.state)
@@ -139,55 +185,114 @@ public class TrafficSignalReceiver : MonoBehaviour
                     }
                 }
 
-                Renderer[] rends;
-                if (!signalRenderers.TryGetValue(sig.id, out rends))
+                GameObject tlsObj = GameObject.Find("TLS_" + sig.id);
+                if (tlsObj == null)
                 {
-                    GameObject tlsObj = GameObject.Find("TLS_" + sig.id);
-                    if (tlsObj != null)
+                    GameObject parent = GameObject.Find("MangaluruDigitalTwin/Traffic/TrafficSignals")
+                                     ?? GameObject.Find("Traffic/TrafficSignals")
+                                     ?? GameObject.Find("TrafficSignals")
+                                     ?? GameObject.Find("SUMO_TLS");
+                    if (parent != null)
                     {
-                        Transform head = tlsObj.transform.Find("Head");
-                        if (head != null)
+                        Transform t = parent.transform.Find("TLS_" + sig.id);
+                        if (t != null) tlsObj = t.gameObject;
+                    }
+                }
+                if (tlsObj == null) continue;
+
+                bool allApproachesResolved = true;
+
+                // Process each physical approach
+                foreach (var kvp in tlsEdgeToLinks[sig.id])
+                {
+                    string fromEdge = kvp.Key;
+                    List<int> linkIndices = kvp.Value;
+                    
+                    string cacheKey = sig.id + "_" + fromEdge;
+
+                    Renderer[] rends;
+                    if (!signalRenderers.TryGetValue(cacheKey, out rends))
+                    {
+                        Transform signalHead = tlsObj.transform.Find("Signal_" + fromEdge);
+                        if (signalHead != null)
                         {
-                            Transform rLight = head.Find("Light_R");
-                            Transform yLight = head.Find("Light_Y");
-                            Transform gLight = head.Find("Light_G");
+                            Transform rLight = signalHead.Find("red_light") ?? FindChildRecursive(signalHead, "red_light");
+                            Transform yLight = signalHead.Find("yellow_light") ?? FindChildRecursive(signalHead, "yellow_light");
+                            Transform gLight = signalHead.Find("green_light") ?? FindChildRecursive(signalHead, "green_light");
+
                             if (rLight != null && yLight != null && gLight != null)
                             {
-                                rends = new Renderer[] {
-                                    rLight.GetComponent<Renderer>(),
-                                    yLight.GetComponent<Renderer>(),
-                                    gLight.GetComponent<Renderer>()
-                                };
-                                signalRenderers[sig.id] = rends;
+                                Renderer rRend = rLight.GetComponentInChildren<Renderer>();
+                                Renderer yRend = yLight.GetComponentInChildren<Renderer>();
+                                Renderer gRend = gLight.GetComponentInChildren<Renderer>();
+
+                                if (rRend != null && yRend != null && gRend != null)
+                                {
+                                    rends = new Renderer[] { rRend, yRend, gRend };
+                                    signalRenderers[cacheKey] = rends;
+                                }
                             }
                         }
                     }
+
+                    if (rends != null)
+                    {
+                        bool isRed = false;
+                        bool isYellow = false;
+                        bool isGreen = false;
+
+                        // Safest visualization: Prioritize Red > Yellow > Green 
+                        // so we never show a false green to the ambulance if any of its approach lanes are red.
+                        foreach (int idx in linkIndices)
+                        {
+                            if (idx >= 0 && idx < sig.state.Length)
+                            {
+                                char c = char.ToLower(sig.state[idx]);
+                                if (c == 'r' || c == 's') isRed = true;
+                                else if (c == 'y') isYellow = true;
+                                else if (c == 'g') isGreen = true;
+                            }
+                        }
+
+                        // Determine final material for this physical signal head
+                        rends[0].sharedMaterial = isRed ? matRedActive : matRedDim;
+                        rends[1].sharedMaterial = (!isRed && isYellow) ? matYellowActive : matYellowDim;
+                        rends[2].sharedMaterial = (!isRed && !isYellow && isGreen) ? matGreenActive : matGreenDim;
+
+                        updatedSignals++;
+                    }
+                    else
+                    {
+                        allApproachesResolved = false;
+                    }
                 }
 
-                if (rends != null)
+                // Update cache only when all approaches for this TLS are resolved
+                if (allApproachesResolved)
                 {
-                    string stateLower = sig.state.ToLower();
-                    bool isGreen = stateLower.Contains("g");
-                    bool isYellow = !isGreen && stateLower.Contains("y");
-                    bool isRed = !isGreen && !isYellow && stateLower.Contains("r");
-
-                    rends[0].sharedMaterial = isRed ? matRedActive : matRedDim;
-                    rends[1].sharedMaterial = isYellow ? matYellowActive : matYellowDim;
-                    rends[2].sharedMaterial = isGreen ? matGreenActive : matGreenDim;
-                    
-                    // Update cache
                     signalStateCache[sig.id] = sig.state;
-                    updatedSignals++;
                 }
             }
             
             packetsReceived++;
             if (Time.time - lastLogTime >= 15.0f && updatedSignals > 0)
             {
-                Debug.Log($"TrafficSignalReceiver: Active signals = {payload.signals.Length} | Visual materials applied for {updatedSignals} changed signals.");
+                Debug.Log($"TrafficSignalReceiver: Active signals = {payload.signals.Length} | Visual materials applied for {updatedSignals} changed approaches.");
                 lastLogTime = Time.time;
             }
         }
+    }
+
+    private Transform FindChildRecursive(Transform parent, string childName)
+    {
+        for (int i = 0; i < parent.childCount; i++)
+        {
+            Transform child = parent.GetChild(i);
+            if (child.name == childName) return child;
+            Transform found = FindChildRecursive(child, childName);
+            if (found != null) return found;
+        }
+        return null;
     }
 
     void OnApplicationQuit()

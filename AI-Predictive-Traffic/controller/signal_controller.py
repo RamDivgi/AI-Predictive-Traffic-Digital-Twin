@@ -117,10 +117,43 @@ class SignalController:
 
         current_state = snapshot.state
 
+        # --- APPROACH-WIDE PREEMPTION LOGIC ---
+        target_approach_edges = set()
+        approach_wide_indices = set()
+        ambulance_lane = "unknown"
+        
+        try:
+            controlled_links = traci.trafficlight.getControlledLinks(junction_id)
+            
+            # 1. Determine the approach edge(s) for the originally requested signal indices
+            for index in signal_indices:
+                if 0 <= index < len(controlled_links):
+                    for connection in controlled_links[index]:
+                        if len(connection) >= 1:
+                            if ambulance_lane == "unknown":
+                                ambulance_lane = connection[0]
+                            from_edge = traci.lane.getEdgeID(connection[0])
+                            target_approach_edges.add(from_edge)
+            
+            # 2. Find ALL signal indices that originate from these approach edge(s)
+            if target_approach_edges:
+                for i, connections in enumerate(controlled_links):
+                    for connection in connections:
+                        if len(connection) >= 1:
+                            from_edge = traci.lane.getEdgeID(connection[0])
+                            if from_edge in target_approach_edges:
+                                approach_wide_indices.add(i)
+            else:
+                approach_wide_indices = set(signal_indices)
+                
+        except traci.TraCIException as e:
+            print(f"[PREEMPTION_ERROR] Failed to map controlled links for {junction_id}: {e}")
+            approach_wide_indices = set(signal_indices)
+
         # Build target preemption state
         preemption_state = ["r" for _ in current_state]
         valid_indices = []
-        for index in signal_indices:
+        for index in approach_wide_indices:
             if 0 <= index < len(preemption_state):
                 preemption_state[index] = "G"
                 valid_indices.append(index)
@@ -129,6 +162,12 @@ class SignalController:
             return False
 
         target_state = "".join(preemption_state)
+        
+        print(f"[TLS PREEMPTION]")
+        print(f"TLS={junction_id}")
+        print(f"ambulance_lane={ambulance_lane}")
+        print(f"ambulance_approach_links={valid_indices}")
+        print(f"selected_ambulance_link={signal_indices}")
         
         # Build yellow transition state
         transition_state_list = list(current_state)
@@ -163,13 +202,18 @@ class SignalController:
                 print(f"[SIGNAL_TRANSITION] {junction_id} entering YELLOW phase for 3s.")
             else:
                 print(f"[SIGNAL_TRANSITION] {junction_id} waiting {wait_time:.1f}s for min phase duration.")
+            return True
         else:
             # Apply immediately
             traci.trafficlight.setRedYellowGreenState(junction_id, target_state)
             self._active_preemptions[junction_id] = PreemptionRecord(junction_id=junction_id, activated_at=current_time)
-            print(f"[SIGNAL_PREEMPTION] {junction_id} active. Green indices: {valid_indices}")
-
-        return True
+            
+            red_indices = [i for i, c in enumerate(target_state) if c == 'r' or c == 'R']
+            print(f"[TLS PREEMPTION]")
+            print(f"TLS={junction_id}")
+            print(f"GREEN={valid_indices}")
+            print(f"RED={red_indices}")
+            return True
 
     def process_step(self):
         """
@@ -185,10 +229,24 @@ class SignalController:
                     print(f"[SIGNAL_TRANSITION] {j_id} minimum duration met, entering YELLOW phase.")
             elif step == "YELLOW":
                 if current_time >= trans["activation_time"]:
-                    traci.trafficlight.setRedYellowGreenState(j_id, trans["target_state"])
+                    target_state = trans["target_state"]
+                    traci.trafficlight.setRedYellowGreenState(j_id, target_state)
                     self._transitions.pop(j_id, None)
                     self._active_preemptions[j_id] = PreemptionRecord(junction_id=j_id, activated_at=current_time)
-                    print(f"[SIGNAL_PREEMPTION] {j_id} active. Target state applied.")
+                    
+                    valid_indices = [i for i, c in enumerate(target_state) if c == 'G' or c == 'g']
+                    red_indices = [i for i, c in enumerate(target_state) if c == 'r' or c == 'R']
+                    
+                    print(f"[TLS PREEMPTION]")
+                    print(f"TLS={j_id}")
+                    print(f"GREEN={valid_indices}")
+                    print(f"RED={red_indices}")
+
+        # Fallback timeout check to avoid extended red hold if ambulance delayed or missed
+        for j_id, record in list(self._active_preemptions.items()):
+            if current_time - record.activated_at >= config.PREEMPTION_HOLD_SECONDS:
+                print(f"[PREEMPTION_TIMEOUT] {j_id} exceeded hold time ({config.PREEMPTION_HOLD_SECONDS}s), restoring.")
+                self.restore(j_id)
 
     # ------------------------------------------------------------------
     # Restoration
@@ -207,9 +265,14 @@ class SignalController:
         )
 
         if snapshot is None:
+            self._transitions.pop(junction_id, None)
+            self._active_preemptions.pop(junction_id, None)
             return False
 
         if junction_id not in traci.trafficlight.getIDList():
+            self._transitions.pop(junction_id, None)
+            self._active_preemptions.pop(junction_id, None)
+            self._snapshots.pop(junction_id, None)
             return False
 
         try:
@@ -220,7 +283,8 @@ class SignalController:
             )
             # We do NOT use setPhase() here because that resets the phase 
             # timer to 0, which breaks network-wide signal coordination.
-        except traci.TraCIException:
+        except traci.TraCIException as e:
+            print(f"[RESTORATION_ERROR] Failed to restore program for {junction_id}: {e}")
             return False
 
         record = self._active_preemptions.get(
@@ -233,6 +297,11 @@ class SignalController:
             )
 
         self._active_preemptions.pop(
+            junction_id,
+            None,
+        )
+
+        self._transitions.pop(
             junction_id,
             None,
         )
@@ -288,8 +357,8 @@ class SignalController:
         except traci.TraCIException:
             return False
 
-        # Ambulance is physically inside the junction.
-        if current_edge.startswith(":"):
+        # Ambulance is physically inside THIS junction.
+        if current_edge.startswith(f":{junction_id}"):
             return False
             
         try:
@@ -304,7 +373,6 @@ class SignalController:
         if current_edge == incoming_edge:
             return False
 
-        # print(f'DEBUG: restoring {junction_id} because current={current_edge} incoming={incoming_edge} route={route}')
         return self.restore(
             junction_id
         )
@@ -318,12 +386,12 @@ class SignalController:
         junction_id: str,
     ) -> bool:
         """
-        Return True when the junction has active preemption.
+        Return True when the junction has active preemption or transition.
         """
 
         return (
-            junction_id
-            in self._active_preemptions
+            junction_id in self._active_preemptions
+            or junction_id in self._transitions
         )
 
     def get_active_preemptions(
@@ -358,9 +426,8 @@ class SignalController:
         Restore every currently preempted junction.
         """
 
-        for junction_id in list(
-            self._active_preemptions.keys()
-        ):
+        all_jids = list(set(list(self._active_preemptions.keys()) + list(self._transitions.keys()) + list(self._snapshots.keys())))
+        for junction_id in all_jids:
             self.restore(
                 junction_id
             )

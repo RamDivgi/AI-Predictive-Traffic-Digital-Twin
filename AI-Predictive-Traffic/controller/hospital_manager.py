@@ -38,8 +38,13 @@ class HospitalManager:
                         nearest_edges = self.net.getNeighboringEdges(x, y, r=200.0)
                         suitable = [(edge, dist) for edge, dist in nearest_edges if edge.allows("passenger")]
                         
-                        nearest_edge_id = None
-                        if suitable:
+                        # Explicit verified destination overrides for hospitals where geometry heuristic selects an unroutable edge
+                        DESTINATION_OVERRIDES = {
+                            "father_muller_hospital": "26209723#3",
+                        }
+
+                        nearest_edge_id = DESTINATION_OVERRIDES.get(hid)
+                        if nearest_edge_id is None and suitable:
                             suitable.sort(key=lambda item: item[1])
                             nearest_edge_id = suitable[0][0].getID()
                         

@@ -24,8 +24,10 @@ public class AmbulanceCameraFollow : MonoBehaviour
     [Header("State")]
     public CameraState currentState = CameraState.Overview;
     
-    private Vector3 overviewPosition = new Vector3(1400f, 150f, 1600f);
-    private Quaternion overviewRotation = Quaternion.Euler(60f, 0f, 0f);
+    // Centered on the current exported Mangaluru network bounds.
+    private Vector3 overviewPosition = new Vector3(1612f, 430f, 1150f);
+    private Vector3 overviewTarget = new Vector3(1612f, 0f, 1673f);
+    private Quaternion overviewRotation;
     
     private Vector3 velocity = Vector3.zero;
     private float transitionTimer = 0f;
@@ -34,8 +36,10 @@ public class AmbulanceCameraFollow : MonoBehaviour
 
     void Start()
     {
+        overviewRotation = Quaternion.LookRotation(overviewTarget - overviewPosition);
         transform.position = overviewPosition;
         transform.rotation = overviewRotation;
+        GetComponent<Camera>().farClipPlane = 5000f;
         
         FindTarget();
         Debug.Log("AmbulanceCameraFollow: Started in Overview state.");

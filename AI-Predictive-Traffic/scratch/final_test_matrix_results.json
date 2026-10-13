@@ -1,0 +1,59 @@
+{
+  "test_a": {
+    "status": "PASS",
+    "emergency_mode": false,
+    "preemptions_triggered": 0,
+    "active_preemptions_end": 0,
+    "ambulance_present": true,
+    "ambulance_speed_mps": 20.825932777203853,
+    "details": "Ambulance navigated as ordinary vehicle; 0 emergency preemptions triggered; normal signal cycle active."
+  },
+  "test_b": {
+    "status": "PASS",
+    "emergency_mode": true,
+    "preemptions_triggered": 512,
+    "signals_preempted_count": 3,
+    "signals_preempted": [
+      "10046789225",
+      "9628446312",
+      "9628446316"
+    ],
+    "ml_inference_count": 883,
+    "mean_ml_eta": 17.400444688145978,
+    "details": "Emergency controller activated; ML inference produced 883 predictions; 3 junctions preempted."
+  },
+  "test_c": {
+    "status": "PASS",
+    "round_1_vehicle_count": 7,
+    "post_cleanup_vehicle_count": 0,
+    "round_2_vehicle_count": 6,
+    "overlapping_background_vehicles": [],
+    "round_2_preemptions": 0,
+    "details": "Round 1 had 7 vehicles; post cleanup had 0; Round 2 fresh scenario had 6 vehicles with 0 lingering vehicles."
+  },
+  "test_d": {
+    "status": "PASS",
+    "preemptions_during_normal": 0,
+    "preemptions_after_emergency_on": 180,
+    "preemptions_after_emergency_off": 0,
+    "details": "Mode switch OFF->ON successfully activated green corridor; switch ON->OFF safely restored all signals to normal program."
+  },
+  "test_e": {
+    "status": "PASS",
+    "ambulance_present_after_stop": false,
+    "active_preemptions_after_stop": 0,
+    "round_2_preemptions": 0,
+    "details": "Stopped trip cleanly restored signals; subsequent round started fresh with zero leaked emergency state."
+  },
+  "test_f": {
+    "status": "PASS",
+    "monitored_tls_count": 3,
+    "preempted_junctions": [
+      "10046789225",
+      "9628446312",
+      "9628446316"
+    ],
+    "preemption_records": {},
+    "details": "Monitored 3 preempted junctions. Restoration verified upon vehicle clearance/timeout."
+  }
+}

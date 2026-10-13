@@ -1,0 +1,309 @@
+diff --git a/MangaluruDigitalTwin3D/Assets/Scripts/RoadVisualizer.cs b/MangaluruDigitalTwin3D/Assets/Scripts/RoadVisualizer.cs
+index bc5192c..fe7e067 100644
+--- a/MangaluruDigitalTwin3D/Assets/Scripts/RoadVisualizer.cs
++++ b/MangaluruDigitalTwin3D/Assets/Scripts/RoadVisualizer.cs
+@@ -24,12 +24,28 @@ public class EdgeData {
+ [System.Serializable]
+ public class JunctionData {
+     public string id;
+-    public bool is_tls;
+     public float x;
+     public float y;
+     public Point2D[] shape;
+ }
+ 
++[System.Serializable]
++public class TlsLinkData {
++    public int link_index;
++    public string from_lane;
++    public string to_lane;
++    public string junction;
++}
++
++[System.Serializable]
++public class TlsData {
++    public string id;
++    public float x;
++    public float y;
++    public string[] controlled_junctions;
++    public TlsLinkData[] controlled_links;
++}
++
+ [System.Serializable]
+ public class BuildingData {
+     public string id;
+@@ -58,6 +74,7 @@ public class RoadNetworkData {
+     public BuildingData[] buildings;
+     public HospitalData[] hospitals;
+     public RoadLabelData[] road_labels;
++    public TlsData[] traffic_lights;
+ }
+ 
+ public class RoadVisualizer : MonoBehaviour
+@@ -66,15 +83,19 @@ public class RoadVisualizer : MonoBehaviour
+     public Material roadMaterial;
+     public float defaultLineWidth = 3.2f; // Standard lane width
+ 
++    private bool hasRendered;
++
++    private int lastRoutePointCount = -1;
++    private RouteReceiver routeReceiver;
++    
++    private Dictionary<string, GameObject> allTlsRoots = new Dictionary<string, GameObject>();
++    private Dictionary<string, HashSet<string>> tlsToIncomingEdges = new Dictionary<string, HashSet<string>>();
++    private Dictionary<string, Vector3[]> edgeShapes = new Dictionary<string, Vector3[]>();
++
+     void Start()
+     {
+-        // Bootstrap essential receivers if they are missing from the scene
+-        if (gameObject.GetComponent<HospitalVisualizer>() == null)
+-        {
+-            gameObject.AddComponent<HospitalVisualizer>();
+-            Debug.Log("RoadVisualizer: Bootstrapped missing HospitalVisualizer.");
+-        }
+-
++        if (hasRendered) return;
++        hasRendered = true;
+         LoadAndRenderRoads();
+     }
+ 
+@@ -254,51 +275,114 @@ public class RoadVisualizer : MonoBehaviour
+                     
+                     mf.mesh = GenerateJunctionMesh(junc.shape);
+                 }
+-
+-                if (junc.is_tls)
++            }
++        }
++        
++        if (networkData.traffic_lights != null)
++        {
++            // Build a quick lookup for lane geometry to accurately place signals at lane ends
++            Dictionary<string, LaneData> laneDict = new Dictionary<string, LaneData>();
++            if (networkData.edges != null)
++            {
++                foreach (EdgeData edge in networkData.edges)
+                 {
+-                    GameObject tlsRoot = new GameObject("TLS_" + junc.id);
+-                    tlsRoot.transform.parent = tlsParent.transform;
+-                    
+-                    Vector3 signalPos = new Vector3(junc.x, 0f, junc.y);
+-                    if (junc.shape != null && junc.shape.Length > 0)
++                    if (edge.lanes == null) continue;
++                    foreach (LaneData lane in edge.lanes)
+                     {
+-                        signalPos = new Vector3(junc.shape[0].x, 0f, junc.shape[0].y);
+-                    }
+-                    tlsRoot.transform.localPosition = signalPos;
+-                    if (Vector3.Distance(signalPos, new Vector3(junc.x, 0f, junc.y)) > 0.1f)
+-                    {
+-                        tlsRoot.transform.LookAt(new Vector3(junc.x, 0f, junc.y));
++                        laneDict[lane.id] = lane;
+                     }
++                }
++            }
++
++            GameObject prefab = Resources.Load<GameObject>("TrafficSignalPrefab");
++            if (prefab == null)
++            {
++                Debug.LogError("TrafficSignalPrefab could not be loaded from Resources!");
++            }
++            else
++            {
++                // Prevent duplicate TLS objects from accumulating
++                List<GameObject> toDestroy = new List<GameObject>();
++                foreach (Transform child in tlsParent.transform)
++                {
++                    toDestroy.Add(child.gameObject);
++                }
++                foreach (GameObject go in toDestroy)
++                {
++                    DestroyImmediate(go);
++                }
+ 
+-                    // Pole
+-                    GameObject pole = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+-                    pole.name = "Pole";
+-                    pole.transform.parent = tlsRoot.transform;
+-                    pole.transform.localPosition = new Vector3(0, 3f, 0); // 6m tall
+-                    pole.transform.localScale = new Vector3(0.2f, 3f, 0.2f);
+-                    Destroy(pole.GetComponent<Collider>());
+-                    Material poleMat = new Material(Shader.Find("Universal Render Pipeline/Lit"));
+-                    poleMat.color = new Color(0.2f, 0.2f, 0.2f);
+-                    pole.GetComponent<Renderer>().material = poleMat;
+-
+-                    // Signal Head
+-                    GameObject head = GameObject.CreatePrimitive(PrimitiveType.Cube);
+-                    head.name = "Head";
+-                    head.transform.parent = tlsRoot.transform;
+-                    head.transform.localPosition = new Vector3(0, 5.5f, 0);
+-                    head.transform.localScale = new Vector3(0.5f, 1.5f, 0.5f);
+-                    Destroy(head.GetComponent<Collider>());
++                foreach (TlsData tls in networkData.traffic_lights)
++                {
++                    GameObject tlsRoot = new GameObject("TLS_" + tls.id);
++                    tlsRoot.transform.parent = tlsParent.transform;
++                    tlsRoot.transform.localPosition = new Vector3(tls.x, 0f, tls.y);
+                     
+-                    Material headMat = new Material(Shader.Find("Universal Render Pipeline/Lit"));
+-                    headMat.color = Color.black;
+-                    head.GetComponent<Renderer>().material = headMat;
++                    allTlsRoots[tls.id] = tlsRoot;
++                    tlsToIncomingEdges[tls.id] = new HashSet<string>();
+                     
+-                    // Lights (R, Y, G)
+-                    // Placed at Z = -0.27f to protrude cleanly out of the 0.5 scale head (0.25 radius)
+-                    CreateSignalLight(head.transform, "Light_R", new Vector3(0, 0.5f, -0.27f), Color.red);
+-                    CreateSignalLight(head.transform, "Light_Y", new Vector3(0, 0f, -0.27f), Color.yellow);
+-                    CreateSignalLight(head.transform, "Light_G", new Vector3(0, -0.5f, -0.27f), Color.green);
++                    HashSet<string> processedEdges = new HashSet<string>();
++
++                    if (tls.controlled_links != null)
++                    {
++                        foreach (TlsLinkData link in tls.controlled_links)
++                        {
++                            if (string.IsNullOrEmpty(link.from_lane))
++                                continue;
++                                
++                            // Authoritative SUMO rule: internal edges always start with ':'
++                            if (link.from_lane.StartsWith(":"))
++                                continue;
++                                
++                            // Extract edge ID from lane ID (e.g. "1538932912#4_1" -> "1538932912#4")
++                            int lastUnderscore = link.from_lane.LastIndexOf('_');
++                            string fromEdge = lastUnderscore > 0 ? link.from_lane.Substring(0, lastUnderscore) : link.from_lane;
++
++                            tlsToIncomingEdges[tls.id].Add(fromEdge);
++
++                            if (processedEdges.Contains(fromEdge))
++                                continue;
++
++                            processedEdges.Add(fromEdge);
++                            
++                            if (laneDict.TryGetValue(link.from_lane, out LaneData laneData))
++                            {
++                                if (laneData.shape == null || laneData.shape.Length < 2) continue;
++                                
++                                if (!edgeShapes.ContainsKey(fromEdge)) {
++                                    Vector3[] pts = new Vector3[laneData.shape.Length];
++                                    for(int i=0; i<laneData.shape.Length; i++) pts[i] = new Vector3(laneData.shape[i].x, 0, laneData.shape[i].y);
++                                    edgeShapes[fromEdge] = pts;
++                                }
++                                
++                                Point2D pPrev = laneData.shape[laneData.shape.Length - 2];
++                                Point2D pLast = laneData.shape[laneData.shape.Length - 1];
++                                
++                                Vector3 posPrev = new Vector3(pPrev.x, 0, pPrev.y);
++                                Vector3 posLast = new Vector3(pLast.x, 0, pLast.y);
++                                
++                                Vector3 dir = (posLast - posPrev).normalized;
++                                if (dir == Vector3.zero) continue;
++                                
++                                // ASSUMPTION: India relies on left-hand traffic, so we place the signal on the LEFT side of the approach lane.
++                                // In Unity's left-handed coordinate system, Cross(up, dir) points right. We negate it to get left.
++                                // The offset is configurable here. 2.5 meters pushes it outside the standard lane width.
++                                float leftRoadsideOffset = 2.5f; 
++                                Vector3 leftDir = -Vector3.Cross(Vector3.up, dir).normalized;
++                                
++                                Vector3 signalPos = posLast + (leftDir * leftRoadsideOffset);
++                                
++                                GameObject signalObj = Instantiate(prefab, tlsRoot.transform);
++                                signalObj.name = "Signal_" + fromEdge;
++                                
++                                // Subtract tlsRoot's local position so the signal positions correctly relative to its parent
++                                signalObj.transform.localPosition = signalPos - new Vector3(tls.x, 0f, tls.y);
++                                
++                                // The signal face must point towards approaching traffic (-dir)
++                                signalObj.transform.localRotation = Quaternion.LookRotation(-dir, Vector3.up);
++                            }
++                        }
++                    }
+                 }
+             }
+         }
+@@ -419,19 +503,74 @@ public class RoadVisualizer : MonoBehaviour
+         Debug.Log($"Successfully rendered {networkData.edges.Length} edges, {(networkData.junctions != null ? networkData.junctions.Length : 0)} junctions, and {(networkData.buildings != null ? networkData.buildings.Length : 0)} buildings.");
+     }
+ 
+-    void CreateSignalLight(Transform parent, string name, Vector3 localPos, Color defaultColor)
++    void Update()
++    {
++        if (routeReceiver == null)
++        {
++            GameObject routeObj = GameObject.Find("Route");
++            if (routeObj != null) routeReceiver = routeObj.GetComponent<RouteReceiver>();
++            if (routeReceiver == null) routeReceiver = FindObjectOfType<RouteReceiver>();
++        }
++
++        if (routeReceiver != null)
++        {
++            LineRenderer lr = routeReceiver.GetComponent<LineRenderer>();
++            if (lr != null && lr.positionCount != lastRoutePointCount)
++            {
++                lastRoutePointCount = lr.positionCount;
++                UpdateSignalVisibility(lr);
++            }
++        }
++    }
++
++    private void UpdateSignalVisibility(LineRenderer lr)
+     {
+-        GameObject light = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+-        light.name = name;
+-        light.transform.parent = parent;
+-        light.transform.localPosition = localPos;
+-        // Squashed sphere to look like a light bulb lens
+-        light.transform.localScale = new Vector3(0.4f, 0.4f, 0.1f);
+-        Destroy(light.GetComponent<Collider>());
++        if (lr.positionCount == 0) return;
+         
+-        Material mat = new Material(Shader.Find("Universal Render Pipeline/Unlit"));
+-        mat.color = new Color(defaultColor.r * 0.15f, defaultColor.g * 0.15f, defaultColor.b * 0.15f); // dim
+-        light.GetComponent<Renderer>().material = mat;
++        Vector3[] routePoints = new Vector3[lr.positionCount];
++        lr.GetPositions(routePoints);
++        
++        HashSet<string> routeEdges = new HashSet<string>();
++        
++        foreach (var kvp in edgeShapes)
++        {
++            string edgeId = kvp.Key;
++            Vector3[] shape = kvp.Value;
++            
++            Vector3 edgeEnd = shape[shape.Length - 1];
++            Vector3 edgeMid = shape[shape.Length / 2];
++            
++            for (int r = 0; r < routePoints.Length; r += 5)
++            {
++                if (Vector3.SqrMagnitude(routePoints[r] - edgeEnd) < 100f || 
++                    Vector3.SqrMagnitude(routePoints[r] - edgeMid) < 100f)
++                {
++                    routeEdges.Add(edgeId);
++                    break;
++                }
++            }
++        }
++        
++        foreach (var kvp in allTlsRoots)
++        {
++            string tlsId = kvp.Key;
++            GameObject tlsRoot = kvp.Value;
++            bool isRelevant = false;
++            
++            if (tlsToIncomingEdges.ContainsKey(tlsId))
++            {
++                foreach (string edge in tlsToIncomingEdges[tlsId])
++                {
++                    if (routeEdges.Contains(edge))
++                    {
++                        isRelevant = true;
++                        break;
++                    }
++                }
++            }
++            
++            tlsRoot.SetActive(isRelevant);
++        }
+     }
+ 
+     Mesh GenerateJunctionMesh(Point2D[] shape)

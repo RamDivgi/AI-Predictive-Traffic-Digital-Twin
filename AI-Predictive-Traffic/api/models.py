@@ -29,17 +29,35 @@ class DecisionState(BaseModel):
     timestamp: float
     details: str
 
+class TrafficMetrics(BaseModel):
+    round_id: int = 0
+    scenario: str = "medium"
+    scheduled: int = 0
+    inserted: int = 0
+    active: int = 0
+    arrived: int = 0
+    removed: int = 0
+    waiting: int = 0
+    mean_speed_kmh: float = 0.0
+    edge_speeds: Optional[dict] = {}
+    edge_queues: Optional[dict] = {}
+
 class DigitalTwinState(BaseModel):
     simulation_time: float
     ambulance: Optional[AmbulanceState]
     traffic: List[TrafficState]
     signals: List[SignalState]
     decisions: List[DecisionState]
+    traffic_metrics: Optional[TrafficMetrics] = None
 
 class TripStartRequest(BaseModel):
     emergency: bool
     hospital_id: str
     start_edge: Optional[str] = None
+    traffic_scenario: Optional[str] = "medium"
+
+class TripModeRequest(BaseModel):
+    emergency: bool
 
 class HospitalResponse(BaseModel):
     id: str

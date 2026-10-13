@@ -5,8 +5,12 @@ public class HospitalVisualizer : MonoBehaviour
 {
     public string jsonFileName = "RoadNetwork.json";
 
+    private bool hasRendered;
+
     void Start()
     {
+        if (hasRendered) return;
+        hasRendered = true;
         LoadAndCreateHospitals();
     }
     
@@ -25,20 +29,23 @@ public class HospitalVisualizer : MonoBehaviour
 
         if (networkData != null && networkData.hospitals != null)
         {
+            GameObject generatedHospitals = new GameObject("GeneratedHospitals");
+            generatedHospitals.transform.SetParent(transform, false);
+
             foreach (var hosp in networkData.hospitals)
             {
-                CreateHospitalModel(hosp.id, hosp.name, hosp.x, hosp.y);
+                CreateHospitalModel(generatedHospitals.transform, hosp.id, hosp.name, hosp.x, hosp.y);
             }
             Debug.Log($"Successfully rendered {networkData.hospitals.Length} hospitals.");
         }
     }
     
-    void CreateHospitalModel(string id, string name, float sumoX, float sumoY)
+    void CreateHospitalModel(Transform parent, string id, string name, float sumoX, float sumoY)
     {
         Vector3 position = new Vector3(sumoX, 0f, sumoY);
         
         GameObject hospital = new GameObject("Hospital_" + id);
-        hospital.transform.parent = this.transform;
+        hospital.transform.parent = parent;
         hospital.transform.localPosition = position;
         
         // Main block

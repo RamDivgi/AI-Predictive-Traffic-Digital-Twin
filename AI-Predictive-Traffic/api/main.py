@@ -16,6 +16,7 @@ from api.models import (
     DecisionState,
     DigitalTwinState,
     TripStartRequest,
+    TripModeRequest,
     HospitalResponse,
     StartPointResponse
 )
@@ -106,7 +107,8 @@ def start_trip(req: TripStartRequest):
         "action": "start",
         "emergency": req.emergency,
         "hospital_id": req.hospital_id,
-        "start_edge": req.start_edge
+        "start_edge": req.start_edge,
+        "traffic_scenario": req.traffic_scenario or "medium"
     })
     return {"status": "ok", "message": "Trip start command issued"}
 
@@ -116,6 +118,14 @@ def stop_trip():
         "action": "stop"
     })
     return {"status": "ok", "message": "Trip stop command issued"}
+
+@app.post("/trip/mode")
+def set_trip_mode(req: TripModeRequest):
+    StateProvider.write_trip_command({
+        "action": "set_mode",
+        "emergency": req.emergency
+    })
+    return {"status": "ok", "message": f"Trip emergency mode set to {req.emergency}"}
 
 
 @app.get("/state", response_model=DigitalTwinState)

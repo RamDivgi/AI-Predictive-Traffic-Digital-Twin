@@ -30,29 +30,30 @@ public static class MangaluruSceneBootstrapper
         GameObject destinations = GetOrCreate("Destinations", root.transform);
         GameObject hospital = GetOrCreate("HighlandHospital", destinations.transform);
 
-        // VisualizationSystems
+        // VisualizationSystems owns communication receivers only.  The scene's
+        // RoadNetwork object owns the sole RoadVisualizer instance.
         GameObject visSys = GetOrCreate("VisualizationSystems", root.transform);
-        
-        // Attach Scripts
-        EnsureComponent<RoadVisualizer>(visSys);
-        EnsureComponent<TrafficReceiver>(visSys);
-        EnsureComponent<TrafficSignalReceiver>(visSys);
-        EnsureComponent<RouteReceiver>(visSys);
-        
-        // Purge any stale AmbulanceReceivers (e.g. from previous manual setups)
-        AmbulanceReceiver[] oldReceivers = Object.FindObjectsByType<AmbulanceReceiver>(FindObjectsSortMode.None);
-        foreach (var r in oldReceivers)
+
+        RoadVisualizer roadVisualizer = Object.FindFirstObjectByType<RoadVisualizer>();
+        if (roadVisualizer == null)
         {
-            Object.DestroyImmediate(r);
+            Debug.LogError("MangaluruSceneBootstrapper: SampleScene must contain exactly one RoadVisualizer on RoadNetwork.");
+        }
+        else
+        {
+            RemoveDuplicateComponents(roadVisualizer);
         }
 
-        // Ambulance Receiver should be on the Ambulance object to directly move it, 
-        // or if it's on VisualizationSystems, it needs to know what to move. 
-        // In previous code, AmbulanceReceiver used 'this.transform'. So it must be on Ambulance.
-        EnsureComponent<AmbulanceReceiver>(ambulance);
-        
-        // Hospital Visualizer builds the hospital at its location, can be on the hospital object
-        EnsureComponent<HospitalVisualizer>(hospital);
+        // Keep exactly one receiver for each Unity/SUMO channel.  The ambulance
+        // receiver belongs to the Ambulance because it moves that transform.
+        EnsureSingleComponent<TrafficReceiver>(visSys);
+        EnsureSingleComponent<TrafficSignalReceiver>(visSys);
+        EnsureSingleComponent<RouteReceiver>(visSys);
+        EnsureSingleComponent<AmbulanceReceiver>(ambulance);
+
+        // Hospitals are a separate visual subsystem and are never created by
+        // RoadVisualizer.  This object is their single owner.
+        EnsureSingleComponent<HospitalVisualizer>(hospital);
 
         // Main Camera
         Camera mainCam = Camera.main;
@@ -65,7 +66,7 @@ public static class MangaluruSceneBootstrapper
         mainCam.transform.parent = root.transform;
         
         // Ensure Camera Follow is attached
-        AmbulanceCameraFollow camFollow = EnsureComponent<AmbulanceCameraFollow>(mainCam.gameObject);
+        AmbulanceCameraFollow camFollow = EnsureSingleComponent<AmbulanceCameraFollow>(mainCam.gameObject);
         camFollow.target = ambulance.transform;
 
         Debug.Log("MangaluruSceneBootstrapper: Scene assembly complete.");
@@ -101,6 +102,42 @@ public static class MangaluruSceneBootstrapper
             comp = go.AddComponent<T>();
         }
         return comp;
+    }
+
+    private static T EnsureSingleComponent<T>(GameObject owner) where T : Behaviour
+    {
+        T[] components = Object.FindObjectsByType<T>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        T retained = owner.GetComponent<T>();
+
+        foreach (T component in components)
+        {
+            if (component == retained)
+            {
+                continue;
+            }
+
+            // Disable immediately so a duplicate cannot initialize this frame,
+            // then remove it normally at the end of the frame.
+            component.enabled = false;
+            Object.Destroy(component);
+        }
+
+        return retained != null ? retained : owner.AddComponent<T>();
+    }
+
+    private static void RemoveDuplicateComponents<T>(T retained) where T : Behaviour
+    {
+        T[] components = Object.FindObjectsByType<T>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        foreach (T component in components)
+        {
+            if (component == retained)
+            {
+                continue;
+            }
+
+            component.enabled = false;
+            Object.Destroy(component);
+        }
     }
 
     private static void BuildProceduralAmbulance(GameObject ambulance)
