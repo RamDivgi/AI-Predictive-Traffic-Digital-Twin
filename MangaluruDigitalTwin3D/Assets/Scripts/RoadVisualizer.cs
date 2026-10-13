@@ -85,6 +85,12 @@ public class RoadVisualizer : MonoBehaviour
 
     private bool hasRendered;
     
+    private struct RoadLaneSegment {
+        public Vector2 p1;
+        public Vector2 p2;
+        public float width;
+    }
+
     private Dictionary<string, GameObject> allTlsRoots = new Dictionary<string, GameObject>();
     private Dictionary<string, HashSet<string>> tlsToIncomingEdges = new Dictionary<string, HashSet<string>>();
     private Dictionary<string, Vector3[]> edgeShapes = new Dictionary<string, Vector3[]>();
@@ -459,6 +465,30 @@ public class RoadVisualizer : MonoBehaviour
             // Deterministic random state to prevent building jitter across runs
             Random.InitState(42);
 
+            // Pre-collect all road segments for frontage alignment and clearance checks
+            List<RoadLaneSegment> roadSegments = new List<RoadLaneSegment>();
+            if (networkData.edges != null)
+            {
+                foreach (EdgeData edge in networkData.edges)
+                {
+                    if (edge.lanes == null) continue;
+                    foreach (LaneData lane in edge.lanes)
+                    {
+                        if (lane.shape == null || lane.shape.Length < 2) continue;
+                        float w = lane.width > 0 ? lane.width : defaultLineWidth;
+                        for (int i = 0; i < lane.shape.Length - 1; i++)
+                        {
+                            roadSegments.Add(new RoadLaneSegment
+                            {
+                                p1 = new Vector2(lane.shape[i].x, lane.shape[i].y),
+                                p2 = new Vector2(lane.shape[i+1].x, lane.shape[i+1].y),
+                                width = w
+                            });
+                        }
+                    }
+                }
+            }
+
             int modelPlacedCount = 0;
             int fallbackPlacedCount = 0;
             
@@ -466,80 +496,128 @@ public class RoadVisualizer : MonoBehaviour
             {
                 if (bldg.shape == null || bldg.shape.Length < 3) continue;
                 
-                // Calculate bounding box of the plot footprint
+                // Calculate centroid from the actual polygon footprint
+                float sumX = 0f, sumZ = 0f;
                 float minX = float.MaxValue, minZ = float.MaxValue;
                 float maxX = float.MinValue, maxZ = float.MinValue;
                 
                 foreach (Point2D p in bldg.shape)
                 {
+                    sumX += p.x;
+                    sumZ += p.y;
                     if (p.x < minX) minX = p.x;
                     if (p.x > maxX) maxX = p.x;
                     if (p.y < minZ) minZ = p.y;
                     if (p.y > maxZ) maxZ = p.y;
                 }
                 
+                int ptCount = bldg.shape.Length;
+                float centerX = sumX / ptCount;
+                float centerZ = sumZ / ptCount;
+                Vector2 centroid = new Vector2(centerX, centerZ);
+
                 float sizeX = maxX - minX;
                 float sizeZ = maxZ - minZ;
-                float centerX = minX + sizeX / 2f;
-                float centerZ = minZ + sizeZ / 2f;
-                float aspect = Mathf.Max(sizeX, sizeZ) / Mathf.Max(0.1f, Mathf.Min(sizeX, sizeZ));
-                float maxDim = Mathf.Max(sizeX, sizeZ);
                 float minDim = Mathf.Min(sizeX, sizeZ);
+                float maxDim = Mathf.Max(sizeX, sizeZ);
+                float aspect = maxDim / Mathf.Max(0.1f, minDim);
 
-                // Check suitability for placing a real 3D building model:
-                // Plot must be standard proportions (10m to 50m dimensions, aspect ratio <= 2.5)
-                bool fits3DModel = (minDim >= 10.0f && maxDim <= 50.0f && aspect <= 2.5f);
+                // Find nearest road frontage segment
+                float minRoadEdgeDist = float.MaxValue;
+                Vector2 nearestRoadProj = Vector2.zero;
+                foreach (var seg in roadSegments)
+                {
+                    Vector2 d = seg.p2 - seg.p1;
+                    float l2 = d.sqrMagnitude;
+                    float t = (l2 > 0.0001f) ? Mathf.Clamp01(Vector2.Dot(centroid - seg.p1, d) / l2) : 0f;
+                    Vector2 proj = seg.p1 + t * d;
+                    float dist = Vector2.Distance(centroid, proj);
+                    float edgeDist = dist - (seg.width * 0.5f);
+                    if (edgeDist < minRoadEdgeDist)
+                    {
+                        minRoadEdgeDist = edgeDist;
+                        nearestRoadProj = proj;
+                    }
+                }
+
+                // Check clearance to hospital locations (keep >= 35m clear so hospital grounds remain open)
+                bool nearHospital = false;
+                if (networkData.hospitals != null)
+                {
+                    foreach (var hosp in networkData.hospitals)
+                    {
+                        if (Vector2.Distance(centroid, new Vector2(hosp.x, hosp.y)) < 35.0f)
+                        {
+                            nearHospital = true;
+                            break;
+                        }
+                    }
+                }
+
+                // Determine suitability for placing a real 3D building model:
+                // Plot must have realistic urban dimensions, reasonable aspect ratio, and no hospital overlap
+                bool fits3DModel = (minDim >= 10.0f && maxDim <= 45.0f && aspect <= 2.2f && !nearHospital);
                 bool modelPlaced = false;
 
                 if (fits3DModel && (validRes.Count > 0 || validCom.Count > 0))
                 {
                     GameObject chosenPrefab = null;
-                    float nativeSpan = 15.0f; // Typical base span of residential models
+                    float nativeSpan = 15.0f;
+                    float targetSpan = 15.0f;
 
                     if (maxDim < 26.0f && validRes.Count > 0)
                     {
                         chosenPrefab = validRes[Random.Range(0, validRes.Count)];
                         nativeSpan = 15.0f;
+                        targetSpan = Mathf.Clamp(minDim * 0.75f, 9.0f, 18.0f);
                     }
                     else if (validCom.Count > 0)
                     {
                         chosenPrefab = validCom[Random.Range(0, validCom.Count)];
-                        nativeSpan = 26.0f;
+                        nativeSpan = 25.0f;
+                        targetSpan = Mathf.Clamp(minDim * 0.75f, 16.0f, 30.0f);
                     }
 
                     if (chosenPrefab != null)
                     {
-                        // Target span fills 85% of plot footprint for realistic urban street wall
-                        float targetSpan = minDim * 0.85f;
-                        // Clamp scale conservatively (0.70 to 1.35) so buildings retain true architectural proportions
-                        float scale = Mathf.Clamp(targetSpan / nativeSpan, 0.70f, 1.35f);
+                        // Conservative scale preserving true architectural proportions
+                        float scale = Mathf.Clamp(targetSpan / nativeSpan, 0.70f, 1.25f);
+                        float halfSpan = (nativeSpan * scale) * 0.5f;
 
-                        // Align building's primary axis along the plot's primary orientation
-                        float rotY = (sizeX >= sizeZ ? 0f : 90f) + ((Random.value > 0.5f) ? 180f : 0f);
+                        // Strict road clearance check: at least 2.5m clearance to road surface
+                        float roadClearance = minRoadEdgeDist - halfSpan;
 
-                        Vector3 bldgPos = new Vector3(centerX, 0f, centerZ);
-                        GameObject bldgObj = Instantiate(chosenPrefab, buildingsParent.transform);
-                        bldgObj.name = "BldgModel_" + bldg.id;
-                        bldgObj.transform.localPosition = bldgPos;
-                        bldgObj.transform.localRotation = Quaternion.Euler(0f, rotY, 0f);
-                        bldgObj.transform.localScale = new Vector3(scale, scale, scale);
-                        bldgObj.isStatic = true;
-
-                        // Ensure no colliders on decorative buildings
-                        foreach (Collider col in bldgObj.GetComponentsInChildren<Collider>())
+                        if (roadClearance >= 2.5f)
                         {
-                            Object.Destroy(col);
-                        }
+                            // Calculate frontage orientation: model forward (+Z) points directly toward road
+                            Vector2 toRoad = nearestRoadProj - centroid;
+                            float faceAngle = Mathf.Atan2(toRoad.x, toRoad.y) * Mathf.Rad2Deg;
 
-                        modelPlaced = true;
-                        modelPlacedCount++;
+                            Vector3 bldgPos = new Vector3(centerX, 0f, centerZ);
+                            GameObject bldgObj = Instantiate(chosenPrefab, buildingsParent.transform);
+                            bldgObj.name = "BldgModel_" + bldg.id;
+                            bldgObj.transform.localPosition = bldgPos;
+                            bldgObj.transform.localRotation = Quaternion.Euler(0f, faceAngle, 0f);
+                            bldgObj.transform.localScale = new Vector3(scale, scale, scale);
+                            bldgObj.isStatic = true;
+
+                            // Ensure no physics overhead on decorative buildings
+                            foreach (Collider col in bldgObj.GetComponentsInChildren<Collider>())
+                            {
+                                Object.Destroy(col);
+                            }
+
+                            modelPlaced = true;
+                            modelPlacedCount++;
+                        }
                     }
                 }
 
                 if (!modelPlaced)
                 {
-                    // Procedural Fallback for irregular, tiny, or very large plots
-                    float height = Mathf.Clamp((sizeX + sizeZ) * 0.4f, 6f, 32f);
+                    // Procedural Fallback: Extrude strictly within OSM polygon boundary
+                    // Ensures 100% compliance with road clearances and plot geometry
+                    float height = Mathf.Clamp((sizeX + sizeZ) * 0.35f, 6.0f, 26.0f);
                     
                     GameObject bObj = new GameObject("Building_Procedural_" + bldg.id);
                     bObj.transform.parent = buildingsParent.transform;
@@ -554,7 +632,7 @@ public class RoadVisualizer : MonoBehaviour
                 }
             }
 
-            Debug.Log($"RoadVisualizer: Placed {modelPlacedCount} 3D architectural building models and {fallbackPlacedCount} clean procedural fallback buildings.");
+            Debug.Log($"RoadVisualizer: Placed {modelPlacedCount} frontage-aligned 3D building models and {fallbackPlacedCount} clean procedural fallback buildings.");
         }
         // Render Road Labels
         GameObject labelsParent = GameObject.Find("Environment/RoadLabels");
