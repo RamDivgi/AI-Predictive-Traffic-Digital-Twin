@@ -20,6 +20,7 @@ class ReroutingStatus:
     last_reroute_time: float | None
     reroute_count: int
     estimated_improvement_s: float
+    last_decision_reason: str | None = None
 
 
 class ReroutingController:
@@ -48,6 +49,8 @@ class ReroutingController:
         self.initial_route_id: str | None = None
         self.current_route_id: str | None = None
         self.estimated_improvement_s: float = 0.0
+        self.last_decision_reason: str = "Route evaluation not yet run."
+        self.last_evaluation_data: dict = {}
         
         self.astar_router = AStarRouter(
             travel_time_weight=1.0,
@@ -67,6 +70,8 @@ class ReroutingController:
         self.initial_route_id = None
         self.current_route_id = None
         self.estimated_improvement_s = 0.0
+        self.last_decision_reason = "Initial route assigned."
+        self.last_evaluation_data = {}
 
     def get_status(self) -> ReroutingStatus:
         """
@@ -79,6 +84,7 @@ class ReroutingController:
             last_reroute_time=self.last_reroute_time,
             reroute_count=self.reroute_count,
             estimated_improvement_s=self.estimated_improvement_s,
+            last_decision_reason=self.last_decision_reason,
         )
 
     def evaluate_and_reroute(
@@ -246,6 +252,16 @@ class ReroutingController:
                 reason = "Rerouting justified despite oscillation risk (strict thresholds met)."
             else:
                 reason = f"Rerouting justified by significant ETA improvement ({improvement_s:.1f}s saved, {improvement_pct:.1f}%)."
+
+        self.last_decision_reason = reason
+        self.last_evaluation_data = {
+            "current_eta": round(current_eta, 1),
+            "alt_eta": round(alt_eta, 1),
+            "improvement_s": round(improvement_s, 1),
+            "improvement_pct": round(improvement_pct, 1),
+            "should_reroute": should_reroute,
+            "reason": reason
+        }
 
         print(f"Reroute decision: {'YES' if should_reroute else 'NO'}")
         print(f"Reason: {reason}\n")

@@ -34,6 +34,32 @@ route_evaluator._SUMO_NETWORK = None
 astar_router._SUMO_NETWORK = None
 junction_detector.SUMO_NETWORK = sumolib.net.readNet(str(MANGALURU_NET))
 
+# Load verified 55-controller coordinates
+TLS_COORDS_FILE = PROJECT_ROOT / "controller" / "tls_coordinates.json"
+TLS_COORDINATES = {}
+if TLS_COORDS_FILE.exists():
+    try:
+        with open(TLS_COORDS_FILE, "r") as f:
+            TLS_COORDINATES = json.load(f)
+    except Exception:
+        pass
+if not TLS_COORDINATES and junction_detector.SUMO_NETWORK:
+    for tl in junction_detector.SUMO_NETWORK.getTrafficLights():
+        tid = tl.getID()
+        coords = None
+        try:
+            node = junction_detector.SUMO_NETWORK.getNode(tid)
+            if node:
+                coords = node.getCoord()
+        except Exception:
+            pass
+        if not coords:
+            edge_coords = [e.getToNode().getCoord() for e in tl.getEdges()]
+            if edge_coords:
+                coords = (sum(c[0] for c in edge_coords)/len(edge_coords), sum(c[1] for c in edge_coords)/len(edge_coords))
+        if coords:
+            TLS_COORDINATES[tid] = {"x": round(coords[0], 2), "y": round(coords[1], 2)}
+
 # UDP setup
 UDP_IP = "127.0.0.1"
 UDP_PORT = 5005
@@ -484,6 +510,43 @@ def main():
     traffic_metrics_tracker.reset_round(round_id=0, scenario="medium", scheduled_ids=active_scheduled_ids)
     round_counter = 0
 
+    # Incident and simulation control states
+    active_incidents = {}
+    orig_edge_speeds = {}
+    trip_start_time = None
+    initial_predicted_eta = None
+    last_trip_summary = None
+    # Clean initial state for telemetry on startup
+    initial_idle_state = {
+        "simulation_time": 0.0,
+        "ambulance": None,
+        "route": {"coordinates": [], "candidates": []},
+        "traffic": [],
+        "signals": [],
+        "decisions": [],
+        "traffic_metrics": traffic_metrics_tracker.get_metrics_dict(),
+        "incidents": [],
+        "green_corridor": {
+            "active_preemptions": [],
+            "preemption_count": 0,
+            "upcoming_signals": [],
+            "safety_status": "Standby — awaiting dispatch",
+            "restored_count": 0
+        },
+        "decision_support": {
+            "selection_reason": "Awaiting ambulance dispatch.",
+            "last_reroute_reason": "N/A",
+            "reroute_count": 0,
+            "candidate_breakdown": [],
+            "initial_predicted_eta": None,
+            "last_trip_summary": None,
+            "confidence_info": "Model: Random Forest Regressor (Confidence estimate unavailable; deterministic point prediction)",
+            "stale_threshold_s": 3.0,
+            "telemetry_timestamp": time.time()
+        }
+    }
+    StateProvider.write_state(initial_idle_state)
+
     while traci.simulation.getMinExpectedNumber() > 0 and traci.simulation.getTime() < 3600:
         loop_start = time.time()
         
@@ -514,6 +577,8 @@ def main():
                     print(f"[ROUTING] Route length: {len(assigned_route)} edges | Final edge: {assigned_route[-1]}")
                     candidate_count = len(ai_controller.candidate_routes)
                     print(f"[ROUTING] Candidate routes stored: {candidate_count}")
+                    if ai_controller.candidate_routes:
+                        initial_predicted_eta = round(ai_controller.candidate_routes[0].total_cost, 1)
                 except Exception:
                     pass
             else:
@@ -531,7 +596,26 @@ def main():
             except Exception:
                 pass
         elif ambulance_found and "ambulance" not in current_vehicles and pending_hospital_id is None:
-            print("\n[INFO] Ambulance reached destination and exited simulation. Trip completed.")
+            cur_sim_time = traci.simulation.getTime()
+            actual_time = round(cur_sim_time - trip_start_time, 1) if trip_start_time is not None else 0.0
+            eta_err_s = round(actual_time - initial_predicted_eta, 1) if initial_predicted_eta is not None else None
+            eta_err_pct = round((eta_err_s / initial_predicted_eta) * 100.0, 1) if (initial_predicted_eta and initial_predicted_eta > 0 and eta_err_s is not None) else None
+            dest_name = ai_controller.destination_hospital.name if ai_controller.destination_hospital else "Hospital"
+            last_trip_summary = {
+                "completed": True,
+                "destination": dest_name,
+                "actual_travel_time_s": actual_time,
+                "actual_travel_time_seconds": actual_time,
+                "initial_predicted_eta_s": initial_predicted_eta,
+                "initial_predicted_eta_seconds": initial_predicted_eta,
+                "eta_error_s": eta_err_s,
+                "error_seconds": eta_err_s,
+                "eta_error_pct": eta_err_pct,
+                "error_pct": eta_err_pct,
+                "reroutes": getattr(ai_controller.rerouting_controller, 'reroute_count', 0),
+                "completion_sim_time": cur_sim_time
+            }
+            print(f"\n[INFO] Ambulance reached destination ({dest_name}) in {actual_time:.1f}s. Initial ETA was {initial_predicted_eta}s. Error: {eta_err_s}s ({eta_err_pct}%). Trip completed.")
             ambulance_found = False
             trip_active = False
             current_route_hash = None
@@ -545,7 +629,7 @@ def main():
                         traci.polygon.remove(pid)
             except Exception:
                 pass
-            StateProvider.write_trip_status({"status": "COMPLETED"})
+            StateProvider.write_trip_status({"status": "COMPLETED", "summary": last_trip_summary})
                 
         # --- NEW: Process Incoming UDP Commands from Unity ---
         try:
@@ -658,6 +742,105 @@ def main():
             except traci.TraCIException:
                 pass
 
+        # --- SIMULATION CONTROL API POLLING ---
+        sim_cmd = StateProvider.read_sim_command()
+        if sim_cmd:
+            act = sim_cmd.get("action")
+            if act == "pause":
+                sim_paused = True
+                print("[SIM_CONTROL] Simulation Paused")
+            elif act == "resume":
+                sim_paused = False
+                print("[SIM_CONTROL] Simulation Resumed")
+            elif act == "reset":
+                sim_paused = False
+                for eid, spd in list(orig_edge_speeds.items()):
+                    try: traci.edge.setMaxSpeed(eid, spd)
+                    except: pass
+                orig_edge_speeds.clear()
+                active_incidents.clear()
+                ai_controller.rerouting_controller.astar_router.clear_all_incidents()
+                if trip_active:
+                    trip_active = False
+                    ambulance_found = False
+                    pending_hospital_id = None
+                    if "ambulance" in current_vehicles:
+                        try: traci.vehicle.remove("ambulance")
+                        except: pass
+                    ai_controller.shutdown()
+                trip_start_time = None
+                initial_predicted_eta = None
+                last_trip_summary = None
+                print("[SIM_CONTROL] Simulation Reset")
+            StateProvider.clear_sim_command()
+
+        # --- INCIDENT MANAGEMENT API POLLING ---
+        inc_cmd = StateProvider.read_incident_command()
+        if inc_cmd:
+            act = inc_cmd.get("action")
+            edge_id = inc_cmd.get("edge_id")
+            if act == "add" and edge_id:
+                severity = inc_cmd.get("severity", "blockage")
+                desc = inc_cmd.get("description", "")
+                if edge_id not in orig_edge_speeds:
+                    try:
+                        orig_edge_speeds[edge_id] = traci.edge.getMaxSpeed(edge_id)
+                    except Exception:
+                        orig_edge_speeds[edge_id] = 13.9
+                
+                try:
+                    target_spd = 0.1 if severity == "blockage" else 2.0
+                    traci.edge.setMaxSpeed(edge_id, target_spd)
+                except Exception as e:
+                    print(f"Warning: could not set speed on edge {edge_id}: {e}")
+
+                ai_controller.rerouting_controller.astar_router.add_incident(edge_id, severity, desc)
+                active_incidents[edge_id] = {
+                    "edge_id": edge_id,
+                    "severity": severity,
+                    "description": desc or ("Road Blockage" if severity == "blockage" else "Severe Slowdown"),
+                    "timestamp": traci.simulation.getTime()
+                }
+                print(f"[INCIDENT_ACTIVATED] Edge: {edge_id} | Severity: {severity}")
+
+                if ambulance_found and "ambulance" in current_vehicles:
+                    print(f"[INCIDENT_REROUTE] Incident on {edge_id} triggering immediate rerouting check...")
+                    ai_controller.last_reroute_evaluation_time = -1.0
+                    did_reroute = ai_controller.rerouting_controller.evaluate_and_reroute(ambulance_id="ambulance")
+                    if did_reroute:
+                        try:
+                            new_traci_route = list(traci.vehicle.getRoute("ambulance"))
+                            cur_edge = traci.vehicle.getRoadID("ambulance")
+                            cur_pos = traci.vehicle.getLanePosition("ambulance")
+                            cur_spd = traci.vehicle.getSpeed("ambulance")
+                            updated_candidates = ai_controller.rerouting_controller.astar_router.find_alternative_routes(
+                                start_edge=cur_edge,
+                                destination_edge=new_traci_route[-1],
+                                start_lane_position=cur_pos,
+                                ambulance_speed_mps=max(15.0, cur_spd)
+                            )
+                            if updated_candidates:
+                                ai_controller.candidate_routes = updated_candidates
+                        except Exception:
+                            pass
+                StateProvider.clear_incident_command()
+            elif act == "clear" and edge_id:
+                if edge_id in orig_edge_speeds:
+                    try:
+                        traci.edge.setMaxSpeed(edge_id, orig_edge_speeds[edge_id])
+                    except Exception:
+                        pass
+                    del orig_edge_speeds[edge_id]
+                ai_controller.rerouting_controller.astar_router.clear_incident(edge_id)
+                if edge_id in active_incidents:
+                    del active_incidents[edge_id]
+                print(f"[INCIDENT_CLEARED] Edge: {edge_id} restored to normal state.")
+
+                if ambulance_found and "ambulance" in current_vehicles:
+                    ai_controller.last_reroute_evaluation_time = -1.0
+                    ai_controller.rerouting_controller.evaluate_and_reroute(ambulance_id="ambulance")
+                StateProvider.clear_incident_command()
+
         # --- TRIP CONTROL API POLLING ---
         cmd = StateProvider.read_trip_command()
         if trip_active and cmd and cmd.get("action") == "stop":
@@ -745,6 +928,8 @@ def main():
 
                     # 3. Spawn the new ambulance
                     trip_active = True
+                    trip_start_time = cur_sim_time
+                    initial_predicted_eta = None
                     print(f"\n[ROUTING]")
                     print(f"Ambulance: ambulance")
                     print(f"Spawn edge: {start_edge}")
@@ -801,15 +986,29 @@ def main():
         # --- Traffic Signal Broadcasting ---
         tls_ids = traci.trafficlight.getIDList()
         signals = []
+        all_live_signals = []
         is_tls_heartbeat = (time.time() - last_tls_heartbeat_time > 2.0)
         if is_tls_heartbeat:
             last_tls_heartbeat_time = time.time()
 
         for tls in tls_ids:
-            state = traci.trafficlight.getRedYellowGreenState(tls)
-            if is_tls_heartbeat or last_tls_states.get(tls) != state:
-                signals.append({"id": tls, "state": state})
-                last_tls_states[tls] = state
+            try:
+                state = traci.trafficlight.getRedYellowGreenState(tls)
+                coords = TLS_COORDINATES.get(tls)
+                all_live_signals.append({
+                    "id": tls,
+                    "junction_id": tls,
+                    "state": state,
+                    "current_state": state,
+                    "coordinates": coords,
+                    "x": coords.get("x") if coords else None,
+                    "y": coords.get("y") if coords else None
+                })
+                if is_tls_heartbeat or last_tls_states.get(tls) != state:
+                    signals.append({"id": tls, "state": state})
+                    last_tls_states[tls] = state
+            except Exception:
+                pass
 
         if signals:
             sock.sendto(json.dumps({"signals": signals}).encode('utf-8'), (UDP_IP, TLS_UDP_PORT))
@@ -896,6 +1095,61 @@ def main():
                 except Exception as e:
                     pass
 
+            # Build Green Corridor monitoring info
+            green_corridor_info = {
+                "active_preemptions": list(ai_controller.active_movements.keys()),
+                "preemption_count": len(ai_controller.active_movements),
+                "upcoming_signals": [],
+                "safety_status": "Approach-wide green active; conflicting cross-traffic held red" if ai_controller.active_movements else "Safety monitor standby (No conflicting phases active)",
+                "restored_count": getattr(ai_controller.signal_controller, 'restored_count', 0) if hasattr(ai_controller.signal_controller, 'restored_count') else 0
+            }
+            try:
+                upcoming_juncs = junction_detector.get_upcoming_junctions(5)
+                for j in upcoming_juncs:
+                    tls_id, sig_indices = signal_mapping.get_tls_and_indices_for_movement(j.incoming_edge, j.outgoing_edge)
+                    if tls_id:
+                        cur_sig_state = traci.trafficlight.getRedYellowGreenState(tls_id) if tls_id in traci.trafficlight.getIDList() else "UNKNOWN"
+                        is_preempted = tls_id in ai_controller.active_movements
+                        green_corridor_info["upcoming_signals"].append({
+                            "junction_id": j.junction_id,
+                            "tls_id": tls_id,
+                            "incoming_edge": j.incoming_edge,
+                            "outgoing_edge": j.outgoing_edge,
+                            "distance_m": round(j.distance_from_ambulance_m, 1),
+                            "is_preempted": is_preempted,
+                            "signal_state": cur_sig_state,
+                            "indices": sig_indices
+                        })
+            except Exception:
+                pass
+
+            # Build Decision Support & Candidate breakdown
+            candidate_breakdown = []
+            cand_routes = getattr(ai_controller, 'candidate_routes', None) or []
+            for c_i, cr in enumerate(cand_routes):
+                candidate_breakdown.append({
+                    "route_index": c_i,
+                    "selected": c_i == 0,
+                    "distance_m": round(cr.total_distance_m, 1),
+                    "total_cost_s": round(cr.total_cost, 1),
+                    "travel_time_s": round(cr.estimated_travel_time_s, 1),
+                    "congestion_delay_s": round(cr.total_congestion_cost, 1),
+                    "signal_delay_s": round(cr.total_signal_delay_s, 1),
+                    "edge_count": len(cr.edge_ids)
+                })
+
+            decision_support_info = {
+                "selection_reason": getattr(ai_controller, 'route_selection_reason', "Route selected under A* dynamic cost optimization."),
+                "last_reroute_reason": getattr(ai_controller.rerouting_controller, 'last_decision_reason', "Route currently stable."),
+                "reroute_count": getattr(ai_controller.rerouting_controller, 'reroute_count', 0),
+                "candidate_breakdown": candidate_breakdown,
+                "initial_predicted_eta": initial_predicted_eta,
+                "last_trip_summary": last_trip_summary,
+                "confidence_info": "Model: Random Forest Regressor (Confidence estimate unavailable; deterministic queue-informed point prediction)",
+                "stale_threshold_s": 3.0,
+                "telemetry_timestamp": time.time()
+            }
+
             state_dict = {
                 "simulation_time": traci.simulation.getTime(),
                 "ambulance": {
@@ -911,18 +1165,14 @@ def main():
                     "progress_pct": progress_pct
                 },
                 "route": {
-                    # Primary selected route geometry (ambulance actively follows this).
                     "coordinates": route_coords,
-                    # Candidate routes: index 0 = selected (same as coordinates above),
-                    # index 1+ = alternatives for dashboard visualisation only.
-                    # Empty list when no trip is active or routes are not yet generated.
                     "candidates": _build_candidate_route_data(
                         getattr(ai_controller, 'candidate_routes', None),
                         junction_detector.SUMO_NETWORK
                     ),
                 },
                 "traffic": [],
-                "signals": signals,
+                "signals": all_live_signals,
                 "decisions": [
                     {
                         "action": sig_state,
@@ -930,19 +1180,44 @@ def main():
                         "details": f"ETA: {next_junc_eta}s | Q: {queue_len} | Next: {next_junc}"
                     }
                 ],
-                "traffic_metrics": traffic_metrics_tracker.get_metrics_dict()
+                "traffic_metrics": traffic_metrics_tracker.get_metrics_dict(),
+                "incidents": list(active_incidents.values()),
+                "green_corridor": green_corridor_info,
+                "decision_support": decision_support_info
             }
             StateProvider.write_state(state_dict)
         elif step % 10 == 0:
+            # Build idle green corridor and decision support
+            green_corridor_info = {
+                "active_preemptions": [],
+                "preemption_count": 0,
+                "upcoming_signals": [],
+                "safety_status": "Standby — awaiting dispatch",
+                "restored_count": 0
+            }
+            decision_support_info = {
+                "selection_reason": "Awaiting ambulance dispatch.",
+                "last_reroute_reason": "N/A",
+                "reroute_count": 0,
+                "candidate_breakdown": [],
+                "initial_predicted_eta": None,
+                "last_trip_summary": last_trip_summary,
+                "confidence_info": "Model: Random Forest Regressor (Confidence estimate unavailable; deterministic point prediction)",
+                "stale_threshold_s": 3.0,
+                "telemetry_timestamp": time.time()
+            }
             # Periodic state broadcast when ambulance is not yet active
             idle_state = {
                 "simulation_time": traci.simulation.getTime(),
                 "ambulance": None,
                 "route": {"coordinates": [], "candidates": []},
                 "traffic": [],
-                "signals": signals if 'signals' in locals() else [],
+                "signals": all_live_signals if 'all_live_signals' in locals() else [],
                 "decisions": [],
-                "traffic_metrics": traffic_metrics_tracker.get_metrics_dict()
+                "traffic_metrics": traffic_metrics_tracker.get_metrics_dict(),
+                "incidents": list(active_incidents.values()),
+                "green_corridor": green_corridor_info,
+                "decision_support": decision_support_info
             }
             StateProvider.write_state(idle_state)
                     

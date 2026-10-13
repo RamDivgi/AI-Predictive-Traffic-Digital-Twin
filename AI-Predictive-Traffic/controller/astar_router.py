@@ -69,20 +69,39 @@ class AStarRouter:
         signal_delay_weight: float = 1.0,
         max_speed_mps: float = 42.0,
         queue_clearance_s_per_veh: float = 2.5,
+        net_file: Optional[str] = None,
+        **kwargs
     ) -> None:
-        # Default weights explanation:
-        # travel_time_weight (1.0): 1 unit of cost = 1 second of road traversal time.
-        # congestion_weight (1.0): Weight modifier for traffic delay calculations.
-        # halted_weight (3.0): Preserved for API backward compatibility.
-        # signal_delay_weight (1.0): 1 unit of cost = 1 second of signal waiting time.
-        # max_speed_mps (42.0): Maximum legal vehicle speed bound across the network in m/s (27.78 m/s * 1.5 speedFactor = 41.67 m/s).
-        # queue_clearance_s_per_veh (2.5): Saturation flow discharge headway per halted vehicle in seconds.
-        self.travel_time_weight = travel_time_weight
+        if isinstance(travel_time_weight, (str, bytes)):
+            travel_time_weight = 1.0
+        self.travel_time_weight = float(travel_time_weight)
         self.congestion_weight = congestion_weight
         self.halted_weight = halted_weight
         self.signal_delay_weight = signal_delay_weight
         self.max_speed_mps = max_speed_mps
         self.queue_clearance_s_per_veh = queue_clearance_s_per_veh
+        self.incident_edges: dict[str, dict] = {}
+
+    def add_incident(self, edge_id: str, severity: str = "blockage", description: str = "") -> None:
+        import time
+        self.incident_edges[edge_id] = {
+            "edge_id": edge_id,
+            "severity": severity,
+            "description": description or ("Road Blockage" if severity == "blockage" else "Severe Slowdown"),
+            "timestamp": time.time(),
+        }
+
+    def clear_incident(self, edge_id: str) -> bool:
+        if edge_id in self.incident_edges:
+            del self.incident_edges[edge_id]
+            return True
+        return False
+
+    def clear_all_incidents(self) -> None:
+        self.incident_edges.clear()
+
+    def get_incidents(self) -> list[dict]:
+        return list(self.incident_edges.values())
 
     def _heuristic(self, current_node_id: str, dest_node_id: str) -> float:
         """
@@ -183,6 +202,14 @@ class AStarRouter:
 
         queue_delay_s = halted_vehicle_count * self.queue_clearance_s_per_veh
         congestion_delay_s = slowdown_delay_s + queue_delay_s
+
+        # Apply incident penalty if edge is affected by simulated incident
+        if edge_id in self.incident_edges:
+            inc = self.incident_edges[edge_id]
+            if inc.get("severity") == "blockage":
+                congestion_delay_s += 100000.0  # Impassable blockage
+            else:
+                congestion_delay_s += 180.0     # Severe slowdown penalty (3 mins)
 
         return t_free, congestion_delay_s, edge_length
 

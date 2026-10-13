@@ -19,10 +19,15 @@ class TrafficState(BaseModel):
     timestamp: float
 
 class SignalState(BaseModel):
-    junction_id: str
+    id: Optional[str] = None
+    junction_id: Optional[str] = None
     state: str
-    phase: int
-    timestamp: float
+    current_state: Optional[str] = None
+    phase: Optional[int] = 0
+    timestamp: Optional[float] = 0.0
+    coordinates: Optional[dict] = None
+    x: Optional[float] = None
+    y: Optional[float] = None
 
 class DecisionState(BaseModel):
     action: str
@@ -44,11 +49,15 @@ class TrafficMetrics(BaseModel):
 
 class DigitalTwinState(BaseModel):
     simulation_time: float
-    ambulance: Optional[AmbulanceState]
-    traffic: List[TrafficState]
-    signals: List[SignalState]
-    decisions: List[DecisionState]
+    ambulance: Optional[AmbulanceState] = None
+    route: Optional[dict] = None
+    traffic: List[TrafficState] = []
+    signals: List[SignalState] = []
+    decisions: List[DecisionState] = []
     traffic_metrics: Optional[TrafficMetrics] = None
+    incidents: Optional[List[dict]] = []
+    green_corridor: Optional[dict] = None
+    decision_support: Optional[dict] = None
 
 class TripStartRequest(BaseModel):
     emergency: bool
@@ -59,14 +68,32 @@ class TripStartRequest(BaseModel):
 class TripModeRequest(BaseModel):
     emergency: bool
 
+class IncidentCreateRequest(BaseModel):
+    edge_id: str
+    severity: Optional[str] = "blockage"  # "blockage" or "slowdown"
+    description: Optional[str] = None
+
+class IncidentClearRequest(BaseModel):
+    edge_id: str
+
+class SimControlRequest(BaseModel):
+    action: str  # "pause", "resume", "reset"
+
 class HospitalResponse(BaseModel):
     id: str
     name: str
     available: bool
     reason: Optional[str] = None
     distance_km: Optional[float] = None
+    nearest_edge: Optional[str] = None
+    coordinates: Optional[dict] = None
+    x: Optional[float] = None
+    y: Optional[float] = None
+    destination_type: Optional[str] = "hospital"
 
 class StartPointResponse(BaseModel):
     id: str
     label: str
+    name: Optional[str] = None
     outgoing_edge: str
+    edge_id: Optional[str] = None

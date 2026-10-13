@@ -123,6 +123,7 @@ class TrafficAwareController:
         # Index 1-3 = alternatives (stored only; NOT assigned to the ambulance).
         self.candidate_routes: list = []
         self._route_selection_counter: int = 0
+        self.route_selection_reason: str = "No route selected yet."
 
     # ------------------------------------------------------------------
     # MODEL CONFIGURATION
@@ -184,6 +185,7 @@ class TrafficAwareController:
 
                     selected_route = all_routes[0]
                     self.candidate_routes = all_routes
+                    self.route_selection_reason = selection_reason
 
                     # Apply ONLY the selected winning route to the ambulance vehicle in TraCI
                     self._route_selection_counter += 1

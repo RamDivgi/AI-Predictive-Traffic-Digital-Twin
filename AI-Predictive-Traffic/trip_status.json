@@ -1,1 +1,1 @@
-{"status": "COMPLETED"}
+{"status": "COMPLETED", "summary": {"completed": true, "destination": "KMC Hospital", "actual_travel_time_s": 126.5, "actual_travel_time_seconds": 126.5, "initial_predicted_eta_s": 136.0, "initial_predicted_eta_seconds": 136.0, "eta_error_s": -9.5, "error_seconds": -9.5, "eta_error_pct": -7.0, "error_pct": -7.0, "reroutes": 0, "completion_sim_time": 481.0}}
