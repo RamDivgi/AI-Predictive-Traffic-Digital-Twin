@@ -43,24 +43,46 @@ public class TrafficSignalReceiver : MonoBehaviour
 
     // Mapping: tlsID -> fromEdge -> list of link indices
     private Dictionary<string, Dictionary<string, List<int>>> tlsEdgeToLinks = new Dictionary<string, Dictionary<string, List<int>>>();
+    private Dictionary<string, GameObject> tlsObjectCache = new Dictionary<string, GameObject>();
 
     void Start()
     {
-        // Use Unlit/Color which works across all pipelines as a safe fallback
-        Shader unlitShader = Shader.Find("Unlit/Color");
-        if (unlitShader == null) unlitShader = Shader.Find("Universal Render Pipeline/Unlit");
+        Shader unlitShader = Shader.Find("Universal Render Pipeline/Unlit");
+        if (unlitShader == null) unlitShader = Shader.Find("Unlit/Color");
 
-        Shader litShader = Shader.Find("Standard");
-        if (litShader == null) litShader = Shader.Find("Universal Render Pipeline/Lit");
+        Shader litShader = Shader.Find("Universal Render Pipeline/Lit");
+        if (litShader == null) litShader = Shader.Find("Standard");
 
-        matRedActive = new Material(unlitShader) { color = Color.red };
-        matRedDim = new Material(litShader) { color = new Color(0.1f, 0, 0) };
+        // High-contrast active signal lamp materials with emissive properties
+        matRedActive = new Material(unlitShader);
+        matRedActive.color = new Color(1.0f, 0.15f, 0.15f);
+        if (matRedActive.HasProperty("_EmissionColor")) {
+            matRedActive.EnableKeyword("_EMISSION");
+            matRedActive.SetColor("_EmissionColor", new Color(1.0f, 0.15f, 0.15f) * 2.0f);
+        }
 
-        matYellowActive = new Material(unlitShader) { color = Color.yellow };
-        matYellowDim = new Material(litShader) { color = new Color(0.1f, 0.1f, 0) };
+        matRedDim = new Material(litShader);
+        matRedDim.color = new Color(0.12f, 0.02f, 0.02f);
 
-        matGreenActive = new Material(unlitShader) { color = Color.green };
-        matGreenDim = new Material(litShader) { color = new Color(0, 0.1f, 0) };
+        matYellowActive = new Material(unlitShader);
+        matYellowActive.color = new Color(1.0f, 0.85f, 0.10f);
+        if (matYellowActive.HasProperty("_EmissionColor")) {
+            matYellowActive.EnableKeyword("_EMISSION");
+            matYellowActive.SetColor("_EmissionColor", new Color(1.0f, 0.85f, 0.10f) * 2.0f);
+        }
+
+        matYellowDim = new Material(litShader);
+        matYellowDim.color = new Color(0.12f, 0.10f, 0.02f);
+
+        matGreenActive = new Material(unlitShader);
+        matGreenActive.color = new Color(0.15f, 1.0f, 0.35f);
+        if (matGreenActive.HasProperty("_EmissionColor")) {
+            matGreenActive.EnableKeyword("_EMISSION");
+            matGreenActive.SetColor("_EmissionColor", new Color(0.15f, 1.0f, 0.35f) * 2.0f);
+        }
+
+        matGreenDim = new Material(litShader);
+        matGreenDim.color = new Color(0.02f, 0.12f, 0.04f);
 
         LoadRoadNetwork();
         StartUDPReceiver();
@@ -185,18 +207,23 @@ public class TrafficSignalReceiver : MonoBehaviour
                     }
                 }
 
-                GameObject tlsObj = GameObject.Find("TLS_" + sig.id);
-                if (tlsObj == null)
+                GameObject tlsObj = null;
+                if (!tlsObjectCache.TryGetValue(sig.id, out tlsObj) || tlsObj == null)
                 {
-                    GameObject parent = GameObject.Find("MangaluruDigitalTwin/Traffic/TrafficSignals")
-                                     ?? GameObject.Find("Traffic/TrafficSignals")
-                                     ?? GameObject.Find("TrafficSignals")
-                                     ?? GameObject.Find("SUMO_TLS");
-                    if (parent != null)
+                    tlsObj = GameObject.Find("TLS_" + sig.id);
+                    if (tlsObj == null)
                     {
-                        Transform t = parent.transform.Find("TLS_" + sig.id);
-                        if (t != null) tlsObj = t.gameObject;
+                        GameObject parent = GameObject.Find("MangaluruDigitalTwin/Traffic/TrafficSignals")
+                                         ?? GameObject.Find("Traffic/TrafficSignals")
+                                         ?? GameObject.Find("TrafficSignals")
+                                         ?? GameObject.Find("SUMO_TLS");
+                        if (parent != null)
+                        {
+                            Transform t = parent.transform.Find("TLS_" + sig.id);
+                            if (t != null) tlsObj = t.gameObject;
+                        }
                     }
+                    if (tlsObj != null) tlsObjectCache[sig.id] = tlsObj;
                 }
                 if (tlsObj == null) continue;
 

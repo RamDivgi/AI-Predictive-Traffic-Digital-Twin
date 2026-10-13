@@ -133,17 +133,6 @@ public class AmbulanceCameraFollow : MonoBehaviour
     
     private void UpdateFollow()
     {
-        // Calculate displacement to see if the ambulance has stopped
-        float distMoved = Vector3.Distance(target.position, lastTargetPosition);
-        
-        // If ambulance is stopped (e.g. at a red light), don't jitter the camera
-        if (distMoved < 0.01f)
-        {
-            // Just softly damp to a complete halt
-            transform.position = Vector3.SmoothDamp(transform.position, transform.position, ref velocity, positionSmoothTime);
-            return;
-        }
-
         Vector3 desiredPosition = GetDesiredPosition();
         Quaternion desiredRotation = GetDesiredRotation();
         

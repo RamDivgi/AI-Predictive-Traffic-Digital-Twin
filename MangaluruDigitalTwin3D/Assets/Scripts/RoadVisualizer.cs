@@ -371,6 +371,20 @@ public class RoadVisualizer : MonoBehaviour
                                 
                                 Vector3 signalPos = posLast + (leftDir * leftRoadsideOffset);
                                 
+                                // Create prominent stop line across the approach lane
+                                GameObject stopLineObj = GameObject.CreatePrimitive(PrimitiveType.Quad);
+                                stopLineObj.name = "StopLine_" + fromEdge;
+                                stopLineObj.transform.parent = tlsRoot.transform;
+                                Object.Destroy(stopLineObj.GetComponent<Collider>());
+                                
+                                float laneWidth = laneData.width > 0 ? laneData.width : defaultLineWidth;
+                                stopLineObj.transform.localPosition = posLast + (Vector3.up * 0.06f) - new Vector3(tls.x, 0f, tls.y);
+                                stopLineObj.transform.localRotation = Quaternion.Euler(90f, Quaternion.LookRotation(dir, Vector3.up).eulerAngles.y, 0f);
+                                stopLineObj.transform.localScale = new Vector3(laneWidth, 0.5f, 1f);
+                                
+                                Renderer stopRend = stopLineObj.GetComponent<Renderer>();
+                                if (stopRend != null) stopRend.sharedMaterial = solidMarkingMat;
+
                                 GameObject signalObj = Instantiate(prefab, tlsRoot.transform);
                                 signalObj.name = "Signal_" + fromEdge;
                                 
@@ -391,26 +405,55 @@ public class RoadVisualizer : MonoBehaviour
         if (buildingsParent == null) buildingsParent = new GameObject("SUMO_Buildings");
         if (networkData.buildings != null)
         {
-            Material[] bldgMats = new Material[4];
-            Color[] colors = { 
-                new Color(0.7f, 0.7f, 0.7f),   // Light gray
-                new Color(0.75f, 0.72f, 0.65f), // Beige
-                new Color(0.65f, 0.7f, 0.75f), // Pale blue-gray
-                new Color(0.6f, 0.6f, 0.6f)    // Medium gray
+            // Load selected 3D building model prefabs
+            GameObject[] resPrefabs = new GameObject[]
+            {
+                Resources.Load<GameObject>("Buildings/Bldg_House01"),
+                Resources.Load<GameObject>("Buildings/Bldg_House02"),
+                Resources.Load<GameObject>("Buildings/Bldg_House05"),
+                Resources.Load<GameObject>("Buildings/Bldg_House07"),
+                Resources.Load<GameObject>("Buildings/Bldg_House11")
             };
-            for(int i=0; i<4; i++) {
-                bldgMats[i] = new Material(Shader.Find("Universal Render Pipeline/Lit"));
-                bldgMats[i].color = colors[i];
+            GameObject[] comPrefabs = new GameObject[]
+            {
+                Resources.Load<GameObject>("Buildings/Bldg_Commercial01"),
+                Resources.Load<GameObject>("Buildings/Bldg_Commercial02"),
+                Resources.Load<GameObject>("Buildings/Bldg_Commercial03"),
+                Resources.Load<GameObject>("Buildings/Bldg_Office01"),
+                Resources.Load<GameObject>("Buildings/Bldg_Office02")
+            };
+
+            // Filter out any null prefabs
+            List<GameObject> validRes = new List<GameObject>();
+            foreach (var p in resPrefabs) if (p != null) validRes.Add(p);
+
+            List<GameObject> validCom = new List<GameObject>();
+            foreach (var p in comPrefabs) if (p != null) validCom.Add(p);
+
+            // Refined architectural materials for procedural fallback buildings
+            Material[] fallbackMats = new Material[4];
+            Color[] colors = { 
+                new Color(0.82f, 0.80f, 0.76f), // Light sandstone
+                new Color(0.72f, 0.70f, 0.66f), // Warm concrete
+                new Color(0.68f, 0.72f, 0.75f), // Urban muted slate
+                new Color(0.78f, 0.74f, 0.70f)  // Soft beige stucco
+            };
+            for (int i = 0; i < 4; i++) {
+                fallbackMats[i] = new Material(Shader.Find("Universal Render Pipeline/Lit"));
+                fallbackMats[i].color = colors[i];
             }
             
-            // Setup simple random determinism so buildings don't flicker on reload
+            // Deterministic random state to prevent building jitter across runs
             Random.InitState(42);
+
+            int modelPlacedCount = 0;
+            int fallbackPlacedCount = 0;
             
             foreach (BuildingData bldg in networkData.buildings)
             {
                 if (bldg.shape == null || bldg.shape.Length < 3) continue;
                 
-                // Calculate bounding box
+                // Calculate bounding box of the plot footprint
                 float minX = float.MaxValue, minZ = float.MaxValue;
                 float maxX = float.MinValue, maxZ = float.MinValue;
                 
@@ -426,20 +469,78 @@ public class RoadVisualizer : MonoBehaviour
                 float sizeZ = maxZ - minZ;
                 float centerX = minX + sizeX / 2f;
                 float centerZ = minZ + sizeZ / 2f;
-                
-                // Random height based on footprint size to look somewhat realistic
-                float height = Mathf.Clamp((sizeX + sizeZ) * 0.5f, 5f, 40f);
-                
-                GameObject bObj = new GameObject("Building_" + bldg.id);
-                bObj.transform.parent = buildingsParent.transform;
-                bObj.isStatic = true;
-                
-                MeshFilter mf = bObj.AddComponent<MeshFilter>();
-                MeshRenderer mr = bObj.AddComponent<MeshRenderer>();
-                mr.material = bldgMats[Random.Range(0, 4)];
-                
-                mf.mesh = GenerateBuildingMesh(bldg.shape, height);
+                float aspect = Mathf.Max(sizeX, sizeZ) / Mathf.Max(0.1f, Mathf.Min(sizeX, sizeZ));
+                float maxDim = Mathf.Max(sizeX, sizeZ);
+                float minDim = Mathf.Min(sizeX, sizeZ);
+
+                // Check suitability for placing a real 3D building model:
+                // Plot must be standard proportions (10m to 46m dimensions, aspect ratio <= 2.2)
+                bool fits3DModel = (minDim >= 10.0f && maxDim <= 46.0f && aspect <= 2.2f);
+                bool modelPlaced = false;
+
+                if (fits3DModel && (validRes.Count > 0 || validCom.Count > 0))
+                {
+                    GameObject chosenPrefab = null;
+                    float nativeSpan = 16.0f; // Typical base span of models
+
+                    if (maxDim < 26.0f && validRes.Count > 0)
+                    {
+                        chosenPrefab = validRes[Random.Range(0, validRes.Count)];
+                        nativeSpan = 15.0f;
+                    }
+                    else if (validCom.Count > 0)
+                    {
+                        chosenPrefab = validCom[Random.Range(0, validCom.Count)];
+                        nativeSpan = 24.0f;
+                    }
+
+                    if (chosenPrefab != null)
+                    {
+                        // Safe placement: Scale conservatively (80% of footprint) to guarantee zero road intrusion
+                        float targetSpan = minDim * 0.80f;
+                        float scale = Mathf.Clamp(targetSpan / nativeSpan, 0.45f, 1.4f);
+
+                        // Align building to cardinal / plot orientation with 90-degree step
+                        float rotY = (Random.Range(0, 4)) * 90f;
+
+                        Vector3 bldgPos = new Vector3(centerX, 0f, centerZ);
+                        GameObject bldgObj = Instantiate(chosenPrefab, buildingsParent.transform);
+                        bldgObj.name = "BldgModel_" + bldg.id;
+                        bldgObj.transform.localPosition = bldgPos;
+                        bldgObj.transform.localRotation = Quaternion.Euler(0f, rotY, 0f);
+                        bldgObj.transform.localScale = new Vector3(scale, scale, scale);
+                        bldgObj.isStatic = true;
+
+                        // Ensure no colliders on decorative buildings
+                        foreach (Collider col in bldgObj.GetComponentsInChildren<Collider>())
+                        {
+                            Object.Destroy(col);
+                        }
+
+                        modelPlaced = true;
+                        modelPlacedCount++;
+                    }
+                }
+
+                if (!modelPlaced)
+                {
+                    // Procedural Fallback for irregular, tiny, or very large plots
+                    float height = Mathf.Clamp((sizeX + sizeZ) * 0.4f, 6f, 32f);
+                    
+                    GameObject bObj = new GameObject("Building_Procedural_" + bldg.id);
+                    bObj.transform.parent = buildingsParent.transform;
+                    bObj.isStatic = true;
+                    
+                    MeshFilter mf = bObj.AddComponent<MeshFilter>();
+                    MeshRenderer mr = bObj.AddComponent<MeshRenderer>();
+                    mr.material = fallbackMats[Random.Range(0, 4)];
+                    
+                    mf.mesh = GenerateBuildingMesh(bldg.shape, height);
+                    fallbackPlacedCount++;
+                }
             }
+
+            Debug.Log($"RoadVisualizer: Placed {modelPlacedCount} 3D architectural building models and {fallbackPlacedCount} clean procedural fallback buildings.");
         }
         // Render Road Labels
         GameObject labelsParent = GameObject.Find("Environment/RoadLabels");

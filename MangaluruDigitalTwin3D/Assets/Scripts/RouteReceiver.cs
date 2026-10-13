@@ -24,9 +24,9 @@ public class RoutePayload
 public class RouteReceiver : MonoBehaviour
 {
     public int listenPort = 5008;
-    public float yOffset = 0.1f; // Slightly above road surface
-    public float lineWidth = 0.15f; // Thin navigation line
-    public Color routeColor = new Color(0.4f, 0.8f, 1.0f, 1.0f); // Light blue
+    public float yOffset = 0.12f; // Elevated cleanly above road surface (0.0m) and lane markings (0.05m)
+    public float lineWidth = 0.50f; // Clear, conservative navigation path width (50 cm)
+    public Color routeColor = new Color(0.15f, 0.72f, 1.0f, 1.0f); // Vibrant emergency navigation cyan
 
     private UdpClient udpClient;
     private Thread receiveThread;
