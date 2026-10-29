@@ -6,7 +6,7 @@ if 'SUMO_HOME' in os.environ:
     tools = os.path.join(os.environ['SUMO_HOME'], 'tools')
     sys.path.append(tools)
 
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Request, Response, HTTPException, status, Depends
 import asyncio
 from fastapi.responses import JSONResponse
 from typing import List, Dict, Any, Optional
@@ -24,9 +24,23 @@ from api.models import (
     IncidentClearRequest,
     SimControlRequest,
     HospitalResponse,
-    StartPointResponse
+    StartPointResponse,
+    LoginRequest,
+    LoginResponse,
+    UserProfile
 )
 from api.state_provider import StateProvider
+from api.auth import (
+    require_auth,
+    authenticate_user,
+    create_session,
+    get_session,
+    revoke_session,
+    DEMO_USERS,
+    get_current_user_from_request
+)
+
+from api.trip_history import TripHistoryManager
 from fastapi.staticfiles import StaticFiles
 import os
 
@@ -39,7 +53,24 @@ if not os.path.exists(static_dir):
 app.mount("/dashboard", StaticFiles(directory=static_dir, html=True), name="dashboard")
 
 def get_live_state():
-    return StateProvider.read_state()
+    state = StateProvider.read_state()
+    if state:
+        # Check if trip completed and update TripHistory
+        ds = state.get("decision_support", {})
+        lts = ds.get("last_trip_summary")
+        if lts and lts.get("completed"):
+            act_s = lts.get("actual_travel_time_s") or lts.get("actual_travel_time_seconds", 0.0)
+            ini_s = lts.get("initial_predicted_eta_s") or lts.get("initial_predicted_eta_seconds", 0.0)
+            gc = state.get("green_corridor", {})
+            preempt_count = gc.get("preemption_count", 0)
+            reroute_count = ds.get("reroute_count", 0)
+            TripHistoryManager.complete_active_trip(
+                actual_duration_s=act_s,
+                predicted_eta_s=ini_s,
+                preemptions_count=preempt_count,
+                reroutes_count=reroute_count
+            )
+    return state
 
 def unavailable_response():
     return JSONResponse(status_code=503, content={"status": "simulation unavailable"})
@@ -48,6 +79,115 @@ def unavailable_response():
 def get_health():
     state = get_live_state()
     return {"status": "ok", "simulation_running": state is not None}
+
+# AMBULANCE FLEET REGISTRY
+AMBULANCES = [
+    {
+        "id": "AMB-01",
+        "name": "Ambulance 01 (ALS Unit)",
+        "callsign": "ALS-MGL-01",
+        "type": "Advanced Life Support",
+        "station": "Father Muller Medical Base",
+        "equipment": "Defibrillator, Ventilator, Real-Time Telemetry Bridge",
+        "status": "Available"
+    },
+    {
+        "id": "AMB-02",
+        "name": "Ambulance 02 (BLS Unit)",
+        "callsign": "BLS-MGL-02",
+        "type": "Basic Life Support",
+        "station": "Pumpwell Standby Post",
+        "equipment": "First Response, Trauma Kit",
+        "status": "Standby"
+    },
+    {
+        "id": "AMB-03",
+        "name": "Ambulance 03 (Critical Care)",
+        "callsign": "MICU-MGL-03",
+        "type": "Mobile Intensive Care Unit",
+        "station": "Kankanady Depot",
+        "equipment": "Full Intensive Care Suite",
+        "status": "Standby"
+    }
+]
+
+@app.get("/ambulances")
+def get_ambulances():
+    state = get_live_state()
+    active_amb = state.get("ambulance") if state else None
+    fleet = [dict(a) for a in AMBULANCES]
+    if active_amb and active_amb.get("vehicle_id"):
+        fleet[0]["status"] = "En Route"
+        fleet[0]["current_speed_kmh"] = round(active_amb.get("speed", 0.0) * 3.6, 1)
+        fleet[0]["current_edge"] = active_amb.get("current_edge", "Unknown")
+        fleet[0]["destination"] = active_amb.get("destination", "Assigned")
+    return fleet
+
+# AUTHENTICATION ENDPOINTS
+@app.post("/auth/login", response_model=LoginResponse)
+def login(req: LoginRequest, response: Response):
+    user = authenticate_user(req.username, req.password)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid credentials. Use demo account: dispatcher (pass: dispatch123), traffic_admin (pass: admin123), or evaluator (pass: viewer123)."
+        )
+    token = create_session(
+        username=user["username"],
+        operator_name=req.operator_name,
+        assigned_ambulance=req.assigned_ambulance
+    )
+    session = get_session(token)
+    response.set_cookie(
+        key="session_token",
+        value=token,
+        max_age=86400,
+        httponly=False,
+        samesite="lax"
+    )
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+        "user": {
+            "username": session["username"],
+            "name": session["name"],
+            "operator_name": session["operator_name"],
+            "assigned_ambulance": session["assigned_ambulance"],
+            "role": session["role"],
+            "permissions": session["permissions"]
+        }
+    }
+
+
+@app.get("/auth/me")
+def get_me(current_user: dict = Depends(require_auth())):
+    return current_user
+
+@app.post("/auth/logout")
+def logout(request: Request, response: Response, current_user: dict = Depends(require_auth())):
+    token = request.cookies.get("session_token")
+    if not token and request.headers.get("Authorization"):
+        auth_header = request.headers.get("Authorization")
+        if auth_header.startswith("Bearer "):
+            token = auth_header[7:]
+    if token:
+        revoke_session(token)
+    response.delete_cookie("session_token")
+    return {"status": "ok", "message": "Logged out successfully"}
+
+@app.get("/auth/demo-accounts")
+def get_demo_accounts():
+    return [
+        {
+            "username": u["username"],
+            "name": u["name"],
+            "role": u["role"],
+            "permissions": u["permissions"],
+            "description": u["description"]
+        }
+        for u in DEMO_USERS.values()
+    ]
+
 
 STARTING_POINTS = [
     {"id": "1096889856", "label": "Base (Father Muller Road)", "name": "Base (Father Muller Road)", "outgoing_edge": "1096889856", "edge_id": "1096889856"},
@@ -128,25 +268,92 @@ def get_hospitals(start_junction: Optional[str] = None):
     return hospitals
 
 @app.post("/trip/start")
-def start_trip(req: TripStartRequest):
+def start_trip(req: TripStartRequest, current_user: dict = Depends(require_auth(["dispatcher", "admin"]))):
+    # Enforce assigned ambulance authorization
+    session_amb = current_user.get("assigned_ambulance", "AMB-01")
+    if req.ambulance_id and req.ambulance_id != session_amb and current_user["role"] != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=f"Authorization failure: Account is assigned to {session_amb}. Cannot dispatch {req.ambulance_id}."
+        )
+    
+    ambulance_to_dispatch = session_amb or req.ambulance_id or "AMB-01"
+
+    # Lookup destination name
+    destination_name = req.hospital_id
+    try:
+        all_hosps = get_hospitals()
+        for h in all_hosps:
+            if h.get("id") == req.hospital_id:
+                destination_name = h.get("name", req.hospital_id)
+                break
+    except Exception:
+        pass
+
+    origin_name = req.start_edge or "Base (Father Muller Road)"
+    for sp in STARTING_POINTS:
+        if sp["id"] == req.start_edge:
+            origin_name = sp["label"]
+            break
+
+    # Calculate initial predicted ETA if recommend endpoint is available
+    predicted_eta = None
+    try:
+        rec_data = recommend_hospital(start_edge=req.start_edge)
+        if isinstance(rec_data, dict):
+            for rec in rec_data.get("recommendations", []):
+                if rec.get("hospital_id") == req.hospital_id:
+                    predicted_eta = rec.get("total_cost_s")
+                    break
+    except Exception:
+        pass
+
     StateProvider.write_trip_command({
         "action": "start",
         "emergency": req.emergency,
         "hospital_id": req.hospital_id,
+        "ambulance_id": ambulance_to_dispatch,
         "start_edge": req.start_edge,
         "traffic_scenario": req.traffic_scenario or "medium"
     })
-    return {"status": "ok", "message": "Trip start command issued"}
+
+    op_name = current_user.get("operator_name", current_user["name"])
+    trip_record = TripHistoryManager.start_trip(
+        ambulance_id=ambulance_to_dispatch,
+        origin_name=origin_name,
+        start_edge=req.start_edge or "1096889856",
+        hospital_id=req.hospital_id,
+        destination_name=destination_name,
+        traffic_scenario=req.traffic_scenario or "medium",
+        emergency_mode=req.emergency,
+        predicted_eta=predicted_eta,
+        dispatched_by=current_user["username"],
+        operator_name=op_name
+    )
+
+    return {
+        "status": "ok",
+        "message": f"Trip start command issued for {destination_name} (Ambulance: {ambulance_to_dispatch}, Operator: {op_name})",
+        "trip": trip_record
+    }
+
 
 @app.post("/trip/stop")
-def stop_trip():
+def stop_trip(current_user: dict = Depends(require_auth(["dispatcher", "admin"]))):
     StateProvider.write_trip_command({
         "action": "stop"
     })
-    return {"status": "ok", "message": "Trip stop command issued"}
+    aborted_trip = TripHistoryManager.abort_active_trip(
+        reason=f"Aborted by operator ({current_user['name']})"
+    )
+    return {
+        "status": "ok",
+        "message": "Trip stop command issued",
+        "trip": aborted_trip
+    }
 
 @app.post("/trip/mode")
-def set_trip_mode(req: TripModeRequest):
+def set_trip_mode(req: TripModeRequest, current_user: dict = Depends(require_auth(["dispatcher", "admin"]))):
     StateProvider.write_trip_command({
         "action": "set_mode",
         "emergency": req.emergency
@@ -154,22 +361,22 @@ def set_trip_mode(req: TripModeRequest):
     return {"status": "ok", "message": f"Trip emergency mode set to {req.emergency}"}
 
 @app.post("/incident/add")
-def add_incident(req: IncidentCreateRequest):
+def add_incident(req: IncidentCreateRequest, current_user: dict = Depends(require_auth(["admin"]))):
     StateProvider.write_incident_command({
         "action": "add",
         "edge_id": req.edge_id,
         "severity": req.severity or "blockage",
         "description": req.description or ""
     })
-    return {"status": "ok", "message": f"Incident added on edge {req.edge_id}"}
+    return {"status": "ok", "message": f"Incident added on edge {req.edge_id} by {current_user['name']}"}
 
 @app.post("/incident/clear")
-def clear_incident(req: IncidentClearRequest):
+def clear_incident(req: IncidentClearRequest, current_user: dict = Depends(require_auth(["admin"]))):
     StateProvider.write_incident_command({
         "action": "clear",
         "edge_id": req.edge_id
     })
-    return {"status": "ok", "message": f"Incident clearance issued for edge {req.edge_id}"}
+    return {"status": "ok", "message": f"Incident clearance issued for edge {req.edge_id} by {current_user['name']}"}
 
 @app.get("/incidents")
 def get_incidents():
@@ -179,11 +386,20 @@ def get_incidents():
     return StateProvider.get_active_incidents()
 
 @app.post("/sim/control")
-def control_sim(req: SimControlRequest):
+def control_sim(req: SimControlRequest, current_user: dict = Depends(require_auth(["admin"]))):
     StateProvider.write_sim_command({
         "action": req.action
     })
-    return {"status": "ok", "message": f"Simulation command {req.action} issued"}
+    return {"status": "ok", "message": f"Simulation command {req.action} issued by {current_user['name']}"}
+
+@app.get("/trips/history")
+def get_trips_history():
+    return TripHistoryManager.get_all_trips()
+
+@app.get("/trips/analytics")
+def get_trips_analytics():
+    return TripHistoryManager.get_analytics_summary()
+
 
 @app.get("/network/edges")
 def get_network_edges():

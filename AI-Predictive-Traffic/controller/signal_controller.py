@@ -21,6 +21,8 @@ class SignalSnapshot:
 class PreemptionRecord:
     junction_id: str
     activated_at: float
+    min_hold_seconds: float = 8.0
+    max_timeout_s: float = 45.0
     restored_at: float | None = None
 
 
@@ -100,7 +102,9 @@ class SignalController:
         self,
         junction_id: str,
         signal_indices: list[int],
-        hold_seconds: float = 8.0,
+        hold_seconds: float = getattr(config, "PREEMPTION_MIN_HOLD_SECONDS", 8.0),
+        max_timeout_s: float = getattr(config, "PREEMPTION_MAX_TIMEOUT_S", 45.0),
+        approach_wide: bool = getattr(config, "PREEMPTION_APPROACH_WIDE", False),
     ) -> bool:
         if junction_id not in traci.trafficlight.getIDList():
             return False
@@ -117,7 +121,7 @@ class SignalController:
 
         current_state = snapshot.state
 
-        # --- APPROACH-WIDE PREEMPTION LOGIC ---
+        # --- SIGNAL INDICES SELECTION (MOVEMENT-SPECIFIC VS APPROACH-WIDE) ---
         target_approach_edges = set()
         approach_wide_indices = set()
         ambulance_lane = "unknown"
@@ -150,10 +154,14 @@ class SignalController:
             print(f"[PREEMPTION_ERROR] Failed to map controlled links for {junction_id}: {e}")
             approach_wide_indices = set(signal_indices)
 
-        # Build target preemption state
+        # Movement-specific indices default: use exact signal indices requested for the movement
+        # Approach-wide only when explicitly configured
+        chosen_indices = approach_wide_indices if approach_wide else set(signal_indices)
+
+        # Build target preemption state: all other movements set strictly to 'r' (NO conflicting greens)
         preemption_state = ["r" for _ in current_state]
         valid_indices = []
-        for index in approach_wide_indices:
+        for index in chosen_indices:
             if 0 <= index < len(preemption_state):
                 preemption_state[index] = "G"
                 valid_indices.append(index)
@@ -166,10 +174,11 @@ class SignalController:
         print(f"[TLS PREEMPTION]")
         print(f"TLS={junction_id}")
         print(f"ambulance_lane={ambulance_lane}")
-        print(f"ambulance_approach_links={valid_indices}")
+        print(f"preemption_mode={'APPROACH_WIDE' if approach_wide else 'MOVEMENT_SPECIFIC'}")
+        print(f"green_indices={valid_indices}")
         print(f"selected_ambulance_link={signal_indices}")
         
-        # Build yellow transition state
+        # Build yellow transition state (standard 3.0s yellow)
         transition_state_list = list(current_state)
         needs_transition = False
         
@@ -195,7 +204,8 @@ class SignalController:
                 "target_state": target_state,
                 "transition_time": transition_time,
                 "activation_time": activation_time,
-                "hold_seconds": hold_seconds
+                "hold_seconds": hold_seconds,
+                "max_timeout_s": max_timeout_s,
             }
             if wait_time == 0:
                 traci.trafficlight.setRedYellowGreenState(junction_id, transition_state)
@@ -206,7 +216,12 @@ class SignalController:
         else:
             # Apply immediately
             traci.trafficlight.setRedYellowGreenState(junction_id, target_state)
-            self._active_preemptions[junction_id] = PreemptionRecord(junction_id=junction_id, activated_at=current_time)
+            self._active_preemptions[junction_id] = PreemptionRecord(
+                junction_id=junction_id,
+                activated_at=current_time,
+                min_hold_seconds=hold_seconds,
+                max_timeout_s=max_timeout_s,
+            )
             
             red_indices = [i for i, c in enumerate(target_state) if c == 'r' or c == 'R']
             print(f"[TLS PREEMPTION]")
@@ -231,8 +246,15 @@ class SignalController:
                 if current_time >= trans["activation_time"]:
                     target_state = trans["target_state"]
                     traci.trafficlight.setRedYellowGreenState(j_id, target_state)
+                    hold_sec = trans.get("hold_seconds", getattr(config, "PREEMPTION_MIN_HOLD_SECONDS", 8.0))
+                    max_tout = trans.get("max_timeout_s", getattr(config, "PREEMPTION_MAX_TIMEOUT_S", 45.0))
                     self._transitions.pop(j_id, None)
-                    self._active_preemptions[j_id] = PreemptionRecord(junction_id=j_id, activated_at=current_time)
+                    self._active_preemptions[j_id] = PreemptionRecord(
+                        junction_id=j_id,
+                        activated_at=current_time,
+                        min_hold_seconds=hold_sec,
+                        max_timeout_s=max_tout,
+                    )
                     
                     valid_indices = [i for i, c in enumerate(target_state) if c == 'G' or c == 'g']
                     red_indices = [i for i, c in enumerate(target_state) if c == 'r' or c == 'R']
@@ -242,10 +264,11 @@ class SignalController:
                     print(f"GREEN={valid_indices}")
                     print(f"RED={red_indices}")
 
-        # Fallback timeout check to avoid extended red hold if ambulance delayed or missed
+        # Fail-safe max timeout check to avoid extended green/red lock if ambulance delayed or diverted
         for j_id, record in list(self._active_preemptions.items()):
-            if current_time - record.activated_at >= config.PREEMPTION_HOLD_SECONDS:
-                print(f"[PREEMPTION_TIMEOUT] {j_id} exceeded hold time ({config.PREEMPTION_HOLD_SECONDS}s), restoring.")
+            max_tout = getattr(record, "max_timeout_s", getattr(config, "PREEMPTION_MAX_TIMEOUT_S", 45.0))
+            if current_time - record.activated_at >= max_tout:
+                print(f"[PREEMPTION_TIMEOUT] {j_id} exceeded fail-safe max hold time ({max_tout}s), restoring.")
                 self.restore(j_id)
 
     # ------------------------------------------------------------------
@@ -372,6 +395,14 @@ class SignalController:
         # Ambulance is still approaching the junction.
         if current_edge == incoming_edge:
             return False
+
+        # Ensure minimum green hold time has elapsed before restoring (safety rule)
+        record = self._active_preemptions.get(junction_id)
+        if record is not None:
+            min_hold = getattr(record, "min_hold_seconds", getattr(config, "PREEMPTION_MIN_HOLD_SECONDS", 8.0))
+            current_time = traci.simulation.getTime()
+            if (current_time - record.activated_at) < min_hold:
+                return False
 
         return self.restore(
             junction_id

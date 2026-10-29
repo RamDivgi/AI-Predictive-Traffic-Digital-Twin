@@ -1,0 +1,110 @@
+[
+  {
+    "config": "Baseline",
+    "congestion_level": "Low",
+    "blockers": 0,
+    "travel_time_s": 309.0,
+    "reached_destination": true,
+    "time_stopped_s": 60.0,
+    "reroute_count": 0,
+    "preemptions_fired": 0,
+    "total_distance_m": 3762.2,
+    "route_changes": 0
+  },
+  {
+    "config": "Uncontrolled_AI",
+    "congestion_level": "Low",
+    "blockers": 0,
+    "travel_time_s": 311.0,
+    "reached_destination": true,
+    "time_stopped_s": 8.0,
+    "reroute_count": 6,
+    "preemptions_fired": 13,
+    "total_distance_m": 5315.4,
+    "route_changes": 6
+  },
+  {
+    "config": "Safeguarded_AI",
+    "congestion_level": "Low",
+    "blockers": 0,
+    "travel_time_s": 282.0,
+    "reached_destination": true,
+    "time_stopped_s": 0.0,
+    "reroute_count": 3,
+    "preemptions_fired": 11,
+    "total_distance_m": 5689.7,
+    "route_changes": 3
+  },
+  {
+    "config": "Baseline",
+    "congestion_level": "Medium",
+    "blockers": 2,
+    "travel_time_s": 989.0,
+    "reached_destination": false,
+    "time_stopped_s": 777.0,
+    "reroute_count": 0,
+    "preemptions_fired": 0,
+    "total_distance_m": 2520.5,
+    "route_changes": 0
+  },
+  {
+    "config": "Uncontrolled_AI",
+    "congestion_level": "Medium",
+    "blockers": 2,
+    "travel_time_s": 280.0,
+    "reached_destination": true,
+    "time_stopped_s": 0.0,
+    "reroute_count": 8,
+    "preemptions_fired": 12,
+    "total_distance_m": 5683.7,
+    "route_changes": 8
+  },
+  {
+    "config": "Safeguarded_AI",
+    "congestion_level": "Medium",
+    "blockers": 2,
+    "travel_time_s": 280.0,
+    "reached_destination": true,
+    "time_stopped_s": 0.0,
+    "reroute_count": 4,
+    "preemptions_fired": 8,
+    "total_distance_m": 5683.7,
+    "route_changes": 4
+  },
+  {
+    "config": "Baseline",
+    "congestion_level": "High",
+    "blockers": 5,
+    "travel_time_s": 989.0,
+    "reached_destination": false,
+    "time_stopped_s": 782.0,
+    "reroute_count": 0,
+    "preemptions_fired": 0,
+    "total_distance_m": 2520.5,
+    "route_changes": 0
+  },
+  {
+    "config": "Uncontrolled_AI",
+    "congestion_level": "High",
+    "blockers": 5,
+    "travel_time_s": 278.0,
+    "reached_destination": true,
+    "time_stopped_s": 3.0,
+    "reroute_count": 9,
+    "preemptions_fired": 10,
+    "total_distance_m": 4570.0,
+    "route_changes": 9
+  },
+  {
+    "config": "Safeguarded_AI",
+    "congestion_level": "High",
+    "blockers": 5,
+    "travel_time_s": 834.0,
+    "reached_destination": true,
+    "time_stopped_s": 517.0,
+    "reroute_count": 21,
+    "preemptions_fired": 12,
+    "total_distance_m": 5601.7,
+    "route_changes": 21
+  }
+]

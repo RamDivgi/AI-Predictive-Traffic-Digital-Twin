@@ -150,10 +150,11 @@ public class RouteReceiver : MonoBehaviour
         beacon.GetComponent<Renderer>().material = beaconMat;
         beaconTransform = beacon.transform;
 
-        // 3. Floating Billboard at Y = 14.5m
+        // 3. Floating Billboard (suppressed to prevent duplicate text with authentic hospital rooftop billboard)
         GameObject billboard = new GameObject("DestinationBillboard");
         billboard.transform.SetParent(destinationMarkerRoot.transform, false);
         billboard.transform.localPosition = new Vector3(0f, 14.5f, 0f);
+        billboard.SetActive(false);
         billboardTransform = billboard.transform;
 
         // Backplate

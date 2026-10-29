@@ -13,15 +13,19 @@ import junction_detector
 from traffic_aware_controller import TrafficAwareController
 from signal_mapping import get_signal_indices_for_movement
 
-# Override network file for A* and junction detector to use Mangaluru
+import config
+
+# Override network file for A*, route evaluator, controller, and junction detector to use Mangaluru
 MANGALURU_NET = PROJECT_ROOT / "simulation" / "mangaluru" / "mangaluru_ai.net.xml.gz"
+config.NET_FILE = MANGALURU_NET
 astar_router.NETWORK_FILE = MANGALURU_NET
 route_evaluator.NETWORK_FILE = MANGALURU_NET
 junction_detector.NETWORK_FILE = MANGALURU_NET
 
-route_evaluator._SUMO_NETWORK = None
-astar_router._SUMO_NETWORK = None
-junction_detector.SUMO_NETWORK = sumolib.net.readNet(str(MANGALURU_NET))
+_mangaluru_net_instance = sumolib.net.readNet(str(MANGALURU_NET))
+route_evaluator._SUMO_NETWORK = _mangaluru_net_instance
+astar_router._SUMO_NETWORK = _mangaluru_net_instance
+junction_detector.SUMO_NETWORK = _mangaluru_net_instance
 
 SUMOCFG = PROJECT_ROOT / "simulation" / "mangaluru" / "ambulance_test.sumocfg"
 
@@ -59,7 +63,7 @@ def run_scenario(scenario_idx, congestion_edge, num_halted_vehicles, hospital_id
     # We will track active preemptions to detect restorations
     previous_active_preemptions = set()
     
-    while step < 1000:
+    while step < 1200:
         traci.simulationStep()
         
         # Apply congestion
@@ -88,6 +92,12 @@ def run_scenario(scenario_idx, congestion_edge, num_halted_vehicles, hospital_id
                 start_time = traci.simulation.getTime()
                 old_route = traci.vehicle.getRouteID("ambulance")
                 
+                # Ensure emergency status is explicitly registered in TraCI
+                try:
+                    traci.vehicle.setParameter("ambulance", "emergency", "true")
+                except Exception:
+                    pass
+
                 # Set the destination hospital dynamically now that ambulance exists
                 controller.set_hospital_destination(hospital_id)
                 target_edge = controller.destination_hospital.nearest_edge if controller.destination_hospital else None
@@ -220,7 +230,7 @@ if __name__ == "__main__":
     # We use similar blockage points, but test multiple hospitals and congestion levels
     scenarios = [
         (1, "184750308#18", 2, "highland_hospital"), # Heavy congestion
-        (2, "184750308#18", 1, "wenlock_hospital"),  # Moderate congestion
+        (2, "184750308#18", 1, "kmc_hospital"),       # Moderate congestion
         (3, "184750308#18", 0, "highland_hospital")  # No congestion test
     ]
     

@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem.UI;
 
 [System.Serializable]
 public class TelemetryPayload
@@ -23,6 +25,10 @@ public class TelemetryPayload
 
 public class DashboardController : MonoBehaviour
 {
+    [Header("UI Configuration")]
+    [Tooltip("Enable or disable the 2D semi-transparent dashboard overlay on the left side of the Game view.")]
+    public bool showDashboardOverlay = false;
+
     private UdpClient udpClient;
     private Thread receiveThread;
     private bool isRunning = false;
@@ -31,6 +37,7 @@ public class DashboardController : MonoBehaviour
     private object dataLock = new object();
     private TelemetryPayload latestPayload = null;
     private bool hasNewData = false;
+    private DateTime lastPacketUtc = DateTime.MinValue;
 
     // UI Elements
     private GameObject canvasObj;
@@ -48,12 +55,39 @@ public class DashboardController : MonoBehaviour
 
     void Start()
     {
-        CreateUI();
-        StartUDPReceiver();
+        if (showDashboardOverlay)
+        {
+            CreateUI();
+            StartUDPReceiver();
+        }
+        else
+        {
+            CleanupUI();
+            Debug.Log("DashboardController: 2D dashboard overlay disabled for unobstructed 3D simulation view.");
+        }
+    }
+
+    private void CleanupUI()
+    {
+        GameObject canvas = GameObject.Find("AI_DashboardCanvas");
+        if (canvas != null)
+        {
+            Destroy(canvas);
+        }
+    }
+
+    void OnValidate()
+    {
+        if (Application.isPlaying && canvasObj != null)
+        {
+            canvasObj.SetActive(showDashboardOverlay);
+        }
     }
 
     private void CreateUI()
     {
+        if (!showDashboardOverlay) return;
+
         // Auto-generate UI Canvas if not present
         canvasObj = new GameObject("AI_DashboardCanvas");
         Canvas canvas = canvasObj.AddComponent<Canvas>();
@@ -61,11 +95,26 @@ public class DashboardController : MonoBehaviour
         canvasObj.AddComponent<CanvasScaler>().uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         canvasObj.AddComponent<GraphicRaycaster>();
         
-        if (FindObjectOfType<UnityEngine.EventSystems.EventSystem>() == null)
+        EventSystem es = FindAnyObjectByType<EventSystem>();
+        if (es == null)
         {
             GameObject esObj = new GameObject("EventSystem");
-            esObj.AddComponent<UnityEngine.EventSystems.EventSystem>();
-            esObj.AddComponent<UnityEngine.EventSystems.StandaloneInputModule>();
+            es = esObj.AddComponent<EventSystem>();
+        }
+
+        // Remove legacy StandaloneInputModule if present to prevent InvalidOperationException
+        StandaloneInputModule legacyModule = es.GetComponent<StandaloneInputModule>();
+        if (legacyModule != null)
+        {
+            Destroy(legacyModule);
+        }
+
+        // Add modern InputSystemUIInputModule if not present and assign default actions
+        InputSystemUIInputModule inputModule = es.GetComponent<InputSystemUIInputModule>();
+        if (inputModule == null)
+        {
+            inputModule = es.gameObject.AddComponent<InputSystemUIInputModule>();
+            inputModule.AssignDefaultActions();
         }
 
         // Background Panel
@@ -124,12 +173,46 @@ public class DashboardController : MonoBehaviour
         CreateButton(panelObj.transform, "KMC Hospital", "kmc_hospital", new Vector2(10, yOffset));
     }
 
+    private Font cachedFont = null;
+
+    private Font GetDefaultFont()
+    {
+        if (cachedFont != null) return cachedFont;
+
+        // In Unity 6 (6000.x), LegacyRuntime.ttf replaces the deprecated Arial.ttf
+        try
+        {
+            cachedFont = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        }
+        catch (Exception) {}
+
+        if (cachedFont == null)
+        {
+            try
+            {
+                cachedFont = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            }
+            catch (Exception) {}
+        }
+
+        if (cachedFont == null)
+        {
+            try
+            {
+                cachedFont = Font.CreateDynamicFontFromOSFont("Arial", 14);
+            }
+            catch (Exception) {}
+        }
+
+        return cachedFont;
+    }
+
     private Text CreateText(Transform parent, string textStr, Vector2 pos, int fontSize, FontStyle style, Color color)
     {
         GameObject textObj = new GameObject("Text");
         textObj.transform.SetParent(parent, false);
         Text t = textObj.AddComponent<Text>();
-        t.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+        t.font = GetDefaultFont();
         t.text = textStr;
         t.fontSize = fontSize;
         t.fontStyle = style;
@@ -163,7 +246,7 @@ public class DashboardController : MonoBehaviour
         GameObject textObj = new GameObject("Text");
         textObj.transform.SetParent(btnObj.transform, false);
         Text t = textObj.AddComponent<Text>();
-        t.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+        t.font = GetDefaultFont();
         t.text = label;
         t.fontSize = 14;
         t.color = Color.white;
@@ -196,6 +279,8 @@ public class DashboardController : MonoBehaviour
 
     private void StartUDPReceiver()
     {
+        if (!showDashboardOverlay) return;
+
         isRunning = true;
         receiveThread = new Thread(new ThreadStart(ReceiveData));
         receiveThread.IsBackground = true;
@@ -222,6 +307,7 @@ public class DashboardController : MonoBehaviour
                         {
                             latestPayload = payload;
                             hasNewData = true;
+                            lastPacketUtc = DateTime.UtcNow;
                         }
                     }
                 }
@@ -236,7 +322,10 @@ public class DashboardController : MonoBehaviour
 
     void Update()
     {
+        if (!showDashboardOverlay) return;
+
         TelemetryPayload payloadToDraw = null;
+        DateTime packetTime = DateTime.MinValue;
         lock (dataLock)
         {
             if (hasNewData)
@@ -244,11 +333,22 @@ public class DashboardController : MonoBehaviour
                 payloadToDraw = latestPayload;
                 hasNewData = false;
             }
+            packetTime = lastPacketUtc;
+        }
+
+        if (packetTime != DateTime.MinValue && (DateTime.UtcNow - packetTime).TotalSeconds > 5.0)
+        {
+            if (ambulanceStatusText != null)
+            {
+                ambulanceStatusText.text = "Ambulance: TELEMETRY PAUSED / STALE";
+                ambulanceStatusText.color = Color.yellow;
+            }
         }
 
         if (payloadToDraw != null)
         {
             ambulanceStatusText.text = "Ambulance: EN ROUTE";
+            ambulanceStatusText.color = Color.green;
             destinationText.text = "Destination: " + payloadToDraw.hospital;
             currentEtaText.text = "Current ETA: " + payloadToDraw.overall_eta.ToString("F1") + " s";
             routeTypeText.text = "Route: " + payloadToDraw.route_type;
@@ -291,7 +391,13 @@ public class DashboardController : MonoBehaviour
     void OnDestroy()
     {
         isRunning = false;
-        if (udpClient != null) udpClient.Close();
-        if (receiveThread != null && receiveThread.IsAlive) receiveThread.Abort();
+        if (udpClient != null)
+        {
+            try { udpClient.Close(); } catch (Exception) {}
+        }
+        if (receiveThread != null && receiveThread.IsAlive)
+        {
+            try { receiveThread.Join(200); } catch (Exception) {}
+        }
     }
 }

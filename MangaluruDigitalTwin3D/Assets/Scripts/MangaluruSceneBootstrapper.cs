@@ -14,6 +14,8 @@ public static class MangaluruSceneBootstrapper
         GameObject env = GetOrCreate("Environment", root.transform);
         GetOrCreate("Roads", env.transform);
         GetOrCreate("Buildings", env.transform);
+        GetOrCreate("Parks", env.transform);
+        GetOrCreate("Trees", env.transform);
         GetOrCreate("Intersections", env.transform);
 
         // Traffic
@@ -49,11 +51,18 @@ public static class MangaluruSceneBootstrapper
         EnsureSingleComponent<TrafficReceiver>(visSys);
         EnsureSingleComponent<TrafficSignalReceiver>(visSys);
         EnsureSingleComponent<RouteReceiver>(visSys);
+        EnsureSingleComponent<DashboardController>(visSys);
         EnsureSingleComponent<AmbulanceReceiver>(ambulance);
 
         // Hospitals are a separate visual subsystem and are never created by
         // RoadVisualizer.  This object is their single owner.
         EnsureSingleComponent<HospitalVisualizer>(hospital);
+
+        // Roadside vegetation and urban green spaces
+        EnsureSingleComponent<EnvironmentDecorator>(env);
+
+        // Visual Acceptance Agent for runtime verification
+        EnsureSingleComponent<VisualAcceptanceAgent>(visSys);
 
         // Main Camera
         Camera mainCam = Camera.main;

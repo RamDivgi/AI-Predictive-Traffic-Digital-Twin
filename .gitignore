@@ -10,3 +10,13 @@ MangaluruDigitalTwin3D/UserSettings/
 *.user
 *.csproj
 *.sln
+
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+*.log
+
+# Large local files exceeding GitHub limits
+gte_siemens_led_california_traffic_signal_set_3.glb

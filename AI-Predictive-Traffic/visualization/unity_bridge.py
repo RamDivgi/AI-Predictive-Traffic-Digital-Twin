@@ -75,6 +75,10 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 # Command receiver socket
 COMMAND_PORT = 5009
 cmd_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+try:
+    cmd_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+except Exception:
+    pass
 cmd_sock.bind(("0.0.0.0", COMMAND_PORT))
 cmd_sock.setblocking(False)
 print(f"Listening for commands from Unity on port {COMMAND_PORT}")
@@ -94,6 +98,8 @@ def generate_dynamic_traffic():
     ET.SubElement(new_root, 'vType', id='passenger', vClass='passenger', guiShape='passenger', maxSpeed='15.0', color='blue', length='5.0')
     ET.SubElement(new_root, 'vType', id='ambulance', vClass='emergency', guiShape='emergency', speedFactor='1.5', accel='2.5', decel='3.5', color='red', length='7.0', width='2.5')
     ET.SubElement(new_root, 'route', id='jam_route', edges='1189020226#3 -132363066#1 -132363066#0 903009071#1')
+    ET.SubElement(new_root, 'route', id='corridor_route_early', edges='1055574152#1 1055574152#2 26182678#1 26182678#2 26182678#3 26299204#0 1189020226#1')
+    ET.SubElement(new_root, 'route', id='corridor_route_mid', edges='26182678#2 26182678#3 26299204#0 1189020226#1 1189020226#2 1189020226#3 -132363066#1')
     
     tree = ET.ElementTree(new_root)
     tree.write(out_file, encoding='UTF-8', xml_declaration=True)
@@ -232,10 +238,10 @@ def generate_round_traffic(round_id: int, current_time: float, scenario: str = "
         return sum(p[0] for p in shape) / len(shape), sum(p[1] for p in shape) / len(shape)
 
     scenario_configs = {
-        "low": {"random_target": 21, "window": 70.0, "bottleneck_target": 0},
-        "medium": {"random_target": 64, "window": 75.0, "bottleneck_target": 0},
-        "high": {"random_target": 106, "window": 90.0, "bottleneck_target": 0},
-        "bottleneck": {"random_target": 50, "window": 75.0, "bottleneck_target": 20}
+        "low": {"random_target": 15, "window": 70.0, "bottleneck_target": 0},
+        "medium": {"random_target": 58, "window": 75.0, "bottleneck_target": 0},
+        "high": {"random_target": 100, "window": 90.0, "bottleneck_target": 0},
+        "bottleneck": {"random_target": 44, "window": 75.0, "bottleneck_target": 20}
     }
     cfg = scenario_configs[scenario]
     target_random = cfg["random_target"]
@@ -320,18 +326,39 @@ def generate_round_traffic(round_id: int, current_time: float, scenario: str = "
                 except Exception:
                     pass
 
-    # 3. 4 Deterministic queue vehicles on jam_route
-    jam_departs = [15.0, 17.0, 19.0, 21.0]
-    for i, d in enumerate(jam_departs):
+    # 3. 10 Deterministic civilian corridor vehicles distributed ahead of the ambulance
+    corridor_specs = [
+        # Early segment ahead of ambulance dispatch (entering arterial)
+        ("corridor_route_early", 2.0, "best"),
+        ("corridor_route_early", 4.5, "0"),
+        ("corridor_route_early", 7.0, "best"),
+        # Mid corridor across consecutive lanes and intersections
+        ("corridor_route_mid", 8.5, "0"),
+        ("corridor_route_mid", 10.5, "1"),
+        ("corridor_route_mid", 13.0, "0"),
+        # Late approach and signal queuing ahead of ambulance
+        ("jam_route", 15.0, "best"),
+        ("jam_route", 17.0, "best"),
+        ("jam_route", 19.0, "best"),
+        ("jam_route", 21.0, "best"),
+    ]
+    for i, (r_id, d, lane) in enumerate(corridor_specs):
         jam_id = f"rnd_{round_id}_jam_{i}"
         jam_time = round(current_time + d, 1)
         try:
-            traci.vehicle.add(jam_id, "jam_route", typeID="passenger", depart=str(jam_time))
+            if r_id not in traci.route.getIDList():
+                if r_id == "corridor_route_early":
+                    traci.route.add(r_id, ['1055574152#1', '1055574152#2', '26182678#1', '26182678#2', '26182678#3', '26299204#0', '1189020226#1'])
+                elif r_id == "corridor_route_mid":
+                    traci.route.add(r_id, ['26182678#2', '26182678#3', '26299204#0', '1189020226#1', '1189020226#2', '1189020226#3', '-132363066#1'])
+                elif r_id == "jam_route":
+                    traci.route.add(r_id, ['1189020226#3', '-132363066#1', '-132363066#0', '903009071#1'])
+            traci.vehicle.add(jam_id, r_id, typeID="passenger", depart=str(jam_time), departLane=lane)
             scheduled_ids.append(jam_id)
         except Exception:
             pass
 
-    print(f"\n[ROUND_TRAFFIC] Round {round_id} traffic generated ({scenario}): {len(scheduled_ids)} vehicles scheduled (incl. 4 queue).")
+    print(f"\n[ROUND_TRAFFIC] Round {round_id} traffic generated ({scenario}): {len(scheduled_ids)} vehicles scheduled (incl. 10 corridor queue).")
     return scheduled_ids
 
 
@@ -343,14 +370,6 @@ def cleanup_simulation_traffic(scheduled_ids: list[str]) -> int:
     removed_count = 0
     active_ids = set(traci.vehicle.getIDList())
     for v in active_ids:
-        try:
-            traci.vehicle.remove(v)
-            removed_count += 1
-        except Exception:
-            pass
-    for v in scheduled_ids:
-        if v in active_ids:
-            continue
         try:
             traci.vehicle.remove(v)
             removed_count += 1
@@ -437,7 +456,6 @@ def main():
         "--step-length", str(REAL_TIME_STEP),
         "--random",
         "--ignore-route-errors",
-        "--quit-on-end",
         "--start"
     ])
     
@@ -547,12 +565,25 @@ def main():
     }
     StateProvider.write_state(initial_idle_state)
 
-    while traci.simulation.getMinExpectedNumber() > 0 and traci.simulation.getTime() < 3600:
+    while traci.simulation.getTime() < 86400:
         loop_start = time.time()
         
-        traci.simulationStep()
+        try:
+            traci.simulationStep()
+        except (traci.exceptions.FatalTraCIError, traci.exceptions.TraCIException) as e:
+            print(f"\n[SUMO] TraCI connection closed ({e}). Exiting simulation loop.")
+            break
+
         step += 1
         traffic_metrics_tracker.update_step()
+
+        # Replenish background civilian traffic during idle periods if vehicles run low
+        if not trip_active and pending_hospital_id is None:
+            if traffic_metrics_tracker.active_count < 15 and step % 100 == 0:
+                cur_t = traci.simulation.getTime()
+                round_counter += 1
+                fresh_ids = generate_round_traffic(round_id=round_counter, current_time=cur_t, scenario="medium")
+                active_scheduled_ids.extend(fresh_ids)
             
         # Run AI signal preemption logic
         ai_decisions = []
@@ -1231,6 +1262,14 @@ def main():
         traci.close()
     except Exception:
         pass
+    try:
+        sock.close()
+    except Exception:
+        pass
+    try:
+        cmd_sock.close()
+    except Exception:
+        pass
     if api_proc and api_proc.poll() is None:
         try:
             api_proc.terminate()
@@ -1245,5 +1284,13 @@ if __name__ == "__main__":
         print("\nBridge stopped by user.")
         try:
             traci.close()
+        except Exception:
+            pass
+        try:
+            sock.close()
+        except Exception:
+            pass
+        try:
+            cmd_sock.close()
         except Exception:
             pass

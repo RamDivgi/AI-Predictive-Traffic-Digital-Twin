@@ -60,10 +60,13 @@ class DigitalTwinState(BaseModel):
     decision_support: Optional[dict] = None
 
 class TripStartRequest(BaseModel):
-    emergency: bool
+    emergency: bool = True
     hospital_id: str
+    ambulance_id: Optional[str] = None
     start_edge: Optional[str] = None
     traffic_scenario: Optional[str] = "medium"
+    green_corridor: Optional[bool] = True
+
 
 class TripModeRequest(BaseModel):
     emergency: bool
@@ -97,3 +100,24 @@ class StartPointResponse(BaseModel):
     name: Optional[str] = None
     outgoing_edge: str
     edge_id: Optional[str] = None
+
+class LoginRequest(BaseModel):
+    username: str
+    password: str
+    operator_name: Optional[str] = None
+    assigned_ambulance: Optional[str] = "AMB-01"
+
+class UserProfile(BaseModel):
+    username: str
+    name: str
+    operator_name: Optional[str] = None
+    assigned_ambulance: Optional[str] = "AMB-01"
+    role: str
+    permissions: List[str]
+
+class LoginResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    user: UserProfile
+
+

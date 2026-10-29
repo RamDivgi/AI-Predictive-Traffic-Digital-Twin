@@ -1,0 +1,33 @@
+condition,route_name,origin_edge,destination_hospital,scenario,seed,completed,elapsed_trip_time_s,junctions_reached,preemptions_activated,premature_preemptions,mean_lead_time_s,signals_restored,restoration_rate,civilian_avg_halted,civilian_mean_speed_kmh,adapter_stats,pair_id,paired_diff_duration_s,activation_eta_mae_s
+CONTROL_PROD,Corridor_Kankanady,1089450246#0,athena_hospital,light,5001,True,137.0,11,28,0,11.14,28,1.0,51.44,28.75,,1,17.0,
+TREATMENT_CAND,Corridor_Kankanady,1089450246#0,athena_hospital,light,5001,True,154.0,11,19,0,6.16,19,1.0,55.48,28.27,"{'total_inferences': 419, 'invalid_predictions_clamped': 0, 'exceptions_caught': 0, 'mean_latency_ms': 25.302, 'p95_latency_ms': 27.5244}",1,17.0,
+CONTROL_PROD,Corridor_Kankanady,1089450246#0,athena_hospital,light,5002,True,137.0,11,28,0,12.21,28,1.0,52.3,28.92,,2,15.0,
+TREATMENT_CAND,Corridor_Kankanady,1089450246#0,athena_hospital,light,5002,True,152.0,11,19,0,7.37,19,1.0,55.03,28.59,"{'total_inferences': 407, 'invalid_predictions_clamped': 0, 'exceptions_caught': 0, 'mean_latency_ms': 27.0032, 'p95_latency_ms': 28.4561}",2,15.0,
+CONTROL_PROD,Corridor_Kankanady,1089450246#0,athena_hospital,moderate,5001,True,137.0,11,28,0,12.07,28,1.0,51.47,28.66,,3,-3.0,
+TREATMENT_CAND,Corridor_Kankanady,1089450246#0,athena_hospital,moderate,5001,True,134.0,11,19,0,7.21,19,1.0,50.99,28.81,"{'total_inferences': 355, 'invalid_predictions_clamped': 0, 'exceptions_caught': 0, 'mean_latency_ms': 27.0447, 'p95_latency_ms': 28.5881}",3,-3.0,
+CONTROL_PROD,Corridor_Kankanady,1089450246#0,athena_hospital,moderate,5002,True,136.0,11,27,0,12.0,27,1.0,51.72,28.94,,4,16.0,
+TREATMENT_CAND,Corridor_Kankanady,1089450246#0,athena_hospital,moderate,5002,True,152.0,11,19,0,7.05,19,1.0,53.96,28.7,"{'total_inferences': 408, 'invalid_predictions_clamped': 0, 'exceptions_caught': 0, 'mean_latency_ms': 27.8473, 'p95_latency_ms': 29.0458}",4,16.0,
+CONTROL_PROD,Corridor_Kankanady,1089450246#0,athena_hospital,heavy,5001,True,413.0,11,69,0,100.23,69,1.0,79.57,21.9,,5,10.0,93.76
+TREATMENT_CAND,Corridor_Kankanady,1089450246#0,athena_hospital,heavy,5001,True,423.0,11,22,0,30.82,22,1.0,79.36,21.79,"{'total_inferences': 1224, 'invalid_predictions_clamped': 0, 'exceptions_caught': 0, 'mean_latency_ms': 15.3247, 'p95_latency_ms': 15.8061}",5,10.0,24.95
+CONTROL_PROD,Corridor_Kankanady,1089450246#0,athena_hospital,heavy,5002,True,403.0,11,69,0,90.71,69,1.0,79.8,22.1,,6,16.0,85.21
+TREATMENT_CAND,Corridor_Kankanady,1089450246#0,athena_hospital,heavy,5002,True,419.0,11,22,0,31.14,22,1.0,78.45,22.06,"{'total_inferences': 1212, 'invalid_predictions_clamped': 0, 'exceptions_caught': 0, 'mean_latency_ms': 15.3296, 'p95_latency_ms': 15.8646}",6,16.0,25.88
+CONTROL_PROD,Corridor_Kankanady,1089450246#0,athena_hospital,incident,5001,False,,6,69,34,145.77,35,0.507,80.01,21.01,,7,,141.37
+TREATMENT_CAND,Corridor_Kankanady,1089450246#0,athena_hospital,incident,5001,False,,5,15,9,4.67,6,0.4,79.59,21.08,"{'total_inferences': 1347, 'invalid_predictions_clamped': 0, 'exceptions_caught': 0, 'mean_latency_ms': 103.6259, 'p95_latency_ms': 215.6948}",7,,8.72
+CONTROL_PROD,Corridor_Kankanady,1089450246#0,athena_hospital,incident,5002,False,,6,68,34,130.35,34,0.5,79.96,21.0,,8,,126.32
+TREATMENT_CAND,Corridor_Kankanady,1089450246#0,athena_hospital,incident,5002,False,,6,15,6,33.67,9,0.6,79.99,21.04,"{'total_inferences': 1347, 'invalid_predictions_clamped': 0, 'exceptions_caught': 0, 'mean_latency_ms': 1078.6399, 'p95_latency_ms': 1286.7758}",8,,33.65
+CONTROL_PROD,Corridor_Kodialbail,1358315405,athena_hospital,light,5001,False,,6,24,11,9.62,13,0.542,74.98,22.04,,9,,6.89
+TREATMENT_CAND,Corridor_Kodialbail,1358315405,athena_hospital,light,5001,False,,6,13,0,5.62,13,1.0,81.06,21.21,"{'total_inferences': 1347, 'invalid_predictions_clamped': 0, 'exceptions_caught': 0, 'mean_latency_ms': 1957.0411, 'p95_latency_ms': 2354.0738}",9,,10.37
+CONTROL_PROD,Corridor_Kodialbail,1358315405,athena_hospital,light,5002,False,,6,23,11,11.0,12,0.522,74.76,22.23,,10,,2.3
+TREATMENT_CAND,Corridor_Kodialbail,1358315405,athena_hospital,light,5002,False,,6,13,0,5.85,13,1.0,76.11,22.06,"{'total_inferences': 1347, 'invalid_predictions_clamped': 0, 'exceptions_caught': 0, 'mean_latency_ms': 11.2947, 'p95_latency_ms': 15.7663}",10,,6.73
+CONTROL_PROD,Corridor_Kodialbail,1358315405,athena_hospital,moderate,5001,False,,6,23,10,9.62,13,0.565,76.64,21.86,,11,,6.89
+TREATMENT_CAND,Corridor_Kodialbail,1358315405,athena_hospital,moderate,5001,False,,6,13,0,5.62,13,1.0,75.52,22.04,"{'total_inferences': 1347, 'invalid_predictions_clamped': 0, 'exceptions_caught': 0, 'mean_latency_ms': 8.1888, 'p95_latency_ms': 11.1846}",11,,10.37
+CONTROL_PROD,Corridor_Kodialbail,1358315405,athena_hospital,moderate,5002,False,,6,24,12,11.0,12,0.5,75.14,22.15,,12,,2.3
+TREATMENT_CAND,Corridor_Kodialbail,1358315405,athena_hospital,moderate,5002,False,,6,13,0,5.85,13,1.0,75.64,22.11,"{'total_inferences': 1347, 'invalid_predictions_clamped': 0, 'exceptions_caught': 0, 'mean_latency_ms': 8.4539, 'p95_latency_ms': 11.6824}",12,,6.73
+CONTROL_PROD,Corridor_Kodialbail,1358315405,athena_hospital,heavy,5001,False,,6,24,11,9.62,13,0.542,75.32,22.04,,13,,6.89
+TREATMENT_CAND,Corridor_Kodialbail,1358315405,athena_hospital,heavy,5001,False,,6,13,0,5.62,13,1.0,75.43,22.04,"{'total_inferences': 1347, 'invalid_predictions_clamped': 0, 'exceptions_caught': 0, 'mean_latency_ms': 8.3623, 'p95_latency_ms': 11.3184}",13,,10.37
+CONTROL_PROD,Corridor_Kodialbail,1358315405,athena_hospital,heavy,5002,False,,6,25,13,11.0,12,0.48,75.71,22.07,,14,,2.3
+TREATMENT_CAND,Corridor_Kodialbail,1358315405,athena_hospital,heavy,5002,False,,6,13,0,5.85,13,1.0,75.79,22.12,"{'total_inferences': 1347, 'invalid_predictions_clamped': 0, 'exceptions_caught': 0, 'mean_latency_ms': 8.5424, 'p95_latency_ms': 12.0149}",14,,6.73
+CONTROL_PROD,Corridor_Kodialbail,1358315405,athena_hospital,incident,5001,False,,6,24,11,12.38,13,0.542,75.67,21.94,,15,,4.09
+TREATMENT_CAND,Corridor_Kodialbail,1358315405,athena_hospital,incident,5001,False,,6,12,0,6.58,12,1.0,76.77,21.91,"{'total_inferences': 1347, 'invalid_predictions_clamped': 0, 'exceptions_caught': 0, 'mean_latency_ms': 8.1393, 'p95_latency_ms': 11.0338}",15,,9.5
+CONTROL_PROD,Corridor_Kodialbail,1358315405,athena_hospital,incident,5002,False,,6,23,11,11.0,12,0.522,75.32,22.1,,16,,2.3
+TREATMENT_CAND,Corridor_Kodialbail,1358315405,athena_hospital,incident,5002,False,,6,13,0,5.85,13,1.0,76.27,22.02,"{'total_inferences': 1347, 'invalid_predictions_clamped': 0, 'exceptions_caught': 0, 'mean_latency_ms': 1195.6972, 'p95_latency_ms': 1590.4993}",16,,6.73

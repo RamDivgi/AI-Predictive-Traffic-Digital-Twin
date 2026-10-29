@@ -1,0 +1,48 @@
+{
+    "timestamp": "2026-10-25T12:52:53.5931028Z",
+    "unityVersion": "6000.5.4f1",
+    "platform": "WindowsEditor",
+    "screenResolution": "640x480",
+    "initialCounts": {
+        "totalBuildings": 1194,
+        "bldgModelsPlaced": 1052,
+        "bldgProceduralPlaced": 142,
+        "roadLanes": 509,
+        "sidewalks": 458,
+        "streetlights": 1032,
+        "intersections": 215,
+        "zebraCrossings": 191,
+        "trafficSignals": 55,
+        "hospitals": 15,
+        "trees": 65,
+        "parks": 27
+    },
+    "restartCounts": {
+        "totalBuildings": 1194,
+        "bldgModelsPlaced": 1052,
+        "bldgProceduralPlaced": 142,
+        "roadLanes": 509,
+        "sidewalks": 458,
+        "streetlights": 1032,
+        "intersections": 215,
+        "zebraCrossings": 191,
+        "trafficSignals": 55,
+        "hospitals": 15,
+        "trees": 65,
+        "parks": 27
+    },
+    "accumulationTestPassed": true,
+    "defects": {
+        "missingMaterialsCount": 0,
+        "floatingBuildingsCount": 0,
+        "overlappingMeshesCount": 0,
+        "misplacedTreesCount": 0,
+        "obstructedRoadsCount": 0,
+        "documentedSourceConflicts": 51
+    },
+    "performance": {
+        "avgFps": 32.41999435424805,
+        "minFps": 0.22472618520259858,
+        "onePercentLowFps": 16.60498046875
+    }
+}

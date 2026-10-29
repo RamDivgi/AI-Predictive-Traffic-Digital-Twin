@@ -1,0 +1,104 @@
+{
+  "dataset_metadata": {
+    "total_raw_rows": 30277,
+    "junction_observed_rows": 13498,
+    "hospital_observed_rows": 5632,
+    "unique_runs": 32,
+    "unique_trips": 32,
+    "unique_junctions": 31
+  },
+  "data_integrity": {
+    "null_counts": {
+      "run_id": 0,
+      "seed": 0,
+      "trip_id": 0,
+      "ambulance_id": 0,
+      "destination_hospital": 0,
+      "route_id": 0,
+      "origin_edge": 0,
+      "traffic_scenario": 0,
+      "simulation_time": 0,
+      "ambulance_speed_mps": 0,
+      "ambulance_speed_kmh": 0,
+      "distance_to_junction_m": 0,
+      "distance_to_hospital_m": 0,
+      "vehicle_count": 0,
+      "halted_vehicle_count": 0,
+      "mean_speed_kmh": 0,
+      "occupancy_percent": 0,
+      "signal_phase": 0,
+      "signal_time_to_switch_s": 0,
+      "junction_id": 0,
+      "incoming_edge": 0,
+      "outgoing_edge": 0,
+      "target_junction_eta_s": 16779,
+      "target_junction_observed": 0,
+      "target_hospital_eta_s": 24645,
+      "target_hospital_observed": 0
+    },
+    "exact_duplicate_rows": 0,
+    "junction_valid_duplicate_rows": 0,
+    "negative_targets_count": 0,
+    "impossible_zero_dist_count": 0
+  },
+  "target_distribution_s": {
+    "count": 13498,
+    "min": 0.0,
+    "max": 297.0,
+    "mean": 64.89391020891983,
+    "std": 58.198320717164435,
+    "median": 48.0,
+    "p25": 20.0,
+    "p75": 91.0,
+    "p90": 154.0,
+    "p95": 193.0
+  },
+  "representation": {
+    "scenarios": {
+      "moderate": 4412,
+      "light": 4247,
+      "heavy": 2531,
+      "incident": 2308
+    },
+    "origins": {
+      "321397980": 5103,
+      "1089450246#0": 3446,
+      "1358315405": 1864,
+      "-132363062": 1567,
+      "1096889856": 1518
+    },
+    "destinations": {
+      "athena_hospital": 8034,
+      "kmc_hospital": 5464
+    },
+    "top_junctions": {
+      "298371899": 1418,
+      "9903324256": 1381,
+      "286953320": 1355,
+      "3610155605": 1329,
+      "cluster_11151324665_3610155471": 1171,
+      "12811104666": 1078,
+      "8387081772": 619,
+      "12682639007": 578
+    }
+  },
+  "group_leakage_audit": {
+    "train_samples": 10340,
+    "test_samples": 3158,
+    "train_unique_trips": 25,
+    "test_unique_trips": 7,
+    "trip_id_overlap": 0,
+    "run_id_overlap": 0,
+    "leakage_status": "PASSED (Zero Overlap)"
+  },
+  "feature_correlations_with_target": {
+    "ambulance_speed_mps": 0.2619,
+    "distance_to_junction_m": 0.6799,
+    "vehicle_count": -0.0726,
+    "halted_vehicle_count": 0.0305,
+    "mean_speed_kmh": -0.1445,
+    "occupancy_percent": 0.0438,
+    "signal_phase": -0.2549,
+    "signal_time_to_switch_s": -0.2555
+  }
+}

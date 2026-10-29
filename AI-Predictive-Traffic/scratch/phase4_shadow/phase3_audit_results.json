@@ -1,0 +1,107 @@
+{
+  "unique_counts_raw": {
+    "run_id": 36,
+    "seed": 36,
+    "trip_id": 36,
+    "route_id": 36,
+    "origin_edge": 5,
+    "destination_hospital": 2,
+    "traffic_scenario": 4,
+    "junction_id": 31,
+    "ambulance_id": 36
+  },
+  "unique_counts_valid_junction": {
+    "run_id": 32,
+    "seed": 32,
+    "trip_id": 32,
+    "route_id": 32,
+    "origin_edge": 5,
+    "destination_hospital": 2,
+    "traffic_scenario": 4,
+    "junction_id": 31,
+    "ambulance_id": 32
+  },
+  "unobserved_trips_investigation": [
+    {
+      "trip_id": "trip_028_athena_hospital_heavy_2502",
+      "origin": "-132363062",
+      "destination": "athena_hospital",
+      "scenario": "heavy",
+      "raw_rows": 1047,
+      "reason": "Ambulance did not reach junction within 350s (or route had 0 signalized junctions)"
+    },
+    {
+      "trip_id": "trip_030_athena_hospital_heavy_2536",
+      "origin": "1096889856",
+      "destination": "athena_hospital",
+      "scenario": "heavy",
+      "raw_rows": 1047,
+      "reason": "Ambulance did not reach junction within 350s (or route had 0 signalized junctions)"
+    },
+    {
+      "trip_id": "trip_038_athena_hospital_incident_2672",
+      "origin": "-132363062",
+      "destination": "athena_hospital",
+      "scenario": "incident",
+      "raw_rows": 1047,
+      "reason": "Ambulance did not reach junction within 350s (or route had 0 signalized junctions)"
+    },
+    {
+      "trip_id": "trip_040_athena_hospital_incident_2706",
+      "origin": "1096889856",
+      "destination": "athena_hospital",
+      "scenario": "incident",
+      "raw_rows": 1047,
+      "reason": "Ambulance did not reach junction within 350s (or route had 0 signalized junctions)"
+    }
+  ],
+  "hospitals_in_dataset": [
+    "athena_hospital",
+    "kmc_hospital"
+  ],
+  "hospitals_omitted": [
+    "highland_hospital",
+    "father_muller_hospital",
+    "160262590",
+    "calaco_hospital",
+    "scs_hospital",
+    "unity_hospital",
+    "indira_hospital",
+    "vijaya_clinic_general_hospital",
+    "mangalore_nursing_home"
+  ],
+  "duplicates_audit": {
+    "exact_duplicates": 0,
+    "near_duplicates_features_only": 2302,
+    "near_duplicates_with_junction": 2302,
+    "near_duplicates_with_target": 1157
+  },
+  "leakage_audit": {
+    "negative_targets": 0,
+    "null_targets": 0,
+    "feature_correlations": {
+      "ambulance_speed_mps": 0.2618820057276446,
+      "distance_to_junction_m": 0.6799041772852313,
+      "vehicle_count": -0.07261669388364274,
+      "halted_vehicle_count": 0.030521014500233878,
+      "mean_speed_kmh": -0.14445728047094886,
+      "occupancy_percent": 0.04381985771607465,
+      "signal_phase": -0.2549197228806375,
+      "signal_time_to_switch_s": -0.25549808249192363
+    },
+    "future_information_in_features": false
+  },
+  "reproduction_audit": {
+    "holdout_mae_match": true,
+    "holdout_rmse_match": true,
+    "holdout_r2_match": true,
+    "cv_mae_match": true,
+    "reproduced_metrics": {
+      "holdout_mae": 12.217053987158394,
+      "holdout_rmse": 18.773180441587435,
+      "holdout_medae": 6.559713516532653,
+      "holdout_r2": 0.8692266258978361,
+      "cv_mean_mae": 13.05663062720048
+    }
+  }
+}

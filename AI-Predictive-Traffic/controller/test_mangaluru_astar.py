@@ -10,12 +10,17 @@ import astar_router
 import route_evaluator
 from rerouting_controller import ReroutingController
 
+import sumolib
+import config
+
 # Override network file for A* to use Mangaluru
 MANGALURU_NET = PROJECT_ROOT / "simulation" / "mangaluru" / "mangaluru_ai.net.xml.gz"
+config.NET_FILE = MANGALURU_NET
 astar_router.NETWORK_FILE = MANGALURU_NET
 route_evaluator.NETWORK_FILE = MANGALURU_NET
-route_evaluator._SUMO_NETWORK = None
-astar_router._SUMO_NETWORK = None
+_mangaluru_net_instance = sumolib.net.readNet(str(MANGALURU_NET))
+route_evaluator._SUMO_NETWORK = _mangaluru_net_instance
+astar_router._SUMO_NETWORK = _mangaluru_net_instance
 
 SUMOCFG = PROJECT_ROOT / "simulation" / "mangaluru" / "ambulance_test.sumocfg"
 

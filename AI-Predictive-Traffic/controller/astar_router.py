@@ -22,11 +22,14 @@ NETWORK_FILE = PROJECT_ROOT / "simulation" / "network" / "test.net.xml"
 _SUMO_NETWORK = None
 
 
-def _get_network() -> sumolib.net.Net:
+def _get_network(net_path_override: str | Path | None = None) -> sumolib.net.Net:
     global _SUMO_NETWORK
+    if net_path_override is not None:
+        return sumolib.net.readNet(str(net_path_override))
     if _SUMO_NETWORK is None:
         import config
-        _SUMO_NETWORK = sumolib.net.readNet(str(config.NET_FILE))
+        target_path = NETWORK_FILE if (NETWORK_FILE and Path(NETWORK_FILE).exists() and str(NETWORK_FILE) != str(PROJECT_ROOT / "simulation" / "network" / "test.net.xml")) else config.NET_FILE
+        _SUMO_NETWORK = sumolib.net.readNet(str(target_path))
     return _SUMO_NETWORK
 
 

@@ -36,12 +36,16 @@ class ReroutingController:
         cooldown_s: float = config.REROUTE_COOLDOWN_S,
         min_distance_to_dest_m: float = config.REROUTE_MIN_DISTANCE_TO_DEST_M,
         ambulance_id: str = config.AMBULANCE_ID,
+        oscillation_window_s: float = getattr(config, "REROUTE_OSCILLATION_WINDOW_S", 90.0),
+        oscillation_penalty_factor: float = getattr(config, "REROUTE_OSCILLATION_PENALTY_FACTOR", 2.0),
     ) -> None:
         self.min_improvement_s = min_improvement_s
         self.min_improvement_percent = min_improvement_percent
         self.cooldown_s = cooldown_s
         self.min_distance_to_dest_m = min_distance_to_dest_m
         self.ambulance_id = ambulance_id
+        self.oscillation_window_s = oscillation_window_s
+        self.oscillation_penalty_factor = oscillation_penalty_factor
 
         self.last_reroute_time: float | None = None
         self.reroute_count: int = 0
@@ -51,6 +55,8 @@ class ReroutingController:
         self.estimated_improvement_s: float = 0.0
         self.last_decision_reason: str = "Route evaluation not yet run."
         self.last_evaluation_data: dict = {}
+        self.route_history: list[dict] = []
+        self.recent_route_signatures: list[tuple[float, tuple[str, ...]]] = []
         
         self.astar_router = AStarRouter(
             travel_time_weight=1.0,
@@ -72,6 +78,14 @@ class ReroutingController:
         self.estimated_improvement_s = 0.0
         self.last_decision_reason = "Initial route assigned."
         self.last_evaluation_data = {}
+        self.route_history.clear()
+        self.recent_route_signatures.clear()
+
+    def get_history(self) -> list[dict]:
+        """
+        Return the complete audit trail of reroute decisions.
+        """
+        return list(self.route_history)
 
     def get_status(self) -> ReroutingStatus:
         """
@@ -91,6 +105,7 @@ class ReroutingController:
         self,
         ambulance_id: str | None = None,
         ml_etas: dict[str, float] | None = None,
+        force_reroute: bool = False,
     ) -> bool:
         """
         Evaluate candidate routes and trigger rerouting if justified.
@@ -155,8 +170,22 @@ class ReroutingController:
         if remaining_distance < self.min_distance_to_dest_m:
             return False
 
-        # Guardrail 5: Cooldown check
-        if self.last_reroute_time is not None and (current_time - self.last_reroute_time) < self.cooldown_s:
+        # Check if current route is blocked by an active incident
+        is_route_blocked = False
+        for edge in remaining_current_edges:
+            if edge in self.astar_router.incident_edges:
+                inc = self.astar_router.incident_edges[edge]
+                if inc.get("severity") == "blockage":
+                    is_route_blocked = True
+                    break
+
+        # Guardrail 5: Cooldown check (bypassed if route is unusable or force_reroute is set)
+        cooldown_active = (
+            self.last_reroute_time is not None 
+            and (current_time - self.last_reroute_time) < self.cooldown_s
+        )
+        if cooldown_active and not force_reroute and not is_route_blocked:
+            self.last_decision_reason = f"Rerouting cooldown active ({(current_time - self.last_reroute_time):.1f}s < {self.cooldown_s}s)."
             return False
 
         # -------------------------------------------------------------------
@@ -217,10 +246,16 @@ class ReroutingController:
         should_reroute = False
         reason = ""
 
-        # Oscillation prevention
-        is_oscillation_risk = False
+        # Oscillation prevention across recent route signatures window
+        self.recent_route_signatures = [
+            (t, sig) for t, sig in self.recent_route_signatures
+            if (current_time - t) <= self.oscillation_window_s
+        ]
+        cand_sig = tuple(astar_route.edge_ids)
+        is_oscillation_risk = any(sig == cand_sig for _, sig in self.recent_route_signatures)
         if (
-            self.previous_route_id is not None
+            not is_oscillation_risk
+            and self.previous_route_id is not None
             and not self.previous_route_id.startswith("!")
             and not is_same_route
         ):
@@ -233,14 +268,17 @@ class ReroutingController:
             except traci.TraCIException:
                 pass
 
-        req_improvement_s = self.min_improvement_s * (1.5 if is_oscillation_risk else 1.0)
-        req_pct = self.min_improvement_percent * (1.5 if is_oscillation_risk else 1.0)
+        req_improvement_s = self.min_improvement_s * (self.oscillation_penalty_factor if is_oscillation_risk else 1.0)
+        req_pct = self.min_improvement_percent * (self.oscillation_penalty_factor if is_oscillation_risk else 1.0)
 
         if is_same_route:
             reason = "Current route is already the best."
+        elif is_route_blocked or force_reroute:
+            should_reroute = True
+            reason = "Emergency reroute: current route is impassable or blocked (cooldown bypassed)."
         elif remaining_distance < self.min_distance_to_dest_m:
             reason = f"Too close to destination ({remaining_distance:.1f}m < {self.min_distance_to_dest_m}m)."
-        elif self.last_reroute_time is not None and (current_time - self.last_reroute_time) < self.cooldown_s:
+        elif cooldown_active:
             reason = f"Rerouting cooldown active ({(current_time - self.last_reroute_time):.1f}s < {self.cooldown_s}s)."
         elif improvement_s < req_improvement_s:
             reason = f"Improvement ({improvement_s:.1f}s) is below threshold ({req_improvement_s:.1f}s)."
@@ -249,7 +287,7 @@ class ReroutingController:
         else:
             should_reroute = True
             if is_oscillation_risk:
-                reason = "Rerouting justified despite oscillation risk (strict thresholds met)."
+                reason = "Rerouting justified despite oscillation risk (strict penalty thresholds met)."
             else:
                 reason = f"Rerouting justified by significant ETA improvement ({improvement_s:.1f}s saved, {improvement_pct:.1f}%)."
 
@@ -276,10 +314,27 @@ class ReroutingController:
                 traci.route.add(unique_route_id, astar_route.edge_ids)
                 traci.vehicle.setRouteID(target_id, unique_route_id)
                 
-                self.previous_route_id = self.current_route_id
+                old_rid = self.current_route_id
+                self.previous_route_id = old_rid
                 self.current_route_id = unique_route_id
                 self.last_reroute_time = current_time
                 self.estimated_improvement_s = improvement_s
+
+                # Record in structured audit history
+                self.route_history.append({
+                    "timestamp": current_time,
+                    "previous_route_id": old_rid,
+                    "previous_edges": list(remaining_current_edges),
+                    "new_route_id": unique_route_id,
+                    "new_edges": list(astar_route.edge_ids),
+                    "old_eta_s": round(current_eta, 1),
+                    "new_eta_s": round(alt_eta, 1),
+                    "improvement_s": round(improvement_s, 1),
+                    "improvement_pct": round(improvement_pct, 1),
+                    "reason": reason,
+                    "cooldown_bypassed": force_reroute or is_route_blocked,
+                })
+                self.recent_route_signatures.append((current_time, tuple(remaining_current_edges)))
 
                 print(f"[REROUTE_APPLIED]")
                 print(f"Ambulance: {target_id} at sim_time {current_time:.1f}s")

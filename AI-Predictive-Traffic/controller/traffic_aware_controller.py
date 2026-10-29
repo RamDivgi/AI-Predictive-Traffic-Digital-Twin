@@ -344,14 +344,32 @@ class TrafficAwareController:
 
         if uncached_rows:
             batch_df = pd.DataFrame(uncached_rows)
-            raw_predictions = self.model.predict(batch_df)
+            try:
+                raw_predictions = self.model.predict(batch_df)
+            except Exception as e:
+                print(f"[ML_INFERENCE_WARNING] Model prediction fallback due to: {e}")
+                # Physics fallback: distance / speed
+                raw_predictions = [
+                    max(0.0, r["distance_to_junction_m"] / max(1.0, r["ambulance_speed_mps"]))
+                    for r in uncached_rows
+                ]
 
             # Prevent unbounded cache growth
             if len(self._prediction_cache) > 2000:
                 self._prediction_cache.clear()
 
+            min_clamp = getattr(config, "ETA_MIN_CLAMP_S", 0.0)
+            max_clamp = getattr(config, "ETA_MAX_CLAMP_S", 300.0)
+
             for (res_idx, c_key), raw_pred in zip(uncached_indices, raw_predictions):
-                pred_val = max(0.0, float(raw_pred))
+                try:
+                    val = float(raw_pred)
+                    if val != val or val == float("inf") or val == float("-inf"): # NaN or inf
+                        row = uncached_rows[uncached_indices.index((res_idx, c_key))]
+                        val = max(0.0, row["distance_to_junction_m"] / max(1.0, row["ambulance_speed_mps"]))
+                    pred_val = min(max_clamp, max(min_clamp, val))
+                except Exception:
+                    pred_val = 15.0
                 results[res_idx] = pred_val
                 self._prediction_cache[c_key] = pred_val
 
@@ -628,7 +646,15 @@ class TrafficAwareController:
         # MODE DISTINCTION
         # ------------------------------------------------------------------
         try:
-            is_emergency = traci.vehicle.getParameter(config.AMBULANCE_ID, "emergency") == "true"
+            param = traci.vehicle.getParameter(config.AMBULANCE_ID, "emergency")
+            if param == "false":
+                is_emergency = False
+            elif param == "true":
+                is_emergency = True
+            else:
+                # Default to emergency mode for emergency vehicle IDs or vehicle types
+                veh_type = traci.vehicle.getTypeID(config.AMBULANCE_ID)
+                is_emergency = ("ambulance" in config.AMBULANCE_ID.lower() or "emergency" in veh_type.lower())
         except traci.TraCIException:
             is_emergency = False
             
@@ -645,11 +671,13 @@ class TrafficAwareController:
         # ------------------------------------------------------------------
         ambulance_present = config.AMBULANCE_ID in vehicle_ids
         should_check_reroute = False
+        is_forced_reroute = False
 
         if ambulance_present and self.destination_hospital is not None:
             if self.route_is_impossible():
                 print("[ROUTE_EXCEPTION] Route is impossible. Triggering immediate recalculation.")
                 should_check_reroute = True
+                is_forced_reroute = True
             elif (
                 self.last_reroute_evaluation_time < 0.0
                 or (current_time - self.last_reroute_evaluation_time) >= config.REROUTE_EVALUATION_INTERVAL_S
@@ -661,6 +689,7 @@ class TrafficAwareController:
             did_reroute = self.rerouting_controller.evaluate_and_reroute(
                 ambulance_id=config.AMBULANCE_ID,
                 ml_etas=None,
+                force_reroute=is_forced_reroute,
             )
             if did_reroute:
                 status = self.rerouting_controller.get_status()
@@ -767,7 +796,8 @@ class TrafficAwareController:
             
             if tls_id:
                 queue_len = features.halted_vehicle_count
-                queue_clearance_time = queue_len * 2.5
+                queue_clear_per_veh = getattr(config, "PREEMPTION_QUEUE_CLEAR_SEC_PER_VEH", 2.5)
+                queue_clearance_time = queue_len * queue_clear_per_veh
                 is_red = is_movement_signal_unfavorable(features)
                 eta = features.ambulance_eta_s
                 
@@ -783,17 +813,24 @@ class TrafficAwareController:
                     
                 is_immediate_target = (index == 0)
 
+                # Queue threshold evaluated against lane capacity
+                base_queue_threshold = getattr(config, "PREEMPTION_QUEUE_THRESHOLD", 5)
+                try:
+                    num_lanes = max(1, traci.edge.getLaneNumber(features.incoming_edge))
+                except Exception:
+                    num_lanes = 1
+                effective_queue_thresh = base_queue_threshold * num_lanes
+
                 # 3. Two-Tier Hierarchy Activation
                 if (is_immediate_target and conflict) or in_window:
-                    if queue_len <= 5:
-                        # Rerouting forbidden. Proactive Signal Preemption.
+                    if queue_len <= effective_queue_thresh:
+                        # Queue clearance feasible. Proactive Signal Preemption.
                         decision_str = "PREEMPT"
                         should_preempt = True
                         if not self.signal_controller.is_preempted(tls_id):
                             activated = self.activate_preemption(features)
                     else:
-                        # Queue is too long. Only reroute for the immediate target 
-                        # to prevent premature rerouting for distant junctions.
+                        # Queue is too long for preemption to clear in time. Evaluate rerouting for immediate target.
                         if is_immediate_target:
                             can_evaluate_queue_reroute = (
                                 self.last_reroute_evaluation_time < 0.0

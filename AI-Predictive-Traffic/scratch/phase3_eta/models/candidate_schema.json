@@ -1,0 +1,36 @@
+{
+  "model_type": "RandomForestRegressor",
+  "hyperparameters": {
+    "n_estimators": 100,
+    "max_depth": 12,
+    "min_samples_split": 5,
+    "min_samples_leaf": 3,
+    "max_features": "sqrt",
+    "random_state": 2026
+  },
+  "target_column": "target_junction_eta_s",
+  "feature_columns": [
+    "ambulance_speed_mps",
+    "distance_to_junction_m",
+    "vehicle_count",
+    "halted_vehicle_count",
+    "mean_speed_kmh",
+    "occupancy_percent",
+    "signal_phase",
+    "signal_time_to_switch_s"
+  ],
+  "feature_types": {
+    "ambulance_speed_mps": "float64",
+    "distance_to_junction_m": "float64",
+    "vehicle_count": "int64",
+    "halted_vehicle_count": "int64",
+    "mean_speed_kmh": "float64",
+    "occupancy_percent": "float64",
+    "signal_phase": "int64",
+    "signal_time_to_switch_s": "float64"
+  },
+  "dataset_version": "mangaluru_eta_dataset_v1.csv",
+  "training_samples": 10851,
+  "test_samples": 2647,
+  "trip_level_leakage_overlap": 0
+}

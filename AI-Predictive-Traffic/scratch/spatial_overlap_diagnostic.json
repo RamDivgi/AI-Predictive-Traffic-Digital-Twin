@@ -1,0 +1,745 @@
+{
+  "total_buildings": 1238,
+  "intersecting_roads": 27,
+  "intersecting_junctions": 10,
+  "encroaching_sidewalks": 42,
+  "total_offending": 46,
+  "offenders": [
+    {
+      "id": "osm_way_26564647",
+      "type": "yes",
+      "is_infill": false,
+      "source": "osm",
+      "model_placed": false,
+      "model_name": null,
+      "hits_road": true,
+      "hits_junction": true,
+      "overlap_area_m2": 100.27,
+      "actual_clearance_m": 0.0,
+      "centroid": [
+        897.6,
+        1868.6
+      ]
+    },
+    {
+      "id": "osm_way_1113521337",
+      "type": "residential",
+      "is_infill": false,
+      "source": "osm",
+      "model_placed": false,
+      "model_name": null,
+      "hits_road": true,
+      "hits_junction": true,
+      "overlap_area_m2": 48.43,
+      "actual_clearance_m": 0.0,
+      "centroid": [
+        1410.0,
+        1226.4
+      ]
+    },
+    {
+      "id": "osm_way_209722135",
+      "type": "yes",
+      "is_infill": false,
+      "source": "osm",
+      "model_placed": false,
+      "model_name": null,
+      "hits_road": true,
+      "hits_junction": false,
+      "overlap_area_m2": 36.3,
+      "actual_clearance_m": 0.0,
+      "centroid": [
+        1026.9,
+        2269.8
+      ]
+    },
+    {
+      "id": "osm_way_1566748046",
+      "type": "house",
+      "is_infill": false,
+      "source": "osm",
+      "model_placed": false,
+      "model_name": null,
+      "hits_road": true,
+      "hits_junction": true,
+      "overlap_area_m2": 32.68,
+      "actual_clearance_m": 0.0,
+      "centroid": [
+        998.9,
+        1115.4
+      ]
+    },
+    {
+      "id": "osm_way_1369684614",
+      "type": "yes",
+      "is_infill": false,
+      "source": "osm",
+      "model_placed": false,
+      "model_name": null,
+      "hits_road": true,
+      "hits_junction": false,
+      "overlap_area_m2": 28.4,
+      "actual_clearance_m": 0.0,
+      "centroid": [
+        1925.8,
+        1328.5
+      ]
+    },
+    {
+      "id": "osm_way_1369684615",
+      "type": "yes",
+      "is_infill": false,
+      "source": "osm",
+      "model_placed": false,
+      "model_name": null,
+      "hits_road": true,
+      "hits_junction": false,
+      "overlap_area_m2": 27.53,
+      "actual_clearance_m": 0.0,
+      "centroid": [
+        2248.1,
+        1239.6
+      ]
+    },
+    {
+      "id": "osm_way_1566720706",
+      "type": "yes",
+      "is_infill": false,
+      "source": "osm",
+      "model_placed": false,
+      "model_name": null,
+      "hits_road": true,
+      "hits_junction": true,
+      "overlap_area_m2": 27.12,
+      "actual_clearance_m": 0.0,
+      "centroid": [
+        882.5,
+        1319.2
+      ]
+    },
+    {
+      "id": "osm_way_26564646",
+      "type": "yes",
+      "is_infill": false,
+      "source": "osm",
+      "model_placed": false,
+      "model_name": null,
+      "hits_road": true,
+      "hits_junction": true,
+      "overlap_area_m2": 25.69,
+      "actual_clearance_m": 0.0,
+      "centroid": [
+        896.3,
+        1923.7
+      ]
+    },
+    {
+      "id": "osm_way_1567295916",
+      "type": "yes",
+      "is_infill": false,
+      "source": "osm",
+      "model_placed": false,
+      "model_name": null,
+      "hits_road": true,
+      "hits_junction": true,
+      "overlap_area_m2": 23.77,
+      "actual_clearance_m": 0.0,
+      "centroid": [
+        933.0,
+        1312.5
+      ]
+    },
+    {
+      "id": "osm_way_1567295897",
+      "type": "house",
+      "is_infill": false,
+      "source": "osm",
+      "model_placed": false,
+      "model_name": null,
+      "hits_road": true,
+      "hits_junction": true,
+      "overlap_area_m2": 20.45,
+      "actual_clearance_m": 0.0,
+      "centroid": [
+        1021.1,
+        1541.0
+      ]
+    },
+    {
+      "id": "osm_way_1474201521",
+      "type": "commercial",
+      "is_infill": false,
+      "source": "osm",
+      "model_placed": false,
+      "model_name": null,
+      "hits_road": true,
+      "hits_junction": false,
+      "overlap_area_m2": 18.9,
+      "actual_clearance_m": 0.0,
+      "centroid": [
+        885.1,
+        2190.9
+      ]
+    },
+    {
+      "id": "osm_way_1369684611",
+      "type": "yes",
+      "is_infill": false,
+      "source": "osm",
+      "model_placed": false,
+      "model_name": null,
+      "hits_road": true,
+      "hits_junction": false,
+      "overlap_area_m2": 16.62,
+      "actual_clearance_m": 0.0,
+      "centroid": [
+        1765.7,
+        1263.4
+      ]
+    },
+    {
+      "id": "osm_way_741187999",
+      "type": "residential",
+      "is_infill": false,
+      "source": "osm",
+      "model_placed": false,
+      "model_name": null,
+      "hits_road": true,
+      "hits_junction": false,
+      "overlap_area_m2": 13.52,
+      "actual_clearance_m": 0.0,
+      "centroid": [
+        1415.9,
+        1275.5
+      ]
+    },
+    {
+      "id": "osm_way_83231353",
+      "type": "yes",
+      "is_infill": false,
+      "source": "osm",
+      "model_placed": false,
+      "model_name": null,
+      "hits_road": true,
+      "hits_junction": false,
+      "overlap_area_m2": 11.72,
+      "actual_clearance_m": 0.0,
+      "centroid": [
+        1520.9,
+        1316.1
+      ]
+    },
+    {
+      "id": "osm_way_741198780",
+      "type": "residential",
+      "is_infill": false,
+      "source": "osm",
+      "model_placed": false,
+      "model_name": null,
+      "hits_road": true,
+      "hits_junction": false,
+      "overlap_area_m2": 7.79,
+      "actual_clearance_m": 0.0,
+      "centroid": [
+        1387.2,
+        1273.5
+      ]
+    },
+    {
+      "id": "osm_way_1567295938",
+      "type": "commercial",
+      "is_infill": false,
+      "source": "osm",
+      "model_placed": false,
+      "model_name": null,
+      "hits_road": true,
+      "hits_junction": false,
+      "overlap_area_m2": 6.82,
+      "actual_clearance_m": 0.0,
+      "centroid": [
+        1259.7,
+        1335.9
+      ]
+    },
+    {
+      "id": "osm_way_1369684613",
+      "type": "yes",
+      "is_infill": false,
+      "source": "osm",
+      "model_placed": false,
+      "model_name": null,
+      "hits_road": true,
+      "hits_junction": true,
+      "overlap_area_m2": 4.25,
+      "actual_clearance_m": 0.0,
+      "centroid": [
+        1924.9,
+        1346.3
+      ]
+    },
+    {
+      "id": "osm_way_1567295917",
+      "type": "commercial",
+      "is_infill": false,
+      "source": "osm",
+      "model_placed": false,
+      "model_name": null,
+      "hits_road": true,
+      "hits_junction": false,
+      "overlap_area_m2": 4.2,
+      "actual_clearance_m": 0.0,
+      "centroid": [
+        948.5,
+        1304.1
+      ]
+    },
+    {
+      "id": "osm_way_720472665",
+      "type": "residential",
+      "is_infill": false,
+      "source": "osm",
+      "model_placed": false,
+      "model_name": null,
+      "hits_road": true,
+      "hits_junction": false,
+      "overlap_area_m2": 4.07,
+      "actual_clearance_m": 0.0,
+      "centroid": [
+        1266.3,
+        1377.4
+      ]
+    },
+    {
+      "id": "osm_way_1566748047",
+      "type": "yes",
+      "is_infill": false,
+      "source": "osm",
+      "model_placed": false,
+      "model_name": null,
+      "hits_road": true,
+      "hits_junction": false,
+      "overlap_area_m2": 3.93,
+      "actual_clearance_m": 0.0,
+      "centroid": [
+        878.6,
+        1106.6
+      ]
+    },
+    {
+      "id": "osm_way_26564648",
+      "type": "yes",
+      "is_infill": false,
+      "source": "osm",
+      "model_placed": false,
+      "model_name": null,
+      "hits_road": true,
+      "hits_junction": true,
+      "overlap_area_m2": 2.97,
+      "actual_clearance_m": 0.0,
+      "centroid": [
+        894.1,
+        1952.2
+      ]
+    },
+    {
+      "id": "osm_way_1567295931",
+      "type": "house",
+      "is_infill": false,
+      "source": "osm",
+      "model_placed": false,
+      "model_name": null,
+      "hits_road": true,
+      "hits_junction": true,
+      "overlap_area_m2": 1.54,
+      "actual_clearance_m": 0.0,
+      "centroid": [
+        1181.7,
+        1431.7
+      ]
+    },
+    {
+      "id": "osm_way_1567295924",
+      "type": "house",
+      "is_infill": false,
+      "source": "osm",
+      "model_placed": false,
+      "model_name": null,
+      "hits_road": true,
+      "hits_junction": false,
+      "overlap_area_m2": 1.04,
+      "actual_clearance_m": 0.0,
+      "centroid": [
+        1014.9,
+        1376.7
+      ]
+    },
+    {
+      "id": "osm_way_1567295933",
+      "type": "apartments",
+      "is_infill": false,
+      "source": "osm",
+      "model_placed": false,
+      "model_name": null,
+      "hits_road": true,
+      "hits_junction": false,
+      "overlap_area_m2": 0.91,
+      "actual_clearance_m": 0.0,
+      "centroid": [
+        1235.3,
+        1453.5
+      ]
+    },
+    {
+      "id": "osm_way_1567295937",
+      "type": "apartments",
+      "is_infill": false,
+      "source": "osm",
+      "model_placed": false,
+      "model_name": null,
+      "hits_road": true,
+      "hits_junction": false,
+      "overlap_area_m2": 0.91,
+      "actual_clearance_m": 0.0,
+      "centroid": [
+        1286.4,
+        1346.4
+      ]
+    },
+    {
+      "id": "osm_way_1538919057",
+      "type": "yes",
+      "is_infill": false,
+      "source": "osm",
+      "model_placed": false,
+      "model_name": null,
+      "hits_road": true,
+      "hits_junction": false,
+      "overlap_area_m2": 0.2,
+      "actual_clearance_m": 0.0,
+      "centroid": [
+        1479.7,
+        1966.5
+      ]
+    },
+    {
+      "id": "osm_way_1566748050",
+      "type": "house",
+      "is_infill": false,
+      "source": "osm",
+      "model_placed": false,
+      "model_name": null,
+      "hits_road": true,
+      "hits_junction": false,
+      "overlap_area_m2": 0.11,
+      "actual_clearance_m": 0.0,
+      "centroid": [
+        886.8,
+        1186.8
+      ]
+    },
+    {
+      "id": "osm_way_83231352",
+      "type": "yes",
+      "is_infill": false,
+      "source": "osm",
+      "model_placed": false,
+      "model_name": null,
+      "hits_road": false,
+      "hits_junction": false,
+      "overlap_area_m2": 0.0,
+      "actual_clearance_m": 0.46,
+      "centroid": [
+        1551.8,
+        1284.1
+      ]
+    },
+    {
+      "id": "osm_way_741143038",
+      "type": "yes",
+      "is_infill": false,
+      "source": "osm",
+      "model_placed": false,
+      "model_name": null,
+      "hits_road": false,
+      "hits_junction": false,
+      "overlap_area_m2": 0.0,
+      "actual_clearance_m": 0.66,
+      "centroid": [
+        981.8,
+        1318.0
+      ]
+    },
+    {
+      "id": "osm_way_742757653",
+      "type": "yes",
+      "is_infill": false,
+      "source": "osm",
+      "model_placed": false,
+      "model_name": null,
+      "hits_road": false,
+      "hits_junction": false,
+      "overlap_area_m2": 0.0,
+      "actual_clearance_m": 0.48,
+      "centroid": [
+        2128.3,
+        1220.2
+      ]
+    },
+    {
+      "id": "osm_way_1369684640",
+      "type": "yes",
+      "is_infill": false,
+      "source": "osm",
+      "model_placed": false,
+      "model_name": null,
+      "hits_road": false,
+      "hits_junction": false,
+      "overlap_area_m2": 0.0,
+      "actual_clearance_m": 0.56,
+      "centroid": [
+        1598.3,
+        1684.1
+      ]
+    },
+    {
+      "id": "osm_way_1474201523",
+      "type": "yes",
+      "is_infill": false,
+      "source": "osm",
+      "model_placed": false,
+      "model_name": null,
+      "hits_road": false,
+      "hits_junction": false,
+      "overlap_area_m2": 0.0,
+      "actual_clearance_m": 1.04,
+      "centroid": [
+        889.4,
+        2173.8
+      ]
+    },
+    {
+      "id": "osm_way_1474201524",
+      "type": "yes",
+      "is_infill": false,
+      "source": "osm",
+      "model_placed": false,
+      "model_name": null,
+      "hits_road": false,
+      "hits_junction": false,
+      "overlap_area_m2": 0.0,
+      "actual_clearance_m": 1.75,
+      "centroid": [
+        893.6,
+        2157.7
+      ]
+    },
+    {
+      "id": "osm_way_1538919030",
+      "type": "commercial",
+      "is_infill": false,
+      "source": "osm",
+      "model_placed": false,
+      "model_name": null,
+      "hits_road": false,
+      "hits_junction": false,
+      "overlap_area_m2": 0.0,
+      "actual_clearance_m": 0.5,
+      "centroid": [
+        1458.5,
+        1948.2
+      ]
+    },
+    {
+      "id": "osm_way_1567295892",
+      "type": "house",
+      "is_infill": false,
+      "source": "osm",
+      "model_placed": false,
+      "model_name": null,
+      "hits_road": false,
+      "hits_junction": false,
+      "overlap_area_m2": 0.0,
+      "actual_clearance_m": 1.73,
+      "centroid": [
+        910.9,
+        1585.4
+      ]
+    },
+    {
+      "id": "osm_way_1567295896",
+      "type": "house",
+      "is_infill": false,
+      "source": "osm",
+      "model_placed": false,
+      "model_name": null,
+      "hits_road": false,
+      "hits_junction": false,
+      "overlap_area_m2": 0.0,
+      "actual_clearance_m": 1.05,
+      "centroid": [
+        1060.5,
+        1523.9
+      ]
+    },
+    {
+      "id": "osm_way_1567295902",
+      "type": "house",
+      "is_infill": false,
+      "source": "osm",
+      "model_placed": false,
+      "model_name": null,
+      "hits_road": false,
+      "hits_junction": false,
+      "overlap_area_m2": 0.0,
+      "actual_clearance_m": 0.14,
+      "centroid": [
+        989.4,
+        1478.4
+      ]
+    },
+    {
+      "id": "osm_way_1567295915",
+      "type": "commercial",
+      "is_infill": false,
+      "source": "osm",
+      "model_placed": false,
+      "model_name": null,
+      "hits_road": false,
+      "hits_junction": false,
+      "overlap_area_m2": 0.0,
+      "actual_clearance_m": 1.63,
+      "centroid": [
+        928.5,
+        1336.2
+      ]
+    },
+    {
+      "id": "osm_way_1567295918",
+      "type": "yes",
+      "is_infill": false,
+      "source": "osm",
+      "model_placed": false,
+      "model_name": null,
+      "hits_road": false,
+      "hits_junction": false,
+      "overlap_area_m2": 0.0,
+      "actual_clearance_m": 0.03,
+      "centroid": [
+        1015.9,
+        1294.9
+      ]
+    },
+    {
+      "id": "osm_way_1567295923",
+      "type": "house",
+      "is_infill": false,
+      "source": "osm",
+      "model_placed": false,
+      "model_name": null,
+      "hits_road": false,
+      "hits_junction": false,
+      "overlap_area_m2": 0.0,
+      "actual_clearance_m": 0.79,
+      "centroid": [
+        1009.6,
+        1364.3
+      ]
+    },
+    {
+      "id": "osm_way_1567295927",
+      "type": "yes",
+      "is_infill": false,
+      "source": "osm",
+      "model_placed": false,
+      "model_name": null,
+      "hits_road": false,
+      "hits_junction": false,
+      "overlap_area_m2": 0.0,
+      "actual_clearance_m": 1.09,
+      "centroid": [
+        1040.5,
+        1395.7
+      ]
+    },
+    {
+      "id": "osm_way_1567295932",
+      "type": "house",
+      "is_infill": false,
+      "source": "osm",
+      "model_placed": false,
+      "model_name": null,
+      "hits_road": false,
+      "hits_junction": false,
+      "overlap_area_m2": 0.0,
+      "actual_clearance_m": 0.66,
+      "centroid": [
+        1199.1,
+        1435.3
+      ]
+    },
+    {
+      "id": "osm_way_1567295936",
+      "type": "house",
+      "is_infill": false,
+      "source": "osm",
+      "model_placed": false,
+      "model_name": null,
+      "hits_road": false,
+      "hits_junction": false,
+      "overlap_area_m2": 0.0,
+      "actual_clearance_m": 0.14,
+      "centroid": [
+        1229.7,
+        1414.9
+      ]
+    },
+    {
+      "id": "osm_way_1567295942",
+      "type": "house",
+      "is_infill": false,
+      "source": "osm",
+      "model_placed": false,
+      "model_name": null,
+      "hits_road": false,
+      "hits_junction": false,
+      "overlap_area_m2": 0.0,
+      "actual_clearance_m": 0.64,
+      "centroid": [
+        1173.8,
+        1252.3
+      ]
+    },
+    {
+      "id": "osm_way_1567295959",
+      "type": "apartments",
+      "is_infill": false,
+      "source": "osm",
+      "model_placed": false,
+      "model_name": null,
+      "hits_road": false,
+      "hits_junction": false,
+      "overlap_area_m2": 0.0,
+      "actual_clearance_m": 1.03,
+      "centroid": [
+        888.7,
+        1060.2
+      ]
+    },
+    {
+      "id": "16016715",
+      "type": "yes",
+      "is_infill": false,
+      "source": "osm_poly",
+      "model_placed": false,
+      "model_name": null,
+      "hits_road": false,
+      "hits_junction": false,
+      "overlap_area_m2": 0.0,
+      "actual_clearance_m": 0.09,
+      "centroid": [
+        2260.1,
+        2202.7
+      ]
+    }
+  ]
+}

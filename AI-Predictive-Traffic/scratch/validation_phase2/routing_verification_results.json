@@ -1,0 +1,110 @@
+[
+  {
+    "scenario": "Light Traffic",
+    "seed": 42,
+    "enable_preemption": false,
+    "enable_rerouting": false,
+    "reached": true,
+    "travel_time_s": 311.0,
+    "stopped_time_s": 56.0,
+    "initial_dist_m": 3316.1,
+    "final_dist_m": 3316.1,
+    "reroute_count": 0
+  },
+  {
+    "scenario": "Light Traffic",
+    "seed": 42,
+    "enable_preemption": true,
+    "enable_rerouting": false,
+    "reached": true,
+    "travel_time_s": 311.0,
+    "stopped_time_s": 56.0,
+    "initial_dist_m": 3316.1,
+    "final_dist_m": 3316.1,
+    "reroute_count": 0
+  },
+  {
+    "scenario": "Light Traffic",
+    "seed": 42,
+    "enable_preemption": true,
+    "enable_rerouting": true,
+    "reached": true,
+    "travel_time_s": 245.0,
+    "stopped_time_s": 0.0,
+    "initial_dist_m": 3316.1,
+    "final_dist_m": 1874.0,
+    "reroute_count": 3
+  },
+  {
+    "scenario": "Moderate Slowdown (2.5 m/s)",
+    "seed": 42,
+    "enable_preemption": false,
+    "enable_rerouting": false,
+    "reached": true,
+    "travel_time_s": 349.0,
+    "stopped_time_s": 58.0,
+    "initial_dist_m": 3316.1,
+    "final_dist_m": 3316.1,
+    "reroute_count": 0
+  },
+  {
+    "scenario": "Moderate Slowdown (2.5 m/s)",
+    "seed": 42,
+    "enable_preemption": true,
+    "enable_rerouting": false,
+    "reached": true,
+    "travel_time_s": 349.0,
+    "stopped_time_s": 58.0,
+    "initial_dist_m": 3316.1,
+    "final_dist_m": 3316.1,
+    "reroute_count": 0
+  },
+  {
+    "scenario": "Moderate Slowdown (2.5 m/s)",
+    "seed": 42,
+    "enable_preemption": true,
+    "enable_rerouting": true,
+    "reached": true,
+    "travel_time_s": 441.0,
+    "stopped_time_s": 98.0,
+    "initial_dist_m": 3316.1,
+    "final_dist_m": 1779.9,
+    "reroute_count": 5
+  },
+  {
+    "scenario": "Roadblock Bottleneck",
+    "seed": 42,
+    "enable_preemption": false,
+    "enable_rerouting": false,
+    "reached": false,
+    "travel_time_s": 689.0,
+    "stopped_time_s": 493.0,
+    "initial_dist_m": 3316.1,
+    "final_dist_m": 3316.1,
+    "reroute_count": 0
+  },
+  {
+    "scenario": "Roadblock Bottleneck",
+    "seed": 42,
+    "enable_preemption": true,
+    "enable_rerouting": false,
+    "reached": false,
+    "travel_time_s": 689.0,
+    "stopped_time_s": 493.0,
+    "initial_dist_m": 3316.1,
+    "final_dist_m": 3316.1,
+    "reroute_count": 0
+  },
+  {
+    "scenario": "Roadblock Bottleneck",
+    "seed": 42,
+    "enable_preemption": true,
+    "enable_rerouting": true,
+    "reached": true,
+    "travel_time_s": 439.0,
+    "stopped_time_s": 140.0,
+    "initial_dist_m": 3316.1,
+    "final_dist_m": 1773.5,
+    "reroute_count": 12
+  }
+]

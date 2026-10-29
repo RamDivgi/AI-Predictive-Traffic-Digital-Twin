@@ -1,0 +1,91 @@
+{
+  "holdout_results": {
+    "mean_baseline": {
+      "mae_s": 42.3115,
+      "rmse_s": 52.1048,
+      "medae_s": 38.7692,
+      "p90_error_s": 71.2308,
+      "p95_error_s": 109.2308,
+      "r2_score": -0.0074
+    },
+    "physics_baseline": {
+      "mae_s": 38.2916,
+      "rmse_s": 55.8556,
+      "medae_s": 25.3754,
+      "p90_error_s": 94.4131,
+      "p95_error_s": 126.0562,
+      "r2_score": -0.1576
+    },
+    "ridge_regression": {
+      "mae_s": 25.8335,
+      "rmse_s": 34.0642,
+      "medae_s": 19.6633,
+      "p90_error_s": 52.3584,
+      "p95_error_s": 63.163,
+      "r2_score": 0.5694
+    },
+    "random_forest_candidate": {
+      "mae_s": 12.2171,
+      "rmse_s": 18.7732,
+      "medae_s": 6.5597,
+      "p90_error_s": 31.0615,
+      "p95_error_s": 40.3168,
+      "r2_score": 0.8692
+    }
+  },
+  "scenario_breakdown": {
+    "light": {
+      "samples": 281,
+      "rf_mae_s": 10.068,
+      "rf_rmse_s": 14.004,
+      "rf_r2": 0.7869,
+      "phys_mae_s": 21.381
+    },
+    "moderate": {
+      "samples": 1544,
+      "rf_mae_s": 13.161,
+      "rf_rmse_s": 19.832,
+      "rf_r2": 0.867,
+      "phys_mae_s": 38.91
+    },
+    "heavy": {
+      "samples": 675,
+      "rf_mae_s": 10.337,
+      "rf_rmse_s": 17.376,
+      "rf_r2": 0.8912,
+      "phys_mae_s": 45.63
+    },
+    "incident": {
+      "samples": 147,
+      "rf_mae_s": 15.042,
+      "rf_rmse_s": 21.304,
+      "rf_r2": 0.748,
+      "phys_mae_s": 30.428
+    }
+  },
+  "cross_validation_5fold": {
+    "mean_mae_s": 13.0566,
+    "std_mae_s": 1.8704,
+    "mean_rmse_s": 22.757,
+    "std_rmse_s": 5.2271,
+    "mean_r2": 0.842,
+    "mean_phys_mae_s": 39.8602
+  },
+  "feature_importances": {
+    "distance_to_junction_m": 0.4654,
+    "signal_phase": 0.1053,
+    "occupancy_percent": 0.0954,
+    "mean_speed_kmh": 0.0799,
+    "ambulance_speed_mps": 0.0771,
+    "signal_time_to_switch_s": 0.075,
+    "halted_vehicle_count": 0.0524,
+    "vehicle_count": 0.0495
+  },
+  "data_provenance": {
+    "dataset_file": "D:\\AIML\\Projects\\Major\\AI-Predictive-Traffic\\scratch\\phase3_eta\\data\\mangaluru_eta_dataset_v1.csv",
+    "train_samples": 10851,
+    "test_samples": 2647,
+    "train_trips": 25,
+    "test_trips": 7
+  }
+}

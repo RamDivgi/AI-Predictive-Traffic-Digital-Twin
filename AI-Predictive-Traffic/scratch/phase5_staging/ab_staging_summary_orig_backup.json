@@ -1,0 +1,253 @@
+{
+  "experimental_design": {
+    "total_pairs_planned": 16,
+    "total_simulation_runs": 32,
+    "corridors": [
+      "Corridor_Kankanady",
+      "Corridor_Kodialbail"
+    ],
+    "scenarios": [
+      "light",
+      "moderate",
+      "heavy",
+      "incident"
+    ],
+    "seeds": [
+      5001,
+      5002
+    ],
+    "control_condition": "Production Model ETA (models/eta_prediction_model.joblib)",
+    "treatment_condition": "Candidate Model ETA (scratch/phase3_eta/models/mangaluru_eta_candidate.joblib via StagingETAAdapter)",
+    "predeclared_primary_metric": "Paired Completed Ambulance Trip Travel Time (s)"
+  },
+  "completion_rates": {
+    "control_completion_rate": "6/16 (37.5%)",
+    "treatment_completion_rate": "6/16 (37.5%)",
+    "completed_pairs_count": 6,
+    "incomplete_pairs_count": 10
+  },
+  "primary_metric_results": {
+    "completed_pairs_count": 6,
+    "mean_delta_s": 11.83,
+    "std_delta_s": 7.01,
+    "median_delta_s": 15.5,
+    "mean_percent_change": 6.55,
+    "treatment_faster_pairs": 1,
+    "control_faster_pairs": 5,
+    "tied_pairs": 0,
+    "paired_t_test_p_value": 0.013
+  },
+  "operational_metrics": {
+    "mean_duration_control_s": 227.17,
+    "mean_duration_treatment_s": 239.0,
+    "mean_preemptions_control": 36.0,
+    "mean_preemptions_treatment": 15.81,
+    "total_premature_preemptions_control": 158,
+    "total_premature_preemptions_treatment": 15,
+    "mean_lead_time_control_s": 37.48,
+    "mean_lead_time_treatment_s": 10.93,
+    "restoration_rate_control": 0.701,
+    "restoration_rate_treatment": 0.938,
+    "civilian_avg_halted_control": 70.61,
+    "civilian_avg_halted_treatment": 71.59,
+    "civilian_mean_speed_control_kmh": 23.61,
+    "civilian_mean_speed_treatment_kmh": 23.49
+  },
+  "candidate_adapter_telemetry": {
+    "total_inferences": 17495,
+    "invalid_clamped_predictions": 0,
+    "exceptions_caught": 0,
+    "mean_latency_ms": 282.8648,
+    "p95_latency_ms": 354.0831
+  },
+  "completed_pairs_breakdown": [
+    {
+      "pair_id": 1,
+      "corridor": "Corridor_Kankanady",
+      "scenario": "light",
+      "seed": 5001,
+      "ctrl_duration_s": 137.0,
+      "treat_duration_s": 154.0,
+      "delta_s": 17.0,
+      "percent_change": 12.41,
+      "ctrl_lead_time_s": 11.14,
+      "treat_lead_time_s": 6.16,
+      "ctrl_premature": 0,
+      "treat_premature": 0,
+      "ctrl_civ_speed_kmh": 28.75,
+      "treat_civ_speed_kmh": 28.27
+    },
+    {
+      "pair_id": 2,
+      "corridor": "Corridor_Kankanady",
+      "scenario": "light",
+      "seed": 5002,
+      "ctrl_duration_s": 137.0,
+      "treat_duration_s": 152.0,
+      "delta_s": 15.0,
+      "percent_change": 10.95,
+      "ctrl_lead_time_s": 12.21,
+      "treat_lead_time_s": 7.37,
+      "ctrl_premature": 0,
+      "treat_premature": 0,
+      "ctrl_civ_speed_kmh": 28.92,
+      "treat_civ_speed_kmh": 28.59
+    },
+    {
+      "pair_id": 3,
+      "corridor": "Corridor_Kankanady",
+      "scenario": "moderate",
+      "seed": 5001,
+      "ctrl_duration_s": 137.0,
+      "treat_duration_s": 134.0,
+      "delta_s": -3.0,
+      "percent_change": -2.19,
+      "ctrl_lead_time_s": 12.07,
+      "treat_lead_time_s": 7.21,
+      "ctrl_premature": 0,
+      "treat_premature": 0,
+      "ctrl_civ_speed_kmh": 28.66,
+      "treat_civ_speed_kmh": 28.81
+    },
+    {
+      "pair_id": 4,
+      "corridor": "Corridor_Kankanady",
+      "scenario": "moderate",
+      "seed": 5002,
+      "ctrl_duration_s": 136.0,
+      "treat_duration_s": 152.0,
+      "delta_s": 16.0,
+      "percent_change": 11.76,
+      "ctrl_lead_time_s": 12.0,
+      "treat_lead_time_s": 7.05,
+      "ctrl_premature": 0,
+      "treat_premature": 0,
+      "ctrl_civ_speed_kmh": 28.94,
+      "treat_civ_speed_kmh": 28.7
+    },
+    {
+      "pair_id": 5,
+      "corridor": "Corridor_Kankanady",
+      "scenario": "heavy",
+      "seed": 5001,
+      "ctrl_duration_s": 413.0,
+      "treat_duration_s": 423.0,
+      "delta_s": 10.0,
+      "percent_change": 2.42,
+      "ctrl_lead_time_s": 100.23,
+      "treat_lead_time_s": 30.82,
+      "ctrl_premature": 0,
+      "treat_premature": 0,
+      "ctrl_civ_speed_kmh": 21.9,
+      "treat_civ_speed_kmh": 21.79
+    },
+    {
+      "pair_id": 6,
+      "corridor": "Corridor_Kankanady",
+      "scenario": "heavy",
+      "seed": 5002,
+      "ctrl_duration_s": 403.0,
+      "treat_duration_s": 419.0,
+      "delta_s": 16.0,
+      "percent_change": 3.97,
+      "ctrl_lead_time_s": 90.71,
+      "treat_lead_time_s": 31.14,
+      "ctrl_premature": 0,
+      "treat_premature": 0,
+      "ctrl_civ_speed_kmh": 22.1,
+      "treat_civ_speed_kmh": 22.06
+    }
+  ],
+  "incomplete_pairs_breakdown": [
+    {
+      "pair_id": 7,
+      "corridor": "Corridor_Kankanady",
+      "scenario": "incident",
+      "seed": 5001,
+      "ctrl_completed": false,
+      "treat_completed": false,
+      "reason": "Simulation timeout (>450s) under heavy/incident conditions"
+    },
+    {
+      "pair_id": 8,
+      "corridor": "Corridor_Kankanady",
+      "scenario": "incident",
+      "seed": 5002,
+      "ctrl_completed": false,
+      "treat_completed": false,
+      "reason": "Simulation timeout (>450s) under heavy/incident conditions"
+    },
+    {
+      "pair_id": 9,
+      "corridor": "Corridor_Kodialbail",
+      "scenario": "light",
+      "seed": 5001,
+      "ctrl_completed": false,
+      "treat_completed": false,
+      "reason": "Simulation timeout (>450s) under heavy/incident conditions"
+    },
+    {
+      "pair_id": 10,
+      "corridor": "Corridor_Kodialbail",
+      "scenario": "light",
+      "seed": 5002,
+      "ctrl_completed": false,
+      "treat_completed": false,
+      "reason": "Simulation timeout (>450s) under heavy/incident conditions"
+    },
+    {
+      "pair_id": 11,
+      "corridor": "Corridor_Kodialbail",
+      "scenario": "moderate",
+      "seed": 5001,
+      "ctrl_completed": false,
+      "treat_completed": false,
+      "reason": "Simulation timeout (>450s) under heavy/incident conditions"
+    },
+    {
+      "pair_id": 12,
+      "corridor": "Corridor_Kodialbail",
+      "scenario": "moderate",
+      "seed": 5002,
+      "ctrl_completed": false,
+      "treat_completed": false,
+      "reason": "Simulation timeout (>450s) under heavy/incident conditions"
+    },
+    {
+      "pair_id": 13,
+      "corridor": "Corridor_Kodialbail",
+      "scenario": "heavy",
+      "seed": 5001,
+      "ctrl_completed": false,
+      "treat_completed": false,
+      "reason": "Simulation timeout (>450s) under heavy/incident conditions"
+    },
+    {
+      "pair_id": 14,
+      "corridor": "Corridor_Kodialbail",
+      "scenario": "heavy",
+      "seed": 5002,
+      "ctrl_completed": false,
+      "treat_completed": false,
+      "reason": "Simulation timeout (>450s) under heavy/incident conditions"
+    },
+    {
+      "pair_id": 15,
+      "corridor": "Corridor_Kodialbail",
+      "scenario": "incident",
+      "seed": 5001,
+      "ctrl_completed": false,
+      "treat_completed": false,
+      "reason": "Simulation timeout (>450s) under heavy/incident conditions"
+    },
+    {
+      "pair_id": 16,
+      "corridor": "Corridor_Kodialbail",
+      "scenario": "incident",
+      "seed": 5002,
+      "ctrl_completed": false,
+      "treat_completed": false,
+      "reason": "Simulation timeout (>450s) under heavy/incident conditions"
+    }
+  ]
+}

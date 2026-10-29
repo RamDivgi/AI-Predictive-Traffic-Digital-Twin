@@ -1,0 +1,381 @@
+{
+  "overall_evaluation": {
+    "total_raw_observations": 13398,
+    "valid_observed_evaluations": 6306,
+    "candidate_metrics": {
+      "mae_s": 18.3681,
+      "rmse_s": 33.4187,
+      "medae_s": 7.5795,
+      "p90_error_s": 43.911,
+      "p95_error_s": 98.458,
+      "r2_score": 0.76
+    },
+    "production_metrics": {
+      "mae_s": 74.3162,
+      "rmse_s": 100.1522,
+      "medae_s": 55.765,
+      "p90_error_s": 178.262,
+      "p95_error_s": 201.057,
+      "r2_score": -1.1556
+    },
+    "physics_metrics": {
+      "mae_s": 54.535,
+      "rmse_s": 76.5405,
+      "medae_s": 38.1865,
+      "p90_error_s": 135.7895,
+      "p95_error_s": 165.1893,
+      "r2_score": -0.259
+    },
+    "latency_ms": {
+      "candidate_mean": 28.6842,
+      "candidate_p95": 33.4295,
+      "production_mean": 67.3118,
+      "production_p95": 93.6592
+    }
+  },
+  "scenario_breakdown": {
+    "light": {
+      "samples": 1962,
+      "cand": {
+        "mae_s": 10.2661,
+        "rmse_s": 14.3921,
+        "medae_s": 6.6895,
+        "p90_error_s": 25.6129,
+        "p95_error_s": 31.1164,
+        "r2_score": 0.9433
+      },
+      "prod": {
+        "mae_s": 64.3764,
+        "rmse_s": 87.2673,
+        "medae_s": 47.0,
+        "p90_error_s": 161.057,
+        "p95_error_s": 186.057,
+        "r2_score": -1.0847
+      },
+      "phys": {
+        "mae_s": 44.1602,
+        "rmse_s": 60.7008,
+        "medae_s": 31.974,
+        "p90_error_s": 100.4401,
+        "p95_error_s": 126.1022,
+        "r2_score": -0.0086
+      }
+    },
+    "moderate": {
+      "samples": 2178,
+      "cand": {
+        "mae_s": 9.8397,
+        "rmse_s": 14.5096,
+        "medae_s": 5.849,
+        "p90_error_s": 25.1908,
+        "p95_error_s": 33.3845,
+        "r2_score": 0.9479
+      },
+      "prod": {
+        "mae_s": 70.0836,
+        "rmse_s": 93.3794,
+        "medae_s": 51.506,
+        "p90_error_s": 171.008,
+        "p95_error_s": 192.3813,
+        "r2_score": -1.1558
+      },
+      "phys": {
+        "mae_s": 47.658,
+        "rmse_s": 64.4552,
+        "medae_s": 35.666,
+        "p90_error_s": 107.4133,
+        "p95_error_s": 126.8804,
+        "r2_score": -0.0271
+      }
+    },
+    "heavy": {
+      "samples": 1873,
+      "cand": {
+        "mae_s": 37.2258,
+        "rmse_s": 56.7804,
+        "medae_s": 14.752,
+        "p90_error_s": 109.8616,
+        "p95_error_s": 121.0466,
+        "r2_score": 0.4984
+      },
+      "prod": {
+        "mae_s": 91.5188,
+        "rmse_s": 121.6247,
+        "medae_s": 67.0,
+        "p90_error_s": 212.2908,
+        "p95_error_s": 259.057,
+        "r2_score": -1.3013
+      },
+      "phys": {
+        "mae_s": 77.3621,
+        "rmse_s": 103.9409,
+        "medae_s": 49.141,
+        "p90_error_s": 186.938,
+        "p95_error_s": 197.1722,
+        "r2_score": -0.6808
+      }
+    },
+    "incident": {
+      "samples": 293,
+      "cand": {
+        "mae_s": 15.4686,
+        "rmse_s": 21.7888,
+        "medae_s": 7.503,
+        "p90_error_s": 37.1914,
+        "p95_error_s": 42.9262,
+        "r2_score": 0.7346
+      },
+      "prod": {
+        "mae_s": 62.3716,
+        "rmse_s": 74.181,
+        "medae_s": 61.057,
+        "p90_error_s": 119.057,
+        "p95_error_s": 126.457,
+        "r2_score": -2.0767
+      },
+      "phys": {
+        "mae_s": 29.2043,
+        "rmse_s": 38.3274,
+        "medae_s": 27.8,
+        "p90_error_s": 72.3694,
+        "p95_error_s": 81.6546,
+        "r2_score": 0.1787
+      }
+    }
+  },
+  "preemption_breakdown": {
+    "preempt_off": {
+      "samples": 3109,
+      "cand": {
+        "mae_s": 18.3722,
+        "rmse_s": 33.4873,
+        "medae_s": 7.448,
+        "p90_error_s": 43.1006,
+        "p95_error_s": 98.3342,
+        "r2_score": 0.7562
+      },
+      "prod": {
+        "mae_s": 72.1483,
+        "rmse_s": 98.3193,
+        "medae_s": 52.12,
+        "p90_error_s": 176.057,
+        "p95_error_s": 200.2866,
+        "r2_score": -1.1015
+      },
+      "phys": {
+        "mae_s": 53.8931,
+        "rmse_s": 76.1054,
+        "medae_s": 36.628,
+        "p90_error_s": 136.3658,
+        "p95_error_s": 165.5164,
+        "r2_score": -0.2592
+      }
+    },
+    "preempt_on": {
+      "samples": 3197,
+      "cand": {
+        "mae_s": 18.364,
+        "rmse_s": 33.3519,
+        "medae_s": 7.686,
+        "p90_error_s": 44.7024,
+        "p95_error_s": 98.4998,
+        "r2_score": 0.7631
+      },
+      "prod": {
+        "mae_s": 76.4245,
+        "rmse_s": 101.903,
+        "medae_s": 58.006,
+        "p90_error_s": 180.3092,
+        "p95_error_s": 201.4538,
+        "r2_score": -1.2114
+      },
+      "phys": {
+        "mae_s": 55.1592,
+        "rmse_s": 76.9613,
+        "medae_s": 40.424,
+        "p90_error_s": 135.1654,
+        "p95_error_s": 165.1356,
+        "r2_score": -0.2614
+      }
+    }
+  },
+  "trip_duration_view": [
+    {
+      "trip_id": "trip_p4_001_kmc_hospital_light_base_4053",
+      "origin": "321397980",
+      "destination": "kmc_hospital",
+      "scenario": "light",
+      "preemption": "preempt_off",
+      "observations": 957,
+      "valid_junction_evals": 845,
+      "arrived": false,
+      "trip_duration": ">320s (In-Transit)"
+    },
+    {
+      "trip_id": "trip_p4_002_kmc_hospital_light_preempt_4066",
+      "origin": "321397980",
+      "destination": "kmc_hospital",
+      "scenario": "light",
+      "preemption": "preempt_on",
+      "observations": 957,
+      "valid_junction_evals": 846,
+      "arrived": false,
+      "trip_duration": ">320s (In-Transit)"
+    },
+    {
+      "trip_id": "trip_p4_003_kmc_hospital_moderate_base_4079",
+      "origin": "321397980",
+      "destination": "kmc_hospital",
+      "scenario": "moderate",
+      "preemption": "preempt_off",
+      "observations": 957,
+      "valid_junction_evals": 775,
+      "arrived": false,
+      "trip_duration": ">320s (In-Transit)"
+    },
+    {
+      "trip_id": "trip_p4_004_kmc_hospital_moderate_preempt_4092",
+      "origin": "321397980",
+      "destination": "kmc_hospital",
+      "scenario": "moderate",
+      "preemption": "preempt_on",
+      "observations": 957,
+      "valid_junction_evals": 769,
+      "arrived": false,
+      "trip_duration": ">320s (In-Transit)"
+    },
+    {
+      "trip_id": "trip_p4_005_kmc_hospital_heavy_base_4105",
+      "origin": "321397980",
+      "destination": "kmc_hospital",
+      "scenario": "heavy",
+      "preemption": "preempt_off",
+      "observations": 957,
+      "valid_junction_evals": 464,
+      "arrived": false,
+      "trip_duration": ">320s (In-Transit)"
+    },
+    {
+      "trip_id": "trip_p4_006_kmc_hospital_heavy_preempt_4118",
+      "origin": "321397980",
+      "destination": "kmc_hospital",
+      "scenario": "heavy",
+      "preemption": "preempt_on",
+      "observations": 957,
+      "valid_junction_evals": 466,
+      "arrived": false,
+      "trip_duration": ">320s (In-Transit)"
+    },
+    {
+      "trip_id": "trip_p4_007_kmc_hospital_incident_base_4131",
+      "origin": "321397980",
+      "destination": "kmc_hospital",
+      "scenario": "incident",
+      "preemption": "preempt_off",
+      "observations": 957,
+      "valid_junction_evals": 147,
+      "arrived": false,
+      "trip_duration": ">320s (In-Transit)"
+    },
+    {
+      "trip_id": "trip_p4_008_kmc_hospital_incident_preempt_4144",
+      "origin": "321397980",
+      "destination": "kmc_hospital",
+      "scenario": "incident",
+      "preemption": "preempt_on",
+      "observations": 957,
+      "valid_junction_evals": 146,
+      "arrived": false,
+      "trip_duration": ">320s (In-Transit)"
+    },
+    {
+      "trip_id": "trip_p4_009_athena_hospital_light_base_4157",
+      "origin": "1358315405",
+      "destination": "athena_hospital",
+      "scenario": "light",
+      "preemption": "preempt_off",
+      "observations": 957,
+      "valid_junction_evals": 204,
+      "arrived": false,
+      "trip_duration": ">320s (In-Transit)"
+    },
+    {
+      "trip_id": "trip_p4_010_athena_hospital_light_preempt_4170",
+      "origin": "1358315405",
+      "destination": "athena_hospital",
+      "scenario": "light",
+      "preemption": "preempt_on",
+      "observations": 957,
+      "valid_junction_evals": 67,
+      "arrived": false,
+      "trip_duration": ">320s (In-Transit)"
+    },
+    {
+      "trip_id": "trip_p4_011_athena_hospital_moderate_base_4183",
+      "origin": "1358315405",
+      "destination": "athena_hospital",
+      "scenario": "moderate",
+      "preemption": "preempt_off",
+      "observations": 957,
+      "valid_junction_evals": 203,
+      "arrived": false,
+      "trip_duration": ">320s (In-Transit)"
+    },
+    {
+      "trip_id": "trip_p4_012_athena_hospital_moderate_preempt_4196",
+      "origin": "1358315405",
+      "destination": "athena_hospital",
+      "scenario": "moderate",
+      "preemption": "preempt_on",
+      "observations": 957,
+      "valid_junction_evals": 431,
+      "arrived": false,
+      "trip_duration": ">320s (In-Transit)"
+    },
+    {
+      "trip_id": "trip_p4_013_athena_hospital_heavy_base_4209",
+      "origin": "1089450246#0",
+      "destination": "athena_hospital",
+      "scenario": "heavy",
+      "preemption": "preempt_off",
+      "observations": 957,
+      "valid_junction_evals": 471,
+      "arrived": false,
+      "trip_duration": ">320s (In-Transit)"
+    },
+    {
+      "trip_id": "trip_p4_014_athena_hospital_heavy_preempt_4222",
+      "origin": "1089450246#0",
+      "destination": "athena_hospital",
+      "scenario": "heavy",
+      "preemption": "preempt_on",
+      "observations": 957,
+      "valid_junction_evals": 472,
+      "arrived": false,
+      "trip_duration": ">320s (In-Transit)"
+    },
+    {
+      "trip_id": "trip_p4_015_kmc_hospital_moderate_base_4235",
+      "origin": "-132363062",
+      "destination": "kmc_hospital",
+      "scenario": "moderate",
+      "preemption": "preempt_off",
+      "observations": 0,
+      "valid_junction_evals": 0,
+      "arrived": true,
+      "trip_duration": 199.0
+    },
+    {
+      "trip_id": "trip_p4_016_kmc_hospital_moderate_preempt_4248",
+      "origin": "-132363062",
+      "destination": "kmc_hospital",
+      "scenario": "moderate",
+      "preemption": "preempt_on",
+      "observations": 0,
+      "valid_junction_evals": 0,
+      "arrived": true,
+      "trip_duration": 189.0
+    }
+  ],
+  "trip_summaries": []
+}
